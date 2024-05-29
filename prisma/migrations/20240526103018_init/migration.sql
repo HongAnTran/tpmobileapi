@@ -43,10 +43,8 @@ CREATE TABLE "Product" (
     "short_description" TEXT NOT NULL,
     "create_id" INTEGER NOT NULL,
     "store_id" INTEGER NOT NULL,
-    "category_id" INTEGER NOT NULL,
-    "thumnail" TEXT NOT NULL,
+    "category_id" INTEGER,
     "imageId" INTEGER NOT NULL,
-    "category_title" TEXT NOT NULL,
     "rating" JSONB NOT NULL,
     "meta_title" TEXT NOT NULL,
     "meta_description" TEXT NOT NULL,
@@ -99,16 +97,6 @@ CREATE TABLE "ProductOption" (
     "values" TEXT[],
 
     CONSTRAINT "ProductOption_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ProductTags" (
-    "id" SERIAL NOT NULL,
-    "value" TEXT NOT NULL,
-    "type_id" INTEGER NOT NULL,
-    "product_id" INTEGER NOT NULL,
-
-    CONSTRAINT "ProductTags_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -200,7 +188,7 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 ALTER TABLE "Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Product" ADD CONSTRAINT "Product_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProductVariant" ADD CONSTRAINT "ProductVariant_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -210,9 +198,6 @@ ALTER TABLE "ProductImage" ADD CONSTRAINT "ProductImage_product_id_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "ProductOption" ADD CONSTRAINT "ProductOption_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProductTags" ADD CONSTRAINT "ProductTags_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProductSpecifications" ADD CONSTRAINT "ProductSpecifications_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
