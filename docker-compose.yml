@@ -4,10 +4,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      
+    environment:
+      DATABASE_URL: "postgresql://tp_user:tp_password@postgres:5432/tp_db?schema=public"
     ports:
       - "3000:3000"
     depends_on:
       - postgres
+    restart: always
+      
   postgres:
     image: postgres:13
     container_name: tp_db
