@@ -31,12 +31,20 @@ export class CategoryProductController {
 
   @Get()
   async findAll(@Query() query: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.CategoryWhereUniqueInput;
-    where?: Prisma.CategoryWhereInput;
+    skip?: string;
+    take?: string;
+    orderBy?: string
+    orderType?: string
   }): Promise<Category[]> {
-    return this.categoryProductService.categories(query);
+    const skip = query.skip ? parseInt(query.skip, 10) : undefined;
+    const take = query.take ? parseInt(query.take, 10) : undefined;
+    return this.categoryProductService.categoriesPublic({
+      skip: skip,
+      take: take,
+      orderBy: {
+        [query.orderBy]: query.orderType
+      }
+    });
   }
 
   @Post()

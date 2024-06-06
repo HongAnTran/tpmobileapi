@@ -16,48 +16,50 @@ export class ProductController {
   findAll(@Query() query: {
     skip?: string;
     take?: string;
-    cursor?: Prisma.ProductWhereUniqueInput;
-    where?: Prisma.ProductWhereInput;
-    orderBy?: Prisma.ProductOrderByWithRelationInput;
+    status?: string
+    category_id?: Product["category_id"]
+    ids?: string
+    include?: string,
+    keyword?: string
   }) {
+    const { category_id, ids, include, keyword, status } = query
+
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
+
+    const productIds = ids ? ids.split(",").map(id => Number(id)) : []
+    const includeParams = include ? include.split(",") : [
+      "category",
+      "images",
+      "options",
+      "specifications",
+      "variants"
+    ]
+    const where: Prisma.ProductWhereInput = {
+      status: status ? Number(status) : undefined,
+      category_id: query.category_id ? Number(category_id) : undefined,
+      id: productIds.length ? { in: productIds } : undefined,
+      ...(keyword && { title: { contains: keyword } }),
+    };
+
+
+    let includeQuery = includeParams.reduce((pre, item) => {
+      pre[item] = true
+      return pre
+    }, {})
+
     return this.productService.products({
-      ...query,
       skip,
       take,
-      include: {
-        variants: true,
-        images: true,
-        category: true,
-        options: true,
-        specifications: true
-      }
+      where,
+      include: includeQuery
     });
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    try {
-      const idNumber = Number(id)
-      let query: Prisma.ProductWhereUniqueInput = { slug: id }
-      if (!isNaN(idNumber)) {
-        query = { id: idNumber }
-      }
-      const product = await this.productService.product(query, {
-        category: true,
-        images: true,
-        options: true,
-        specifications: true,
-        variants: true
-      });
-      if (!product) {
-        throw new NotFoundException(`Product with ID ${id} not found`);
-      }
-      return product;
-    } catch (error) {
-      throw new NotFoundException(`Product with ID ${id} not found`);
-    }
+    const product = await this.productService.product(id);
+    return product
   }
 
   @Patch(':id')

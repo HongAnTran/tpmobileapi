@@ -19,27 +19,28 @@ enum ProductStatus {
 }
 
 model Product {
-  id                Int                     @id @default(autoincrement())
-  title             String                  @unique
-  slug              String                  @unique
+  id                Int       @id @default(autoincrement())
+  title             String    @unique
+  slug              String    @unique
   description_html  String?
   vendor            String?
-  available         Boolean
-  status            ProductStatus           @default(DRAFT)
-  created_at        DateTime                @default(now())
+  available         Boolean   @default(true)
+  status            Int       @default(0)
+  created_at        DateTime  @default(now())
   updated_at        DateTime?
   published_at      DateTime?
-  barcode           String?                 @unique
+  barcode           String?   @unique
   short_description String?
   meta_title        String?
   meta_description  String?
   meta_keywords     String?
-  category_id       Int?
-  category          Category?               @relation(fields: [category_id], references: [id])
-  images            ProductImage[]
-  variants          ProductVariant[]
-  specifications    ProductSpecifications[]
-  options           Option[]
+
+  category_id    Int?
+  category       Category?               @relation(fields: [category_id], references: [id])
+  images         ProductImage[]
+  variants       ProductVariant[]
+  specifications ProductSpecifications[]
+  options        Option[]
 }
 
 enum CategoryProductStatus {
@@ -52,6 +53,7 @@ model Category {
   title       String                @unique
   description String?
   image       String?
+  parent_id   Int?
   slug        String                @unique
   status      CategoryProductStatus @default(DRAFT)
   products    Product[]
@@ -135,7 +137,7 @@ model Order {
   ship_price  Float
   discount    Float
   note        String?
-  status      OrderStatus
+  status      Int
   promotions  Json[]
   shipping    Json
   payment     Json
@@ -153,7 +155,7 @@ enum OrderStatus {
 
 model ProductOrder {
   id                  Int      @id @default(autoincrement())
-  title               String   
+  title               String
   slug                String   @unique
   category_title      String
   category_id         Int
@@ -178,17 +180,52 @@ model ProductOrder {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
+  id    Int       @id @default(autoincrement())
+  email String    @unique
   name  String?
-  posts Post[]
+  posts Article[]
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean? @default(false)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model Customer {
+  id      Int       @id @default(autoincrement())
+  email   String    @unique
+  phone   String
+  name    String?
+  gender  Gender?
+  birtday DateTime?
+}
+
+model CategoryArticle {
+  id          Int       @id @default(autoincrement())
+  title       String    @unique
+  description String?
+  image       String?
+  slug        String    @unique
+  status      Int       @default(0)
+  posts       Article[]
+}
+
+model Article {
+  id          Int              @id @default(autoincrement())
+  title       String
+  content     String?
+  published   Boolean?         @default(false)
+  author      User?            @relation(fields: [authorId], references: [id])
+  authorId    Int?
+  category_id Int?
+  category    CategoryArticle? @relation(fields: [category_id], references: [id])
+}
+
+model Store {
+  id      Int     @id @default(autoincrement())
+  name    String
+  phone   String
+  address String?
+  url_map String?
 }
