@@ -34,13 +34,17 @@ model Product {
   meta_title        String?
   meta_description  String?
   meta_keywords     String?
-
+  featured_image     String?
+  price             Float      @default(0)
+  price_max          Float     @default(0)
+  price_min          Float     @default(0)
   category_id    Int?
   category       Category?               @relation(fields: [category_id], references: [id])
   images         ProductImage[]
   variants       ProductVariant[]
   specifications ProductSpecifications[]
   options        Option[]
+
 }
 
 enum CategoryProductStatus {
