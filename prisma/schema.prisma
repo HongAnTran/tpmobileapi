@@ -76,8 +76,8 @@ model ProductVariant {
   title              String
   updated_at         DateTime?
   inventory_quantity Int
-  image_id           Int
-  image              ProductImage @relation(fields: [image_id], references: [id])
+  image_id           Int?
+  image              ProductImage? @relation(fields: [image_id], references: [id])
   available          Boolean
   product            Product      @relation(fields: [product_id], references: [id])
   product_id         Int
