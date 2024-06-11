@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  nestjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      
+    environment:
+      DATABASE_URL: "postgresql://tp_user:tp_password@postgres:5432/tp_db?schema=public"
+    ports:
+<<<<<<< HEAD
+      - "4000:3000"
+=======
+      - "4000:4000"
+>>>>>>> 60208bb13747bbb4ca977a67aba83417cb1a2e27
+    depends_on:
+      - postgres
+    restart: always
+      
+  postgres:
+    image: postgres:13
+    container_name: tp_db
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: tp_db
+      POSTGRES_USER: tp_user
+      POSTGRES_PASSWORD: tp_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
