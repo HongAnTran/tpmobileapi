@@ -8,11 +8,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://tp_user:tp_password@postgres:5432/tp_db?schema=public"
     ports:
-<<<<<<< HEAD
-      - "4000:3000"
-=======
       - "4000:4000"
->>>>>>> 60208bb13747bbb4ca977a67aba83417cb1a2e27
     depends_on:
       - postgres
     restart: always
