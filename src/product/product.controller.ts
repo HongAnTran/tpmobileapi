@@ -30,7 +30,6 @@ export class ProductController {
     const productIds = ids ? ids.split(",").map(id => Number(id)) : []
     const includeParams = include ? include.split(",") : [
       "category",
-      "images",
       "options",
       "specifications",
       "variants"

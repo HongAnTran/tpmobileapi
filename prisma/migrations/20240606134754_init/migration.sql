@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "Product" ALTER COLUMN "price" SET DEFAULT 0,
-ALTER COLUMN "price_max" SET DEFAULT 0,
-ALTER COLUMN "price_min" SET DEFAULT 0;
