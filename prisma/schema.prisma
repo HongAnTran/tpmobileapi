@@ -99,7 +99,7 @@ model SpecificationsType {
 model ProductSpecifications {
   id          Int                @id @default(autoincrement())
   type_id     Int
-  type        SpecificationsType @relation(fields: [type_id], references: [id])
+  type        SpecificationsType @relation(fields: [type_id], references: [id] , onDelete: Cascade)
   name        String
   value       String
   description String?
