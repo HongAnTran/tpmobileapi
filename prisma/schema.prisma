@@ -79,7 +79,7 @@ model ProductVariant {
   image_id           Int?
   image              ProductImage? @relation(fields: [image_id], references: [id])
   available          Boolean
-  product            Product      @relation(fields: [product_id], references: [id])
+  product            Product      @relation(fields: [product_id], references: [id]  , onDelete: Cascade)
   product_id         Int
 }
 
@@ -87,7 +87,7 @@ model ProductImage {
   id          Int              @id @default(autoincrement())
   created_at  DateTime?
   position    Int
-  product     Product          @relation(fields: [product_id], references: [id])
+  product     Product          @relation(fields: [product_id], references: [id] , onDelete: Cascade)
   product_id  Int
   updated_at  DateTime?
   src         String
@@ -98,7 +98,7 @@ model Option {
   id         Int      @id @default(autoincrement())
   name       String
   position   Int
-  product    Product  @relation(fields: [product_id], references: [id])
+  product    Product  @relation(fields: [product_id], references: [id] , onDelete: Cascade)
   product_id Int
   values     String[]
 }
@@ -117,7 +117,7 @@ model ProductSpecifications {
   name        String
   value       String
   description String?
-  product     Product            @relation(fields: [product_id], references: [id])
+  product     Product            @relation(fields: [product_id], references: [id] , onDelete: Cascade)
   product_id  Int
 }
 
@@ -177,9 +177,9 @@ model ProductOrder {
   quantity            Int
   image               String
   selected            Boolean
-  cart                Cart?    @relation(fields: [cartId], references: [id])
+  cart                Cart?    @relation(fields: [cartId], references: [id] , onDelete: Cascade)
   cartId              Int?
-  Order               Order?   @relation(fields: [orderId], references: [id])
+  Order               Order?   @relation(fields: [orderId], references: [id] , onDelete: Cascade)
   orderId             Int?
 }
 
