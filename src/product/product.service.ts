@@ -17,7 +17,6 @@ export class ProductService {
         where: query,
         include: {
           category: true,
-          images: true,
           options: true,
           specifications: true,
           variants: true
@@ -114,7 +113,6 @@ export class ProductService {
     return this.prisma.product.delete({
       where,
       include :{
-        images : true,
         options : true,
         variants : true,
       }
