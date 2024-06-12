@@ -101,7 +101,7 @@ model ProductSpecifications {
   type_id     Int
   type        SpecificationsType @relation(fields: [type_id], references: [id] , onDelete: Cascade)
   name        String
-  value       String
+  value       String[]
   description String?
   product     Product[]
 }
