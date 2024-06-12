@@ -113,6 +113,11 @@ export class ProductService {
   async deleteProduct(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
     return this.prisma.product.delete({
       where,
+      include :{
+        images : true,
+        options : true,
+        variants : true,
+      }
     });
   }
 }
