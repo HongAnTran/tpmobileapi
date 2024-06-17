@@ -29,21 +29,6 @@ export class CategoryProductService {
     });
   }
 
-  async categoriesPublic(params: {
-    skip?: number;
-    take?: number;
-    orderBy?: Prisma.CategoryOrderByWithRelationInput;
-  }): Promise<Category[]> {
-    const { skip, take, orderBy } = params;
-    return this.prisma.category.findMany({
-      skip,
-      take,
-      orderBy,
-      where: {
-        status: "SHOW"
-      }
-    });
-  }
 
   async createCategory(data: Prisma.CategoryCreateInput): Promise<Category> {
     return this.prisma.category.create({

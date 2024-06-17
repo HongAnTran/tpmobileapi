@@ -59,38 +59,6 @@ export class ProductService {
       total
     };
   }
-
-  // async  productsPublic(params: {
-  //   skip?: number;
-  //   take?: number;
-  // }): Promise<{ products: Product[], total: number }> {
-  //   const { skip, take } = params;
-  //   const products = await this.prisma.product.findMany({
-  //     skip,
-  //     take,
-  //     where: {
-  //       status: "SHOW"
-  //     },
-  //     include: {
-  //       category: true,
-  //       variants: true,
-  //       images: true
-  //     }
-  //   });
-
-  //   const total = await this.prisma.product.count({
-  //     where: {
-  //       status: "SHOW"
-  //     },
-  //   });
-
-  //   return {
-  //     products,
-  //     total
-  //   };
-  // }
-
-
   // Tạo mới một sản phẩm
   async createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
     return this.prisma.product.create({

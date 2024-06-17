@@ -9,7 +9,12 @@ export class ProductController {
 
   @Post()
   async create(@Body() createProductDto: Prisma.ProductCreateInput) {
-    return this.productService.createProduct(createProductDto)
+    return this.productService.createProduct({
+      ...createProductDto,
+      specifications :{
+        connect : [{id : 1} , {id : 1}]
+      }
+    })
   }
 
   @Get()
@@ -30,9 +35,9 @@ export class ProductController {
     const productIds = ids ? ids.split(",").map(id => Number(id)) : []
     const includeParams = include ? include.split(",") : [
       "category",
-      "options",
-      "specifications",
-      "variants"
+      // "options",
+      // "specifications",
+      // "variants"
     ]
     const where: Prisma.ProductWhereInput = {
       status: status ? Number(status) : undefined,

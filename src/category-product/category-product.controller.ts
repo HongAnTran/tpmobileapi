@@ -38,7 +38,7 @@ export class CategoryProductController {
   }): Promise<Category[]> {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
-    return this.categoryProductService.categoriesPublic({
+    return this.categoryProductService.categories({
       skip: skip,
       take: take,
       orderBy: {
@@ -46,7 +46,6 @@ export class CategoryProductController {
       }
     });
   }
-
   @Post()
   async create(@Body() data: Prisma.CategoryCreateInput): Promise<Category> {
     return this.categoryProductService.createCategory(data);

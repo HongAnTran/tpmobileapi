@@ -36,6 +36,7 @@ model Product {
   meta_keywords     String?
   featured_image    String                  @default("")
   price             Float                   @default(0)
+  compare_at_price  Float                   @default(0)
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
   category_id       Int?
@@ -99,7 +100,7 @@ model SpecificationsType {
 model ProductSpecifications {
   id          Int                @id @default(autoincrement())
   type_id     Int
-  type        SpecificationsType @relation(fields: [type_id], references: [id] , onDelete: Cascade)
+  type        SpecificationsType @relation(fields: [type_id], references: [id], onDelete: Cascade)
   name        String
   value       String[]
   description String?
@@ -201,8 +202,10 @@ model CategoryArticle {
 }
 
 model Article {
-  id          Int              @id @default(autoincrement())
-  title       String
+  id    Int    @id @default(autoincrement())
+  title String
+  slug  String @unique
+
   content     String?
   published   Boolean?         @default(false)
   author      User?            @relation(fields: [authorId], references: [id])
