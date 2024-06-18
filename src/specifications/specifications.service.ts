@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class SpecificationsService {
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createType(data: Prisma.SpecificationsTypeCreateInput) {
     return this.prisma.specificationsType.create({
@@ -22,8 +22,21 @@ export class SpecificationsService {
     });
   }
 
-  async findAll() {
-    return this.prisma.productSpecifications.findMany();
+  async findAll({
+    skip,
+    take,
+    where
+  }: {
+    skip?: number;
+    take?: number;
+    where?: Prisma.ProductSpecificationsWhereInput
+
+  }) {
+    return this.prisma.productSpecifications.findMany({
+      where,
+      skip,
+      take
+    });
   }
 
   async findOne(id: number) {

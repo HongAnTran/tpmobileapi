@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { SpecificationsService } from './specifications.service';
 import { Prisma } from '@prisma/client';
 
@@ -22,8 +22,22 @@ export class SpecificationsController {
   }
 
   @Get()
-  findAll() {
-    return this.specificationsService.findAll();
+  findAll(@Query() query: {
+    skip?: string;
+    take?: string;
+    type_id?: string
+  }) {
+    const skip = query.skip ? parseInt(query.skip, 10) : undefined;
+    const take = query.take ? parseInt(query.take, 10) : undefined;
+    const where = query.type_id ? {
+      type_id: query.type_id ? parseInt(query.type_id, 10) : undefined
+    } : {}
+
+    return this.specificationsService.findAll({
+      where,
+      skip,
+      take
+    });
   }
 
   @Get(':id')

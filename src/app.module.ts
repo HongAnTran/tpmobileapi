@@ -9,6 +9,8 @@ import { UsersModule } from './users/users.module';
 import { SpecificationsModule } from './specifications/specifications.module';
 import { ArticleModule } from './article/article.module';
 import { CategoryArticleModule } from "./category-article/category-article.module"
+import { ProductVariantModule } from './product-variant/product-variant.module';
+import { OptionsModule } from './options/options.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,7 +21,9 @@ import { CategoryArticleModule } from "./category-article/category-article.modul
     UsersModule,
     SpecificationsModule,
     ArticleModule,
-    CategoryArticleModule
+    CategoryArticleModule,
+    ProductVariantModule,
+    OptionsModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
