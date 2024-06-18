@@ -9,12 +9,7 @@ export class ProductController {
 
   @Post()
   async create(@Body() createProductDto: Prisma.ProductCreateInput) {
-    return this.productService.createProduct({
-      ...createProductDto,
-      specifications :{
-        connect : [{id : 1} , {id : 1}]
-      }
-    })
+    return this.productService.createProduct(createProductDto)
   }
 
   @Get()
@@ -56,7 +51,28 @@ export class ProductController {
       skip,
       take,
       where,
-      include: includeQuery
+      select: {
+        ...includeQuery,
+        available: true,
+        barcode: true,
+        category: true,
+        category_id: true,
+        compare_at_price: true,
+        featured_image: true,
+        id: true,
+        created_at: true,
+        price: true,
+        price_max: true,
+        price_min: true,
+        slug: true,
+        published_at: true,
+        title: true,
+        status: true,
+        vendor: true,
+        updated_at: true,
+        images : true,
+
+      }
     });
   }
 

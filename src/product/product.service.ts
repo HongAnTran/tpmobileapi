@@ -20,7 +20,8 @@ export class ProductService {
           options: true,
           specifications: true,
           variants: true
-        }
+        },
+
       });
       if (!product) {
         throw new NotFoundException(`Product with ID ${id} not found`);
@@ -38,16 +39,19 @@ export class ProductService {
     cursor?: Prisma.ProductWhereUniqueInput;
     where?: Prisma.ProductWhereInput;
     orderBy?: Prisma.ProductOrderByWithRelationInput;
-    include?: Prisma.ProductInclude
-  }): Promise<{ products: Product[], total: number }> {
-    const { skip, take, cursor, where, orderBy, include } = params;
+    // include?: Prisma.ProductInclude
+    select?: Prisma.ProductSelect
+  }) {
+    const { skip, take, cursor, where, orderBy,  select } = params;
+
     const products = await this.prisma.product.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
-      include
+      select
+
     });
 
     const total = await this.prisma.product.count({
@@ -80,9 +84,9 @@ export class ProductService {
   async deleteProduct(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
     return this.prisma.product.delete({
       where,
-      include :{
-        options : true,
-        variants : true,
+      include: {
+        options: true,
+        variants: true,
       }
     });
   }
