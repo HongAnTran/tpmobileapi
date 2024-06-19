@@ -37,9 +37,6 @@ export class ProductController {
     const where: Prisma.ProductWhereInput = {
       status: status ? Number(status) : undefined,
       category_id: query.category_id ? Number(category_id) : undefined,
-      category: {
-        parent_id: query.category_id ? Number(category_id) : undefined
-      },
       id: productIds.length ? { in: productIds } : undefined,
       ...(keyword && { title: { contains: keyword } }),
     };
