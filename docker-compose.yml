@@ -17,7 +17,7 @@ services:
     container_name: postgres_backup
     volumes:
       - pgbackups:/backups
-      - ./backup-scripts:/scripts
+      - ~/backup-scripts:/scripts
     depends_on:
       - postgres
     entrypoint: ["/scripts/backup_entrypoint.sh"]
