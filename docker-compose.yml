@@ -13,20 +13,14 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backup:
-    image: tiredofit/postgresql
-    container_name: tp_db_backup
-    environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_DB=tp_db
-      - POSTGRES_USER=tp_user
-      - POSTGRES_PASSWORD=tp_password
-      - BACKUP_TYPE=sql
-      - BACKUP_TIME=daily
-      - BACKUP_RETENTION=7
+    image: ubuntu:latest
+    container_name: postgres_backup
     volumes:
-      - pgbackups:/backup
+      - pgbackups:/backups
+      - ./backup-scripts:/scripts
     depends_on:
       - postgres
+    entrypoint: ["/scripts/backup_entrypoint.sh"]
 volumes:
   postgres_data:
   pgbackups:
