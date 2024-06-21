@@ -39,6 +39,7 @@ export class ProductController {
       category_id: query.category_id ? Number(category_id) : undefined,
       id: productIds.length ? { in: productIds } : undefined,
       ...(keyword && { title: { contains: keyword } }),
+      
     };
 
 

@@ -1,18 +1,5 @@
 version: '3.7'
 services:
-  nestjs:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      
-    environment:
-      DATABASE_URL: "postgresql://tp_user:tp_password@postgres:5432/tp_db?schema=public"
-    ports:
-      - "4000:3000"
-    depends_on:
-      - postgres
-    restart: always
-      
   postgres:
     image: postgres:13
     container_name: tp_db
@@ -24,5 +11,21 @@ services:
       POSTGRES_PASSWORD: tp_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  backup:
+    image: tiredofit/postgresql
+    container_name: tp_db_backup
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=tp_db
+      - POSTGRES_USER=tp_user
+      - POSTGRES_PASSWORD=tp_password
+      - BACKUP_TYPE=sql
+      - BACKUP_TIME=daily
+      - BACKUP_RETENTION=7
+    volumes:
+      - pgbackups:/backup
+    depends_on:
+      - db
 volumes:
   postgres_data:
