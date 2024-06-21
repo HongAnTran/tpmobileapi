@@ -26,6 +26,7 @@ services:
     volumes:
       - pgbackups:/backup
     depends_on:
-      - db
+      - postgres
 volumes:
   postgres_data:
+  pgbackups:
