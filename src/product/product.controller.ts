@@ -38,8 +38,12 @@ export class ProductController {
       status: status ? Number(status) : undefined,
       category_id: query.category_id ? Number(category_id) : undefined,
       id: productIds.length ? { in: productIds } : undefined,
-      ...(keyword && { title: { contains: keyword } }),
-      
+      ...(keyword && { title: { contains: keyword , mode : "insensitive" } }),
+      // options  : {
+      //   some : {
+      //     name : {contains : }
+      //   }
+      // }
     };
 
 
