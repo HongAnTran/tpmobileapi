@@ -27,7 +27,7 @@ model Product {
   available         Boolean                 @default(true)
   status            Int                     @default(0)
   created_at        DateTime                @default(now())
-  updated_at        DateTime?
+  updated_at        DateTime?              @updatedAt
   published_at      DateTime?
   barcode           String?                 @unique
   short_description String?
@@ -202,17 +202,19 @@ model CategoryArticle {
 }
 
 model Article {
-  id          Int              @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
-  slug        String           @unique
+  slug        String    @unique
   thumnal_url String?
   content     String?
   description String?
-  published   Boolean?         @default(false)
-  author      User?            @relation(fields: [authorId], references: [id])
+  published   Boolean?  @default(false)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
+  author      User?     @relation(fields: [authorId], references: [id])
   authorId    Int?
   category_id Int?
-  category    CategoryArticle? @relation(fields: [category_id], references: [id])
+  category CategoryArticle? @relation(fields: [category_id], references: [id])
 }
 
 model Store {

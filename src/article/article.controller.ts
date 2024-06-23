@@ -27,7 +27,10 @@ export class ArticleController {
       where,
       orderBy,
     };
-    return this.articleService.findAll(params);
+    return this.articleService.findAll({
+      ...params,
+      include: { category  : true}
+    });
   }
 
   @Get(':id')
@@ -36,7 +39,7 @@ export class ArticleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body()  data: Prisma.ArticleUpdateInput) {
+  update(@Param('id') id: string, @Body() data: Prisma.ArticleUpdateInput) {
     return this.articleService.update({
       where: { id: parseInt(id, 10) },
       data: data,
