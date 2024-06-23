@@ -19,16 +19,18 @@ export class ArticleService {
     cursor?: Prisma.ArticleWhereUniqueInput;
     where?: Prisma.ArticleWhereInput;
     orderBy?: Prisma.ArticleOrderByWithRelationInput;
-    include?: Prisma.ArticleInclude;
+    select?: Prisma.ArticleSelect;
+
   }) {
-    const { skip, take, cursor, where, orderBy, include } = params;
+    const { skip, take, cursor, where, orderBy, select } = params;
     const articles = await this.prisma.article.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
-      include,
+
+      select
     });
 
     const total = await this.prisma.article.count({

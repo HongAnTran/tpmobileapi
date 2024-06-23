@@ -16,20 +16,43 @@ export class ArticleController {
   findAll(
     @Query('skip') skip?: string,
     @Query('take') take?: string,
-    @Query('cursor') cursor?: string,
-    @Query('where') where?: Prisma.ArticleWhereInput,
+    @Query('category_id') category_id?: string,
+    @Query('keyword') keyword?: string,
+    @Query('published') published?: string,
     @Query('orderBy') orderBy?: Prisma.ArticleOrderByWithRelationInput,
+
   ) {
+
+    const where: Prisma.ArticleWhereInput = {
+      category_id: category_id ? Number(category_id) : undefined,
+      ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
+      published: published ? !!Number(published) : undefined
+    }
     const params = {
       skip: skip ? parseInt(skip, 10) : undefined,
       take: take ? parseInt(take, 10) : undefined,
-      cursor: cursor ? { id: parseInt(cursor, 10) } : undefined,
-      where,
       orderBy,
+      ...where
     };
+
+
+
+
     return this.articleService.findAll({
       ...params,
-      include: { category  : true}
+
+      select: {
+        id: true,
+        title: true,
+        category: true,
+        authorId: true,
+        author: true,
+        category_id: true,
+        description: true,
+        slug: true,
+        published: true,
+        thumnal_url: true
+      }
     });
   }
 

@@ -13,10 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ProductStatus {
-  DRAFT
-  SHOW
-}
+
 
 model Product {
   id                Int                     @id @default(autoincrement())
@@ -27,7 +24,7 @@ model Product {
   available         Boolean                 @default(true)
   status            Int                     @default(0)
   created_at        DateTime                @default(now())
-  updated_at        DateTime?              @updatedAt
+  updated_at        DateTime?               @updatedAt
   published_at      DateTime?
   barcode           String?                 @unique
   short_description String?
@@ -220,7 +217,7 @@ model Article {
 model Store {
   id      Int     @id @default(autoincrement())
   name    String
-  phone   String
+  phone   String?
   address String?
   url_map String?
 }
