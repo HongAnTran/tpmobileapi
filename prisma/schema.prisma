@@ -202,11 +202,12 @@ model CategoryArticle {
 }
 
 model Article {
-  id    Int    @id @default(autoincrement())
-  title String
-  slug  String @unique
-
+  id          Int              @id @default(autoincrement())
+  title       String
+  slug        String           @unique
+  thumnal_url String?
   content     String?
+  description String?
   published   Boolean?         @default(false)
   author      User?            @relation(fields: [authorId], references: [id])
   authorId    Int?
