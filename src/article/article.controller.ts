@@ -51,7 +51,9 @@ export class ArticleController {
         description: true,
         slug: true,
         published: true,
-        thumnal_url: true
+        thumnal_url: true,
+        created_at : true,
+        updated_at : true
       }
     });
   }
