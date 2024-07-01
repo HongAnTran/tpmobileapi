@@ -29,7 +29,6 @@ export class ArticleService {
       cursor,
       where,
       orderBy,
-
       select
     });
 
