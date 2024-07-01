@@ -14,33 +14,82 @@ export class ProductController {
 
   @Get()
   findAll(@Query() query: {
-    skip?: string;
-    take?: string;
+    page?: string;
+    limit?: string;
     status?: string
     category_id?: Product["category_id"]
     ids?: string
     include?: string,
-    keyword?: string
+    keyword?: string,
+    color?: string
+    capacity?: string
+    price?: string
+    ram?: string
+    sortBy?: string
+    sortType?: Prisma.SortOrder
   }) {
-    const { category_id, ids, include, keyword, status } = query
-
-    const skip = query.skip ? parseInt(query.skip, 10) : undefined;
-    const take = query.take ? parseInt(query.take, 10) : undefined;
+    const HUN = 1000000
+    const { category_id, ids, include, keyword, status, color, capacity, price, ram, sortBy, sortType, page, limit } = query
+    const take = limit ? Number(limit) : 50;
+    const skip = page ? (Number(page) - 1) * take : undefined;
 
     const productIds = ids ? ids.split(",").map(id => Number(id)) : []
     const includeParams = include ? include.split(",") : [
       "category",
-      // "options",
-      // "specifications",
-      // "variants"
     ]
+    const priceRange = price ? price.split(",").map(num => {
+      const number = Number(num)
+      return number ? number * HUN : 0
+    }) : []
+    let queryOptions: Prisma.ProductWhereInput | Prisma.ProductWhereInput[] = undefined
+
+    const capacityValues = capacity?.split(",") || []
+    if (color && capacityValues.length) {
+      queryOptions = {
+        AND: [
+          {
+            options: {
+              some: {
+                values: {
+                  has: color
+                }
+              }
+            }
+          },
+          {
+            options: {
+              some: {
+                values: {
+                  hasSome: capacityValues
+                }
+              }
+            }
+          }
+        ]
+      }
+    } else if (color) {
+      queryOptions = {
+        options: { some: { values: { has: color } } }
+      }
+    }
+    else if (capacityValues.length) {
+      queryOptions = {
+        options: { some: { values: { hasSome: capacityValues } } }
+      }
+    }
     const where: Prisma.ProductWhereInput = {
       status: status ? Number(status) : undefined,
       category_id: query.category_id ? Number(category_id) : undefined,
       id: productIds.length ? { in: productIds } : undefined,
-      ...(keyword && { title: { contains: keyword , mode : "insensitive" } }),
+      price: priceRange.length ? {
+        gte: priceRange[0],
+        lte: priceRange[1]
+      } : undefined,
+      ...queryOptions,
+      ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
     };
 
+    let orderBy: Prisma.ProductOrderByWithRelationInput = { [sortBy]: sortType }
 
     let includeQuery = includeParams.reduce((pre, item) => {
       pre[item] = true
@@ -55,7 +104,14 @@ export class ProductController {
         ...includeQuery,
         available: true,
         barcode: true,
-        category: true,
+        category: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+
+          }
+        },
         category_id: true,
         compare_at_price: true,
         featured_image: true,
@@ -71,8 +127,8 @@ export class ProductController {
         vendor: true,
         updated_at: true,
         images: true,
-
-      }
+      },
+      orderBy
     });
   }
 
