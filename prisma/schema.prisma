@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model Article {
   id              Int              @id @default(autoincrement())
   title           String
@@ -19,6 +20,38 @@ model Article {
   thumnal_url     String?
   User            User?            @relation(fields: [authorId], references: [id])
   CategoryArticle CategoryArticle? @relation(fields: [category_id], references: [id])
+
+}
+
+
+model Product {
+  id                Int                     @id @default(autoincrement())
+  title             String                  @unique
+  slug              String                  @unique
+  description_html  String?
+  vendor            String?
+  available         Boolean                 @default(true)
+  status            Int                     @default(0)
+  created_at        DateTime                @default(now())
+  updated_at        DateTime?               @updatedAt
+  published_at      DateTime?
+  barcode           String?                 @unique
+  short_description String?
+  meta_title        String?
+  meta_description  String?
+  meta_keywords     String?
+  featured_image    String                  @default("")
+  price             Float                   @default(0)
+  compare_at_price  Float                   @default(0)
+  price_max         Float                   @default(0)
+  price_min         Float                   @default(0)
+  category_id       Int?
+  images            String[]                @default([])
+  category          Category?               @relation(fields: [category_id], references: [id])
+  variants          ProductVariant[]
+  specifications    ProductSpecifications[]
+  options           Option[]
+
 }
 
 model Cart {
