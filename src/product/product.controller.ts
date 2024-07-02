@@ -18,6 +18,7 @@ export class ProductController {
     limit?: string;
     status?: string
     category_id?: Product["category_id"]
+    categories?: string
     ids?: string
     include?: string,
     keyword?: string,
@@ -29,22 +30,30 @@ export class ProductController {
     sortType?: Prisma.SortOrder
   }) {
     const HUN = 1000000
-    const { category_id, ids, include, keyword, status, color, capacity, price, ram, sortBy, sortType, page, limit } = query
+    const { category_id, ids, include, keyword, status, color, capacity, price, ram, sortBy, sortType, page, limit, categories } = query
     const take = limit ? Number(limit) : 50;
     const skip = page ? (Number(page) - 1) * take : undefined;
 
     const productIds = ids ? ids.split(",").map(id => Number(id)) : []
+    const categoriesSlugArr = categories ? categories.split(",") : []
     const includeParams = include ? include.split(",") : [
       "category",
     ]
+
     const priceRange = price ? price.split(",").map(num => {
       const number = Number(num)
       return number ? number * HUN : 0
     }) : []
+
     let queryOptions: Prisma.ProductWhereInput | Prisma.ProductWhereInput[] = undefined
 
+
     const capacityValues = capacity?.split(",") || []
-    if (color && capacityValues.length) {
+    const colorValues = color?.split(",") || []
+
+
+
+    if (colorValues.length && capacityValues.length) {
       queryOptions = {
         AND: [
           {
@@ -67,9 +76,9 @@ export class ProductController {
           }
         ]
       }
-    } else if (color) {
+    } else if (colorValues.length) {
       queryOptions = {
-        options: { some: { values: { has: color } } }
+        options: { some: { values: { hasSome: colorValues } } }
       }
     }
     else if (capacityValues.length) {
@@ -84,6 +93,9 @@ export class ProductController {
       price: priceRange.length ? {
         gte: priceRange[0],
         lte: priceRange[1]
+      } : undefined,
+      category: categoriesSlugArr.length ? {
+        slug: { in: categoriesSlugArr }
       } : undefined,
       ...queryOptions,
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
