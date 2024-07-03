@@ -12,9 +12,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-// u[]
-
-
 model Product {
   id                Int                     @id @default(autoincrement())
   title             String                  @unique
@@ -212,6 +209,9 @@ model Article {
   authorId    Int?
   category_id Int?
   category CategoryArticle? @relation(fields: [category_id], references: [id])
+  meta_title        String?
+  meta_description  String?
+  meta_keywords     String?
 }
 
 model Store {
