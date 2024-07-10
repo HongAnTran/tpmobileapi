@@ -7,7 +7,7 @@ import * as crypto from 'crypto';
 import { MailService } from 'src/mail/mail.service';
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService , private readonly mailService : MailService) { }
+  constructor(private readonly ordersService: OrdersService, private readonly mailService: MailService) { }
 
   @Post()
   create(@Body() createOrderDto: Pick<Prisma.OrderCreateInput, "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price">) {
@@ -21,18 +21,21 @@ export class OrdersController {
 
 
   @Post("/checkout")
-  checkout(@Body() checkoutOrder: Order) {
-    const data: Prisma.OrderUpdateInput = { ...checkoutOrder, status: 5 }
-    this.mailService.sendMail({
-      from : "tranhongaknr.2001@gmail.com",
-      html : `"<div>Đặt hàng</div>" ${checkoutOrder.token}`,
-      subject : "Đơn đặt hàng mới",
-      text  : "",
-      to : "ordertpmobile@gmail.com"
-    })
-    
+  async checkout(@Body() checkoutOrder: Order) {
+    const data: Prisma.OrderUpdateInput = { status: 5 }
 
-    return this.ordersService.update(checkoutOrder.id, data);
+    const res = await this.ordersService.update(checkoutOrder.id, data);
+
+    const isSendMail = await this.mailService.sendMail({
+      from: "tranhongaknr.2001@gmail.com",
+      html: `"<div>Đặt hàng</div>" ${checkoutOrder.token}`,
+      subject: "Đơn đặt hàng mới",
+      text: "",
+      to: "ordertpmobile@gmail.com"
+    })
+    console.log( "send mail",isSendMail)
+
+    return res
   }
 
   @Get()
