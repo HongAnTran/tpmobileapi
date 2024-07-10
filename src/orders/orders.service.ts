@@ -42,6 +42,10 @@ export class OrdersService {
   async findOneByToken(token: string) {
     return this.prisma.order.findUnique({
       where: { token },
+      include: {
+        items: true,
+        customer: true, payment: true, shipping: true
+      }
     });
   }
 
