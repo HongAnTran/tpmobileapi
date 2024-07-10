@@ -10,7 +10,6 @@ export class MailService {
   async sendMail(data: CreateMailDto): Promise<boolean> {
     try {
       await this.mailerService.sendMail(data)
-
       return true
     } catch (error) {
       throw error

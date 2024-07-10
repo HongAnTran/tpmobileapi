@@ -146,7 +146,7 @@ model Payment {
 model ProductOrder {
   id                  Int      @id @default(autoincrement())
   title               String
-  slug                String   @unique
+  slug                String   
   category_title      String
   category_id         Int
   vendor              String

@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, BadRequestException } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, Prisma } from '@prisma/client';
 import * as crypto from 'crypto';
 import { MailService } from 'src/mail/mail.service';
+
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService, private readonly mailService: MailService) { }
@@ -12,8 +13,8 @@ export class OrdersController {
   @Post()
   create(@Body() createOrderDto: Pick<Prisma.OrderCreateInput, "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price">) {
 
-    const token = crypto.randomBytes(32).toString('hex');
-    const code = crypto.randomBytes(32).toString('hex');
+    const token = crypto.randomBytes(16).toString('hex');
+    const code = crypto.randomBytes(16).toString('hex');
     const data: Prisma.OrderCreateInput = { ...createOrderDto, token, code: code, status: 3 }
     return this.ordersService.create(data);
   }
@@ -22,20 +23,26 @@ export class OrdersController {
 
   @Post("/checkout")
   async checkout(@Body() checkoutOrder: Order) {
-    const data: Prisma.OrderUpdateInput = { status: 5 }
+    try {
+      const data: Prisma.OrderUpdateInput = { status: 5 }
 
-    const res = await this.ordersService.update(checkoutOrder.id, data);
+      const res = await this.ordersService.update(checkoutOrder.id, data);
 
-    const isSendMail = await this.mailService.sendMail({
-      from: "tranhongaknr.2001@gmail.com",
-      html: `"<div>Đặt hàng</div>" ${checkoutOrder.token}`,
-      subject: "Đơn đặt hàng mới",
-      text: "",
-      to: "ordertpmobile@gmail.com"
-    })
-    console.log( "send mail",isSendMail)
+      this.mailService.sendMail({
+        from: "tranhongankrn.2001@gmail.com",
+        subject: "Đơn đặt hàng mới",
+        text: "",
+        // to: "store.tpmobile@gmail.com",
+        to: "tranhongankrn.2001@gmail.com",
+        template: "newOrder",
+        context: checkoutOrder
 
-    return res
+      })
+
+      return res
+    } catch (error) {
+      throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
+    }
   }
 
   @Get()
