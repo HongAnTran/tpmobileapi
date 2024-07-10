@@ -39,7 +39,6 @@ export class ProductService {
     cursor?: Prisma.ProductWhereUniqueInput;
     where?: Prisma.ProductWhereInput;
     orderBy?: Prisma.ProductOrderByWithRelationInput;
-    // include?: Prisma.ProductInclude
     select?: Prisma.ProductSelect
   }) {
     const { skip, take, cursor, where, orderBy,  select } = params;
@@ -51,7 +50,6 @@ export class ProductService {
       where,
       orderBy,
       select
-
     });
 
     const total = await this.prisma.product.count({

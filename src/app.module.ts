@@ -11,10 +11,29 @@ import { ArticleModule } from './article/article.module';
 import { CategoryArticleModule } from "./category-article/category-article.module"
 import { ProductVariantModule } from './product-variant/product-variant.module';
 import { OptionsModule } from './options/options.module';
+import { OrdersModule } from './orders/orders.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    MailerModule.forRoot({
+      transport: 'smtps://user@domain.com:pass@smtp.domain.com',
+      defaults: {
+        from: '"nest-modules" <modules@nestjs.com>',
+      },
+      template: {
+        dir: __dirname + '/templates',
+        adapter: new PugAdapter({
+          inlineCssEnabled: true,
+        }),
+        options: {
+          strict: true,
+        },
+      },
     }),
     ProductModule,
     CategoryProductModule,
@@ -23,7 +42,8 @@ import { OptionsModule } from './options/options.module';
     ArticleModule,
     CategoryArticleModule,
     ProductVariantModule,
-    OptionsModule
+    OptionsModule,
+    OrdersModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
