@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+
+<<<<<<< HEAD
+
+model Article {
+  id              Int              @id @default(autoincrement())
+  title           String
+  content         String?
+  published       Boolean?         @default(false)
+  authorId        Int?
+  category_id     Int?
+  slug            String           @unique
+  description     String?
+  thumnal_url     String?
+  User            User?            @relation(fields: [authorId], references: [id])
+  CategoryArticle CategoryArticle? @relation(fields: [category_id], references: [id])
+// u[]
+
+
+model Product {
+  id                Int                     @id @default(autoincrement())
+  title             String                  @unique
+  slug              String                  @unique
+  description_html  String?
+  vendor            String?
+  available         Boolean                 @default(true)
+  status            Int                     @default(0)
+  created_at        DateTime                @default(now())
+  updated_at        DateTime?               @updatedAt
+  published_at      DateTime?
+  barcode           String?                 @unique
+  short_description String?
+  meta_title        String?
+  meta_description  String?
+  meta_keywords     String?
+  featured_image    String                  @default("")
+  price             Float                   @default(0)
+  compare_at_price  Float                   @default(0)
+  price_max         Float                   @default(0)
+  price_min         Float                   @default(0)
+  category_id       Int?
+  images            String[]                @default([])
+  category          Category?               @relation(fields: [category_id], references: [id])
+  variants          ProductVariant[]
+  specifications    ProductSpecifications[]
+  options           Option[]
+}
+
+model Cart {
+  id           Int            @id @default(autoincrement())
+  token        String         @unique
+  item_count   Int
+  total_price  Float
+  note         String?
+  customer_id  Int
+  ProductOrder ProductOrder[]
+}
+
+model Category {
+  id          Int                   @id @default(autoincrement())
+  title       String                @unique
+  description String?
+  image       String?
+  parent_id   Int?
+  slug        String                @unique
+  status      CategoryProductStatus @default(DRAFT)
+  Product     Product[]
+}
+
+model CategoryArticle {
+  id          Int       @id @default(autoincrement())
+  title       String    @unique
+  description String?
+  image       String?
+  slug        String    @unique
+  status      Int       @default(0)
+  Article     Article[]
+}
+
+model Customer {
+  id      Int       @id @default(autoincrement())
+  email   String    @unique
+  phone   String
+  name    String?
+  gender  Gender?
+  birtday DateTime?
+}
+
+model Option {
+  id         Int      @id @default(autoincrement())
+  name       String
+  position   Int
+  product_id Int
+  values     String[]
+  Product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id           Int            @id @default(autoincrement())
+  token        String         @unique
+  code         String
+  customer_id  Int
+  total_price  Float
+  temp_price   Float
+  ship_price   Float
+  discount     Float
+  note         String?
+  status       Int
+  promotions   Json[]
+  shipping     Json
+  payment      Json
+  ProductOrder ProductOrder[]
+}
+
+model Product {
+  id                    Int                     @id @default(autoincrement())
+  title                 String                  @unique
+  slug                  String                  @unique
+  description_html      String?
+  vendor                String?
+  available             Boolean                 @default(true)
+  status                Int                     @default(0)
+  created_at            DateTime                @default(now())
+  updated_at            DateTime?
+  published_at          DateTime?
+  barcode               String?                 @unique
+  short_description     String?
+  meta_title            String?
+  meta_description      String?
+  meta_keywords         String?
+  featured_image        String                  @default("")
+  price                 Float                   @default(0)
+  compare_at_price      Float                   @default(0)
+  price_max             Float                   @default(0)
+  price_min             Float                   @default(0)
+  category_id           Int?
+  images                String[]                @default([])
+  Option                Option[]
+  Category              Category?               @relation(fields: [category_id], references: [id])
+  ProductVariant        ProductVariant[]
+  ProductSpecifications ProductSpecifications[]
+}
+
+model ProductOrder {
+  id                  Int      @id @default(autoincrement())
+  title               String
+  slug                String   @unique
+  category_title      String
+  category_id         Int
+  vendor              String
+  barcode             String?
+  line_price          Float
+  price               Float
+  price_original      Float
+  line_price_original Float
+  variant_id          Int
+  product_id          Int
+  product_title       String
+  variant_title       String
+  variant_options     String[]
+  quantity            Int
+  image               String
+  selected            Boolean
+  cartId              Int?
+  orderId             Int?
+  Cart                Cart?    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  Order               Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model ProductSpecifications {
+  id                 Int                @id @default(autoincrement())
+  type_id            Int
+  name               String
+  value              String[]
+  description        String?
+  SpecificationsType SpecificationsType @relation(fields: [type_id], references: [id], onDelete: Cascade)
+  Product            Product[]
+}
+
+model ProductVariant {
+  id                 Int       @id @default(autoincrement())
+  barcode            String?   @unique
+  option1            String
+  option2            String
+  option3            String
+  position           Int
+  compare_at_price   Float
+  price              Float
+  sku                String    @unique
+  title              String
+  updated_at         DateTime?
+  inventory_quantity Int
+  available          Boolean
+  product_id         Int
+  Product            Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
+
+model SpecificationsType {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  description           String?
+  ProductSpecifications ProductSpecifications[]
+}
+
+model Store {
+  id      Int     @id @default(autoincrement())
+  name    String
+  phone   String
+  address String?
+  url_map String?
+}
+
+model User {
+  id      Int       @id @default(autoincrement())
+  email   String    @unique
+  name    String?
+  Article Article[]
+}
+
+enum CategoryProductStatus {
+  DRAFT
+  SHOW
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  FAILED
+}
+
+enum ProductStatus {
+  DRAFT
+  SHOW
+}
