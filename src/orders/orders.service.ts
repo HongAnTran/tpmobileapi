@@ -33,6 +33,10 @@ export class OrdersService {
   async findOne(id: number) {
     return this.prisma.order.findUnique({
       where: { id },
+      include: {
+        items: true,
+        customer: true, payment: true, shipping: true
+      }
     });
   }
   async findOneByToken(token: string) {
