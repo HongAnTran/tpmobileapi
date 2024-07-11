@@ -53,6 +53,12 @@ export class OrdersService {
     return this.prisma.order.update({
       where: { id },
       data,
+      include: {
+        customer: true,
+        items: true,
+        payment: true,
+        shipping: true
+      }
     });
   }
 

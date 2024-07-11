@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, BadRequestException, Put } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -19,26 +19,34 @@ export class OrdersController {
     return this.ordersService.create(data);
   }
 
-
-
-  @Post("/checkout")
-  async checkout(@Body() checkoutOrder: Order) {
+  @Post("/mail")
+  async mail(@Body() checkoutOrder: Order) {
     try {
-      const data: Prisma.OrderUpdateInput = { status: 5 }
-
-      const res = await this.ordersService.update(checkoutOrder.id, data);
-
       this.mailService.sendMail({
         from: "tranhongankrn.2001@gmail.com",
         subject: "Đơn đặt hàng mới",
-        text: "",
-        // to: "store.tpmobile@gmail.com",
         to: "tranhongankrn.2001@gmail.com",
         template: "newOrder",
         context: checkoutOrder
-
       })
 
+    } catch (error) {
+      throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
+    }
+  }
+
+  @Put("/checkout/:id")
+  async checkout(@Param('id') id: string, @Body() checkoutOrder: Pick<Prisma.OrderUpdateInput , "customer" |"discount" | "note" | "payment" | "promotions" | "ship_price"  | "shipping">) {
+    try {
+      const data: Prisma.OrderUpdateInput = { status: 5, ...checkoutOrder }
+      const res = await this.ordersService.update(+id, data);
+      this.mailService.sendMail({
+        from: "tranhongankrn.2001@gmail.com",
+        subject: "Đơn đặt hàng mới",
+        to: "tranhongankrn.2001@gmail.com",
+        template: "newOrder",
+        context: res
+      })
       return res
     } catch (error) {
       throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
