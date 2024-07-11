@@ -33,23 +33,20 @@ html
     table
       thead
         tr
-          th Hình ảnh
           th Tên sản phẩm
-          th Danh mục
+          //- th Danh mục
           th Giá
           th Số lượng
-          th Biến thể
           th Tổng tiền
       tbody
         each item in items
           tr
-            td
-              img(src=item.image, alt=item.title, width="100")
-            td #{item.title}
-            td #{item.category_title}
+            //- td
+            //-   img(src=item.image, alt=item.title, width="100")
+            td #{item.title} - #{item.variant_title}
+            //- td #{item.category_title} 
             td #{item.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
             td #{item.quantity}
-            td #{item.variant_title}
             td #{item.line_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
 
     if promotions.length > 0
@@ -69,13 +66,13 @@ html
           tr
             th Phương thức
             th Số tiền
-            th Trạng thái
+            //- th Trạng thái
             th Ngày thanh toán
         tbody
           tr
             td #{payment.method}
             td #{payment.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-            td #{payment.status}
+            //- td #{payment.status}
             td #{payment.payment_date || 'Chưa thanh toán'}
 
     if shipping
@@ -83,27 +80,27 @@ html
       table
         thead
           tr
-            th Địa chỉ chi tiết
+            th Địa chỉ 
 
-            th Địa chỉ
-            th Tỉnh
-            th Quận/Huyện
-            th Phường/Xã
-            th Quốc gia
+            //- th Địa chỉ
+            //- th Tỉnh
+            //- th Quận/Huyện
+            //- th Phường/Xã
+            //- th Quốc gia
             th Số điện thoại
             th Người nhận
-            th Ngày giao hàng
-            th Mã vận đơn
+            //- th Ngày giao hàng
+            //- th Mã vận đơn
         tbody
           tr
             td #{shipping.address_full}
 
-            td #{shipping.address}
-            td #{shipping.province}
-            td #{shipping.district}
-            td #{shipping.ward}
-            td #{shipping.country}
+            //- td #{shipping.address}
+            //- td #{shipping.province}
+            //- td #{shipping.district}
+            //- td #{shipping.ward}
+            //- td #{shipping.country}
             td #{shipping.phone}
             td #{shipping.fullname}
-            td #{shipping.ship_date || 'Chưa xác định'}
-            td #{shipping.tracking_number || 'Chưa có'}
+            //- td #{shipping.ship_date || 'Chưa xác định'}
+            //- td #{shipping.tracking_number || 'Chưa có'}
