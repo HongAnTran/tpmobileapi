@@ -2,7 +2,7 @@ doctype html
 html
   head
     meta(charset="UTF-8")
-    title Đơn hàng mới
+    title Đơn hàng mới từ TP Mobile Store WEB
     style.
       body {
         font-family: Arial, sans-serif;
@@ -21,13 +21,8 @@ html
       }
   body
     h1 Đơn hàng mới
-    b Mã đơn hàng: #{id}
-    p Giá tạm tính: #{temp_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-    p Giảm giá: #{discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-    p Tổng giá: #{total_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-    p Phí vận chuyển: #{ship_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-    if note
-      p Ghi chú: #{note}
+    h2 Mã đơn hàng: #{id}
+
 
     h2 Sản phẩm
     table
@@ -48,7 +43,13 @@ html
             td #{item.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
             td #{item.quantity}
             td #{item.line_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-
+            
+    p Giá tạm tính: #{temp_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+    p Giảm giá: #{discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+    p Tổng giá: #{total_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+    p Phí vận chuyển: #{ship_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+    if note
+      p Ghi chú: #{note}
     if promotions.length > 0
       h2 Khuyến mãi
       ul
@@ -58,22 +59,6 @@ html
     if customer
       h2 Khách hàng
       p ID Khách hàng: #{customer_id}
-
-    if payment
-      h2 Thanh toán
-      table
-        thead
-          tr
-            th Phương thức
-            th Số tiền
-            //- th Trạng thái
-            th Ngày thanh toán
-        tbody
-          tr
-            td #{payment.method}
-            td #{payment.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-            //- td #{payment.status}
-            td #{payment.payment_date || 'Chưa thanh toán'}
 
     if shipping
       h2 Vận chuyển
@@ -104,3 +89,20 @@ html
             td #{shipping.fullname}
             //- td #{shipping.ship_date || 'Chưa xác định'}
             //- td #{shipping.tracking_number || 'Chưa có'}
+
+    if payment
+      h2 Thanh toán
+      table
+        thead
+          tr
+            th Phương thức
+            th Số tiền
+            //- th Trạng thái
+            th Ngày thanh toán
+        tbody
+          tr
+            td #{payment.method}
+            td #{payment.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+            //- td #{payment.status}
+            td #{payment.payment_date || 'Chưa thanh toán'}
+
