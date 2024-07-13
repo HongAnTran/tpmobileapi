@@ -17,9 +17,9 @@ export class ProductService {
         where: query,
         include: {
           category: true,
-          options: {orderBy : {position  : "desc"}},
+          options: {orderBy : {position  : "asc"}},
           specifications: true,
-          variants: {orderBy : {position  : "desc"}}
+          variants: {orderBy : {position  : "asc"}}
         },
       
 
