@@ -17,10 +17,11 @@ export class ProductService {
         where: query,
         include: {
           category: true,
-          options: true,
+          options: {orderBy : {position  : "desc"}},
           specifications: true,
-          variants: true
+          variants: {orderBy : {position  : "desc"}}
         },
+      
 
       });
       if (!product) {
