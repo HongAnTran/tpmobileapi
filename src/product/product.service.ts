@@ -16,13 +16,11 @@ export class ProductService {
       const product = await this.prisma.product.findUnique({
         where: query,
         include: {
-          category: true,
-          options: {orderBy : {position  : "asc"}},
+          categories: { select: { id: true, slug: true, title: true, status: true }, where: { ProductCategory: { some: { is_default: true } } } },
+          options: { orderBy: { position: "asc" } },
           specifications: true,
-          variants: {orderBy : {position  : "asc"}}
+          variants: { orderBy: { position: "asc" } }
         },
-      
-
       });
       if (!product) {
         throw new NotFoundException(`Product with ID ${id} not found`);
@@ -42,8 +40,7 @@ export class ProductService {
     orderBy?: Prisma.ProductOrderByWithRelationInput;
     select?: Prisma.ProductSelect
   }) {
-    const { skip, take, cursor, where, orderBy,  select } = params;
-
+    const { skip, take, cursor, where, orderBy, select } = params;
     const products = await this.prisma.product.findMany({
       skip,
       take,

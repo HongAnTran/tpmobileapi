@@ -15,6 +15,13 @@ import { OrdersModule } from './orders/orders.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { join } from 'path';
+import { PagesModule } from './pages/pages.module';
+import { SettingsModule } from './settings/settings.module';
+import { CartsModule } from './carts/carts.module';
+
+
+
+
 const GOOGLE_MAILER_CLIENT_ID = '807787170087-2g0d336qe2qbou3ilms5gr505o3durto.apps.googleusercontent.com'
 const GOOGLE_MAILER_CLIENT_SECRET = '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'
 const GOOGLE_MAILER_REFRESH_TOKEN = '1//04j5pqvYDQBahCgYIARAAGAQSNwF-L9IrmY0gRSylpwPU1R-xKM5QZyXalEIlVEyItvHeru-4ccPdqfxigmFTc1VDDvaWkOd7Zb0'
@@ -56,7 +63,10 @@ const ADMIN_EMAIL_ADDRESS = 'tranhongankrn.2001@gmail.com'
     CategoryArticleModule,
     ProductVariantModule,
     OptionsModule,
-    OrdersModule
+    OrdersModule,
+    PagesModule,
+    SettingsModule,
+    CartsModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

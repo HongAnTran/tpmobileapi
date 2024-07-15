@@ -17,8 +17,8 @@ export class ProductController {
     page?: string;
     limit?: string;
     status?: string
-    category_id?: Product["category_id"]
     categories?: string
+    category_id?: string
     ids?: string
     include?: string,
     keyword?: string,
@@ -30,14 +30,14 @@ export class ProductController {
     sortType?: Prisma.SortOrder
   }) {
     const HUN = 1000000
-    const { category_id, ids, include, keyword, status, color, capacity, price, ram, sortBy, sortType, page, limit, categories } = query
+    const { ids, include, keyword, status, color, capacity, price, ram, sortBy, sortType, page, limit, categories, category_id } = query
     const take = limit ? Number(limit) : 50;
     const skip = page ? (Number(page) - 1) * take : undefined;
 
     const productIds = ids ? ids.split(",").map(id => Number(id)) : []
     const categoriesSlugArr = categories ? categories.split(",") : []
     const includeParams = include ? include.split(",") : [
-      "category",
+      "categories",
     ]
 
     const priceRange = price ? price.split(",").map(num => {
@@ -88,14 +88,14 @@ export class ProductController {
     }
     const where: Prisma.ProductWhereInput = {
       status: status ? Number(status) : undefined,
-      category_id: query.category_id ? Number(category_id) : undefined,
       id: productIds.length ? { in: productIds } : undefined,
       price: priceRange.length ? {
         gte: priceRange[0],
         lte: priceRange[1]
       } : undefined,
-      category: categoriesSlugArr.length ? {
-        slug: { in: categoriesSlugArr }
+
+      categories: category_id ? { some: { id: +category_id } } : categoriesSlugArr.length ? {
+        some: { slug: { in: categoriesSlugArr } }
       } : undefined,
       ...queryOptions,
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
@@ -116,7 +116,7 @@ export class ProductController {
         ...includeQuery,
         available: true,
         barcode: true,
-        category: {
+        categories: {
           select: {
             id: true,
             title: true,
@@ -124,9 +124,9 @@ export class ProductController {
 
           }
         },
-        category_id: true,
         compare_at_price: true,
         featured_image: true,
+        product_images: true,
         id: true,
         created_at: true,
         price: true,
@@ -139,6 +139,7 @@ export class ProductController {
         vendor: true,
         updated_at: true,
         images: true,
+
       },
       orderBy
     });

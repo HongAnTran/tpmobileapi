@@ -28,41 +28,65 @@ model Product {
   compare_at_price  Float                   @default(0)
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
-  category_id       Int?
   images            String[]                @default([])
   options           Option[]
-  category          Category?               @relation(fields: [category_id], references: [id])
+  categories        Category[]              @relation("ProductCategories")
   variants          ProductVariant[]
   specifications    ProductSpecifications[] @relation("ProductToProductSpecifications")
+  product_images    ProductImage[]
+  ProductCategory   ProductCategory[]
 }
 
 model Category {
-  id          Int                   @id @default(autoincrement())
-  title       String                @unique
-  description String?
-  image       String?
-  parent_id   Int?
-  slug        String                @unique
-  status      CategoryProductStatus @default(DRAFT)
-  products    Product[]
+  id              Int               @id @default(autoincrement())
+  title           String            @unique
+  description     String?
+  image           String?
+  slug            String            @unique
+  status          Int               @default(1)
+  products        Product[]         @relation("ProductCategories")
+  ProductCategory ProductCategory[]
+}
+
+model ProductCategory {
+  product_id  Int
+  category_id Int
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  is_default  Boolean  @default(false)
+
+  @@id([product_id, category_id])
 }
 
 model ProductVariant {
-  id                 Int       @id @default(autoincrement())
-  barcode            String?   @unique
+  id                 Int           @id @default(autoincrement())
+  barcode            String?       @unique
   option1            String
   option2            String
   option3            String
   position           Int
   compare_at_price   Float
   price              Float
-  sku                String    @unique
+  sku                String        @unique
   title              String
   updated_at         DateTime?
   inventory_quantity Int
   available          Boolean
   product_id         Int
-  product            Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product            Product       @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  image              ProductImage? @relation(fields: [image_id], references: [id])
+  image_id           Int?
+}
+
+model ProductImage {
+  id             Int              @id @default(autoincrement())
+  url            String
+  alt_text       String?
+  position       Int
+  productVariant ProductVariant[]
+  is_featured    Boolean          @default(false)
+  product        Product          @relation(fields: [product_id], references: [id])
+  product_id     Int
 }
 
 model Option {
@@ -104,7 +128,7 @@ model Cart {
 model Order {
   id          Int            @id @default(autoincrement())
   token       String         @unique
-  code        String
+  code        String         @unique
   customer_id Int?
   total_price Float
   temp_price  Float
@@ -178,7 +202,6 @@ model ProductOrder {
   variant_options     String[]
   quantity            Int
   image               String
-  selected            Boolean
   cartId              Int?
   orderId             Int?
   cart                Cart?    @relation(fields: [cartId], references: [id], onDelete: Cascade)
@@ -187,8 +210,9 @@ model ProductOrder {
 
 model User {
   id    Int       @id @default(autoincrement())
-  email String    @unique
-  name  String?
+  email String?   @unique
+  name  String
+  phone String
   posts Article[]
 }
 
@@ -236,33 +260,47 @@ model Store {
   url_map String?
 }
 
-enum CategoryProductStatus {
-  DRAFT
-  SHOW
-}
-
-enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  FAILED
-}
-
 enum Gender {
   MALE
   FEMALE
   OTHER
 }
 
-enum ProductStatus {
-  DRAFT
-  SHOW
-}
-
 enum PaymentStatus {
   PENDING
   COMPLETED
   FAILED
+}
+
+model Page {
+  id                Int       @id @default(autoincrement())
+  title             String    @unique
+  slug              String    @unique
+  content_html      String
+  short_description String?
+  meta_data         Json      @default("{}")
+  created_at        DateTime  @default(now())
+  updated_at        DateTime? @updatedAt
+  status            Int       @default(0) // 0: Draft, 1: Published, etc.
+}
+
+model Setting {
+  id             Int              @id @default(autoincrement())
+  key            String           @unique
+  value          Json?
+  description    String?
+  access_control String? // Ví dụ: role_id hoặc user_id
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+  SettingHistory SettingHistory[]
+}
+
+model SettingHistory {
+  id         Int      @id @default(autoincrement())
+  setting_id Int
+  oldValue   Json
+  newValue   Json
+  updatedBy  String? // Ví dụ: user_id
+  updatedAt  DateTime @default(now())
+  setting Setting @relation(fields: [setting_id], references: [id])
 }
