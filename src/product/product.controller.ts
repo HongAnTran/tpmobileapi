@@ -125,7 +125,7 @@ export class ProductController {
           }
         },
         compare_at_price: true,
-        product_images: true,
+        images: true,
         id: true,
         created_at: true,
         price: true,
