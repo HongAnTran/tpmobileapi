@@ -125,7 +125,6 @@ export class ProductController {
           }
         },
         compare_at_price: true,
-        featured_image: true,
         product_images: true,
         id: true,
         created_at: true,
@@ -138,8 +137,6 @@ export class ProductController {
         status: true,
         vendor: true,
         updated_at: true,
-        images: true,
-
       },
       orderBy
     });

@@ -18,7 +18,7 @@ export class ArticleController {
     @Query('take') take?: string,
     @Query('category_id') category_id?: string,
     @Query('keyword') keyword?: string,
-    @Query('published') published?: string,
+    @Query('status') status?: string,
     @Query('orderBy') orderBy?: Prisma.ArticleOrderByWithRelationInput,
 
   ) {
@@ -26,7 +26,7 @@ export class ArticleController {
     const where: Prisma.ArticleWhereInput = {
       category_id: category_id ? Number(category_id) : undefined,
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
-      published: published ? !!Number(published) : undefined
+      status: status ? Number(status) : undefined
     }
     const params = {
       skip: skip ? parseInt(skip, 10) : undefined,
@@ -40,7 +40,6 @@ export class ArticleController {
 
     return this.articleService.findAll({
       ...params,
-
       select: {
         id: true,
         title: true,
@@ -50,10 +49,10 @@ export class ArticleController {
         category_id: true,
         description: true,
         slug: true,
-        published: true,
         thumnal_url: true,
-        created_at : true,
-        updated_at : true
+        created_at: true,
+        updated_at: true,
+        status: true
       }
     });
   }

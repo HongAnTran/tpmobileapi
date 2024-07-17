@@ -35,7 +35,6 @@ export class CategoryArticleController {
     take?: string;
     orderBy?: string
     orderType?: string
-    status?: string
   }): Promise<CategoryArticle[]> {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
@@ -43,7 +42,7 @@ export class CategoryArticleController {
       skip: skip,
       take: take,
       where: {
-        status: Number(query.status) || 1
+        published: true
       },
       orderBy: {
         [query.orderBy]: query.orderType
