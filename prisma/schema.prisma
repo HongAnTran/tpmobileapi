@@ -30,7 +30,7 @@ model Product {
   categories        Category[]              @relation("ProductCategories")
   variants          ProductVariant[]
   specifications    ProductSpecifications[] @relation("ProductToProductSpecifications")
-  product_images    ProductImage[]
+  images    ProductImage[]
 }
 
 model Category {
