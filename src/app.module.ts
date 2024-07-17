@@ -18,14 +18,14 @@ import { join } from 'path';
 import { PagesModule } from './pages/pages.module';
 import { SettingsModule } from './settings/settings.module';
 import { CartsModule } from './carts/carts.module';
+import { LocationModule } from './location/location.module';
+import { CustomerModule } from './customer/customer.module';
+import { StoreModule } from './store/store.module';
+import { VendorModule } from './vendor/vendor.module';
 
 
 
 
-const GOOGLE_MAILER_CLIENT_ID = '807787170087-2g0d336qe2qbou3ilms5gr505o3durto.apps.googleusercontent.com'
-const GOOGLE_MAILER_CLIENT_SECRET = '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'
-const GOOGLE_MAILER_REFRESH_TOKEN = '1//04j5pqvYDQBahCgYIARAAGAQSNwF-L9IrmY0gRSylpwPU1R-xKM5QZyXalEIlVEyItvHeru-4ccPdqfxigmFTc1VDDvaWkOd7Zb0'
-const ADMIN_EMAIL_ADDRESS = 'tranhongankrn.2001@gmail.com'
 
 @Module({
   imports: [
@@ -36,13 +36,13 @@ const ADMIN_EMAIL_ADDRESS = 'tranhongankrn.2001@gmail.com'
       transport: {
         host: 'smtp.gmail.com',
         port: 465,
-        secure: true, // true for 465, false for other ports
+        secure: true, 
         auth: {
           type  : "OAuth2",
-          user  : ADMIN_EMAIL_ADDRESS,
-          clientId  : GOOGLE_MAILER_CLIENT_ID,
-          clientSecret  : GOOGLE_MAILER_CLIENT_SECRET,
-          refreshToken :GOOGLE_MAILER_REFRESH_TOKEN,
+          user  : process.env.ADMIN_EMAIL_ADDRESS,
+          clientId  : process.env.GOOGLE_MAILER_CLIENT_ID,
+          clientSecret  : process.env.GOOGLE_MAILER_CLIENT_SECRET,
+          refreshToken :process.env.GOOGLE_MAILER_REFRESH_TOKEN,
         },
       },
       template: {
@@ -66,7 +66,11 @@ const ADMIN_EMAIL_ADDRESS = 'tranhongankrn.2001@gmail.com'
     OrdersModule,
     PagesModule,
     SettingsModule,
-    CartsModule
+    CartsModule,
+    LocationModule,
+    CustomerModule,
+    StoreModule,
+    VendorModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

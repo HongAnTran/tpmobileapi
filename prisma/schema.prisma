@@ -12,7 +12,8 @@ model Product {
   title             String                  @unique
   slug              String                  @unique
   description_html  String?
-  vendor            String?
+  vendor            Vendor?                 @relation(fields: [vendor_id], references: [id])
+  vendor_id         Int?
   available         Boolean                 @default(true)
   status            Int                     @default(0)
   created_at        DateTime                @default(now())
@@ -20,43 +21,30 @@ model Product {
   published_at      DateTime?
   barcode           String?                 @unique
   short_description String?
-  meta_title        String?
-  meta_description  String?
-  meta_keywords     String?
-  featured_image    String                  @default("")
+  meta_data         Json?
   price             Float                   @default(0)
   compare_at_price  Float                   @default(0)
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
-  images            String[]                @default([])
   options           Option[]
   categories        Category[]              @relation("ProductCategories")
   variants          ProductVariant[]
   specifications    ProductSpecifications[] @relation("ProductToProductSpecifications")
   product_images    ProductImage[]
-  ProductCategory   ProductCategory[]
 }
 
 model Category {
-  id              Int               @id @default(autoincrement())
-  title           String            @unique
-  description     String?
-  image           String?
-  slug            String            @unique
-  status          Int               @default(1)
-  products        Product[]         @relation("ProductCategories")
-  ProductCategory ProductCategory[]
+  id          Int       @id @default(autoincrement())
+  title       String    @unique
+  slug        String    @unique
+  description String?
+  image       String?
+  published   Boolean?  @default(false)
+  meta_data   Json?
+  products    Product[] @relation("ProductCategories")
 }
 
-model ProductCategory {
-  product_id  Int
-  category_id Int
-  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  is_default  Boolean  @default(false)
 
-  @@id([product_id, category_id])
-}
 
 model ProductVariant {
   id                 Int           @id @default(autoincrement())
@@ -69,7 +57,8 @@ model ProductVariant {
   price              Float
   sku                String        @unique
   title              String
-  updated_at         DateTime?
+  updated_at         DateTime?     @updatedAt
+  created_at         DateTime      @default(now())
   inventory_quantity Int
   available          Boolean
   product_id         Int
@@ -101,18 +90,16 @@ model Option {
 model SpecificationsType {
   id             Int                     @id @default(autoincrement())
   name           String
-  description    String?
   specifications ProductSpecifications[]
 }
 
 model ProductSpecifications {
-  id          Int                @id @default(autoincrement())
-  type_id     Int
-  name        String
-  value       String[]
-  description String?
-  type        SpecificationsType @relation(fields: [type_id], references: [id], onDelete: Cascade)
-  product     Product[]          @relation("ProductToProductSpecifications")
+  id      Int                @id @default(autoincrement())
+  type_id Int
+  name    String
+  value   String
+  type    SpecificationsType @relation(fields: [type_id], references: [id], onDelete: Cascade)
+  product Product[]          @relation("ProductToProductSpecifications")
 }
 
 model Cart {
@@ -121,15 +108,15 @@ model Cart {
   item_count  Int
   total_price Float
   note        String?
-  customer_id Int
   items       ProductOrder[]
+  customer_id Int?
+  customer    Customer?      @relation(fields: [customer_id], references: [id], onDelete: Cascade)
 }
 
 model Order {
   id          Int            @id @default(autoincrement())
   token       String         @unique
   code        String         @unique
-  customer_id Int?
   total_price Float
   temp_price  Float
   ship_price  Float
@@ -140,6 +127,7 @@ model Order {
   shipping    Shipping?
   payment     Payment?
   items       ProductOrder[]
+  customer_id Int?
   customer    Customer?      @relation(fields: [customer_id], references: [id])
 }
 
@@ -183,6 +171,12 @@ model Payment {
   order          Order         @relation(fields: [order_id], references: [id])
 }
 
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
 model ProductOrder {
   id                  Int      @id @default(autoincrement())
   title               String
@@ -209,55 +203,38 @@ model ProductOrder {
 }
 
 model User {
-  id    Int       @id @default(autoincrement())
-  email String?   @unique
-  name  String
-  phone String
-  posts Article[]
+  id         Int       @id @default(autoincrement())
+  name       String
+  password   String
+  username   String
+  avt        String?
+  posts      Article[]
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  role       Role      @relation(fields: [roleId], references: [id])
+  roleId     Int
+  meta_data  Json?
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
 }
 
 model Customer {
-  id      Int       @id @default(autoincrement())
-  email   String    @unique
-  phone   String
-  name    String?
-  gender  Gender?
-  birtday DateTime?
-  Order   Order[]
-}
-
-model CategoryArticle {
-  id          Int       @id @default(autoincrement())
-  title       String    @unique
-  description String?
-  image       String?
-  slug        String    @unique
-  status      Int       @default(0)
-  posts       Article[]
-}
-
-model Article {
-  id          Int              @id @default(autoincrement())
-  title       String
-  content     String?
-  published   Boolean?         @default(false)
-  authorId    Int?
-  category_id Int?
-  slug        String           @unique
-  thumnal_url String?
-  description String?
-  created_at  DateTime         @default(now())
-  updated_at  DateTime?        @updatedAt
-  author      User?            @relation(fields: [authorId], references: [id])
-  category    CategoryArticle? @relation(fields: [category_id], references: [id])
-}
-
-model Store {
-  id      Int     @id @default(autoincrement())
-  name    String
-  phone   String?
-  address String?
-  url_map String?
+  id         Int       @id @default(autoincrement())
+  email      String?   @unique
+  password   String
+  name       String
+  phone      String    @unique
+  orders     Order[]
+  carts      Cart[]
+  gender     Gender?
+  address    Address[]
+  birthday   DateTime?
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 }
 
 enum Gender {
@@ -266,10 +243,68 @@ enum Gender {
   OTHER
 }
 
-enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
+enum LocationType {
+  PROVINCE
+  DISTRICT
+  WARD
+}
+
+model Address {
+  id          Int       @id @default(autoincrement())
+  name        String
+  phone       String    @unique
+  created_at  DateTime  @default(now())
+  province    Location  @relation("Province", fields: [province_id], references: [id])
+  district    Location  @relation("District", fields: [district_id], references: [id])
+  ward        Location  @relation("Ward", fields: [ward_id], references: [id])
+  ward_id     Int
+  district_id Int
+  province_id Int
+  updated_at  DateTime? @updatedAt
+  customer_id Int
+  customer    Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model CategoryArticle {
+  id          Int       @id @default(autoincrement())
+  title       String    @unique
+  description String?
+  image       String?
+  slug        String    @unique
+  published   Boolean?  @default(false)
+  meta_data   Json?
+  posts       Article[]
+}
+
+model Article {
+  id          Int              @id @default(autoincrement())
+  title       String           @unique
+  slug        String           @unique
+  status      Int
+  content     String?
+  authorId    Int?
+  category_id Int?
+  thumnal_url String?
+  description String?
+  meta_data   Json?
+  created_at  DateTime         @default(now())
+  updated_at  DateTime?        @updatedAt
+  author      User?            @relation(fields: [authorId], references: [id])
+  category    CategoryArticle? @relation(fields: [category_id], references: [id])
+}
+
+model Store {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String?
+  address     String?
+  url_map     String?
+  province    Location @relation("ProvinceStore", fields: [province_id], references: [id])
+  district    Location @relation("DistrictStore", fields: [district_id], references: [id])
+  ward        Location @relation("WardStore", fields: [ward_id], references: [id])
+  ward_id     Int
+  district_id Int
+  province_id Int
 }
 
 model Page {
@@ -278,7 +313,7 @@ model Page {
   slug              String    @unique
   content_html      String
   short_description String?
-  meta_data         Json      @default("{}")
+  meta_data         Json?
   created_at        DateTime  @default(now())
   updated_at        DateTime? @updatedAt
   status            Int       @default(0) // 0: Draft, 1: Published, etc.
@@ -302,5 +337,38 @@ model SettingHistory {
   newValue   Json
   updatedBy  String? // Ví dụ: user_id
   updatedAt  DateTime @default(now())
-  setting Setting @relation(fields: [setting_id], references: [id])
+  setting    Setting  @relation(fields: [setting_id], references: [id])
+}
+
+enum LocationTypeCode {
+  PROVINCE
+  DISTRICT
+  WARD
+}
+
+model Location {
+  id             Int              @id @default(autoincrement())
+  name           String
+  type           LocationTypeCode
+  code           String?
+  parent_code    String?
+  provinces      Address[]        @relation("Province")
+  districts      Address[]        @relation("District")
+  wards          Address[]        @relation("Ward")
+  provincesStore Store[]          @relation("ProvinceStore")
+  districtsStore Store[]          @relation("DistrictStore")
+  wardsStore     Store[]          @relation("WardStore")
+}
+
+
+model Vendor {
+  id        Int       @id @default(autoincrement())
+  name      String
+  address   String?
+  phone     String?
+  email     String?
+  website   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  products Product[] 
 }

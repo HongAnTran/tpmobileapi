@@ -34,6 +34,16 @@ export class SettingsService {
     return setting;
   }
 
+  async findOneKey(key: string): Promise<Setting | null> {
+    const setting = await this.prisma.setting.findUnique({
+      where: { key },
+    });
+    if (!setting) {
+      throw new NotFoundException(`Setting with id ${key} not found`);
+    }
+    return setting;
+  }
+
   async update(id: number, updateSettingDto: UpdateSettingDto): Promise<Setting> {
     const { value, description } = updateSettingDto;
 

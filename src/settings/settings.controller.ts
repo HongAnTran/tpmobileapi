@@ -21,6 +21,11 @@ export class SettingsController {
   findOne(@Param('id') id: string) {
     return this.settingsService.findOne(+id);
   }
+  @Get('key/:id')
+  findOneKey(@Param('id') key: string) {
+    return this.settingsService.findOneKey(key);
+  }
+
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSettingDto: UpdateSettingDto) {

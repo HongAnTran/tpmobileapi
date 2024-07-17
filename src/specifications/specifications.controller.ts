@@ -26,11 +26,13 @@ export class SpecificationsController {
     skip?: string;
     take?: string;
     type_id?: string
+    keyword?: string
   }) {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
-    const where = query.type_id ? {
-      type_id: query.type_id ? parseInt(query.type_id, 10) : undefined
+    const where: Prisma.ProductSpecificationsWhereInput = query.type_id ? {
+      type_id: query.type_id ? parseInt(query.type_id, 10) : undefined,
+      value: query.keyword ? { contains: query.keyword, mode: "insensitive" } : undefined
     } : {}
 
     return this.specificationsService.findAll({
