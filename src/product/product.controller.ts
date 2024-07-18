@@ -95,7 +95,7 @@ export class ProductController {
       } : undefined,
 
       categories: category_id ? { some: { id: +category_id } } : categoriesSlugArr.length ? {
-        some: { slug: { in: categoriesSlugArr } }
+        some: { category: { slug: { in: categoriesSlugArr } } }
       } : undefined,
       ...queryOptions,
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
@@ -118,13 +118,17 @@ export class ProductController {
         barcode: true,
         categories: {
           select: {
-            id: true,
-            title: true,
-            slug: true,
             priority: true,
-            published: true
+            category: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                published: true
+              }
+            }
           },
-          where: { priority: 0 }
+          where: { category: { published: true }, priority: 0 }
         },
         compare_at_price: true,
         images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" }, take: 2 },
@@ -140,7 +144,7 @@ export class ProductController {
         brand: { select: { id: true, slug: true, name: true } },
         updated_at: true,
         ratings: { select: { rate: true } },
-        
+
       },
       orderBy
     });

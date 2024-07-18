@@ -16,7 +16,7 @@ export class ProductService {
       const product = await this.prisma.product.findUnique({
         where: query,
         include: {
-          categories: { select: { id: true, slug: true, title: true }, where: { published : true   } },
+          categories: { select: { category: { select: { id: true, slug: true, title: true } } }, where: { category: { published: true } } },
           options: { orderBy: { position: "asc" } },
           specifications: true,
           variants: { orderBy: { position: "asc" } }
