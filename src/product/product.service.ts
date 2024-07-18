@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Product, Prisma } from '@prisma/client';
+import { Product, Prisma, ProductImage } from '@prisma/client';
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) { }
@@ -84,6 +84,12 @@ export class ProductService {
         options: true,
         variants: true,
       }
+    });
+  }
+
+  async deleteProductImage(where: Prisma.ProductImageWhereUniqueInput): Promise<ProductImage> {
+    return this.prisma.productImage.delete({
+      where,
     });
   }
 }

@@ -12,8 +12,21 @@ export class SpecificationsService {
       data,
     });
   }
+  async createGroup(data: Prisma.SpecificationsGroupCreateInput) {
+    return this.prisma.specificationsGroup.create({
+      data,
+    });
+  }
   async findAllType() {
     return this.prisma.specificationsType.findMany();
+  }
+  async findAllGroup({
+    where
+  }: {
+    where?: Prisma.SpecificationsGroupWhereInput
+
+  }) {
+    return this.prisma.specificationsGroup.findMany({ where });
   }
 
   async create(data: Prisma.ProductSpecificationsCreateInput) {

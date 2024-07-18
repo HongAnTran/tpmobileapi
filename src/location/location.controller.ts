@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
-import { Prisma } from '@prisma/client';
+import { LocationTypeCode, Prisma } from '@prisma/client';
 
 @Controller('location')
 export class LocationController {
-  constructor(private readonly locationService: LocationService) {}
+  constructor(private readonly locationService: LocationService) { }
 
   @Post()
   create(@Body() createLocationDto: Prisma.LocationCreateInput) {
@@ -14,8 +14,11 @@ export class LocationController {
   }
 
   @Get()
-  findAll() {
-    return this.locationService.findAll();
+  findAll(@Query() query: {
+    type?: LocationTypeCode
+    parent_code?: string
+  }) {
+    return this.locationService.findAll({ type: query.type, parent_code: query.parent_code });
   }
 
   @Get(':id')
@@ -24,7 +27,7 @@ export class LocationController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLocationDto:  Prisma.LocationUpdateInput) {
+  update(@Param('id') id: string, @Body() updateLocationDto: Prisma.LocationUpdateInput) {
     return this.locationService.update(+id, updateLocationDto);
   }
 

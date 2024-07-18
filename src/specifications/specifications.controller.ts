@@ -11,9 +11,22 @@ export class SpecificationsController {
     return this.specificationsService.createType(data);
   }
 
+  @Post('group')
+  createGroup(@Body() data: Prisma.SpecificationsGroupCreateInput) {
+    return this.specificationsService.createGroup(data);
+  }
+
   @Get('types')
   findAllType() {
     return this.specificationsService.findAllType();
+  }
+  @Get('groups')
+  findAllGroup(@Query() query: {
+    type_id?: string
+  }) {
+    return this.specificationsService.findAllGroup({
+      where: Number(query.type_id) ? { type_id: Number(query.type_id) } : undefined
+    });
   }
 
   @Post()
@@ -25,13 +38,13 @@ export class SpecificationsController {
   findAll(@Query() query: {
     skip?: string;
     take?: string;
-    type_id?: string
+    group_id?: string
     keyword?: string
   }) {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
-    const where: Prisma.ProductSpecificationsWhereInput = query.type_id ? {
-      type_id: query.type_id ? parseInt(query.type_id, 10) : undefined,
+    const where: Prisma.ProductSpecificationsWhereInput = query.group_id ? {
+      group_id: query.group_id ? parseInt(query.group_id, 10) : undefined,
       value: query.keyword ? { contains: query.keyword, mode: "insensitive" } : undefined
     } : {}
 

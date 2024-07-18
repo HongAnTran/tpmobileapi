@@ -21,7 +21,9 @@ import { CartsModule } from './carts/carts.module';
 import { LocationModule } from './location/location.module';
 import { CustomerModule } from './customer/customer.module';
 import { StoreModule } from './store/store.module';
-import { VendorModule } from './vendor/vendor.module';
+import { RatingModule } from './rating/rating.module';
+import { QuestionModule } from './question/question.module';
+import { BrandModule } from './brand/brand.module';
 
 
 
@@ -70,7 +72,9 @@ import { VendorModule } from './vendor/vendor.module';
     LocationModule,
     CustomerModule,
     StoreModule,
-    VendorModule
+    RatingModule,
+    QuestionModule,
+    BrandModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

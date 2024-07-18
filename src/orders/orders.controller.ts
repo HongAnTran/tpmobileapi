@@ -19,31 +19,15 @@ export class OrdersController {
     return this.ordersService.create(data);
   }
 
-  @Post("/mail")
-  async mail(@Body() checkoutOrder: Order) {
-    try {
-      this.mailService.sendMail({
-        from: "tranhongankrn.2001@gmail.com",
-        subject: "Đơn đặt hàng mới",
-        to: "tranhongankrn.2001@gmail.com",
-        template: "newOrder",
-        context: checkoutOrder
-      })
-
-    } catch (error) {
-      throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
-    }
-  }
-
   @Put("/checkout/:id")
   async checkout(@Param('id') id: string, @Body() checkoutOrder: Pick<Prisma.OrderUpdateInput , "customer" |"discount" | "note" | "payment" | "promotions" | "ship_price"  | "shipping">) {
     try {
       const data: Prisma.OrderUpdateInput = { status: 5, ...checkoutOrder }
       const res = await this.ordersService.update(+id, data);
       this.mailService.sendMail({
-        from: "tranhongankrn.2001@gmail.com",
-        subject: "Đơn đặt hàng mới",
-        to: "tranhongankrn.2001@gmail.com",
+        from: process.env.ADMIN_EMAIL_ADDRESS,
+        subject: "TP Mobile Store - Đơn đặt hàng mới",
+        to: process.env.ADMIN_EMAIL_ADDRESS,
         template: "newOrder",
         context: res
       })

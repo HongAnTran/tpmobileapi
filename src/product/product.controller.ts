@@ -121,11 +121,13 @@ export class ProductController {
             id: true,
             title: true,
             slug: true,
-
-          }
+            priority: true,
+            published: true
+          },
+          where: { priority: 0 }
         },
         compare_at_price: true,
-        images: true,
+        images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" }, take: 2 },
         id: true,
         created_at: true,
         price: true,
@@ -135,8 +137,10 @@ export class ProductController {
         published_at: true,
         title: true,
         status: true,
-        vendor: true,
+        brand: { select: { id: true, slug: true, name: true } },
         updated_at: true,
+        ratings: { select: { rate: true } },
+        
       },
       orderBy
     });
@@ -162,5 +166,10 @@ export class ProductController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productService.deleteProduct({ id: Number(id) });
+  }
+
+  @Delete('image:id')
+  removeImage(@Param('id') id: string) {
+    return this.productService.deleteProductImage({ id: Number(id) });
   }
 }

@@ -12,8 +12,8 @@ model Product {
   title             String                  @unique
   slug              String                  @unique
   description_html  String?
-  vendor            Vendor?                 @relation(fields: [vendor_id], references: [id])
-  vendor_id         Int?
+  brand             Brand?                  @relation(fields: [brand_id], references: [id])
+  brand_id          Int?
   available         Boolean                 @default(true)
   status            Int                     @default(0)
   created_at        DateTime                @default(now())
@@ -27,12 +27,24 @@ model Product {
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
   options           Option[]
-  categories        Category[]              @relation("ProductCategories")
+  categories        ProductCategories[]             
   variants          ProductVariant[]
   specifications    ProductSpecifications[] @relation("ProductToProductSpecifications")
-  images    ProductImage[]
+  images            ProductImage[]
+  ratings           Rating[]
+  questions         Question[]
 }
 
+model ProductCategories {
+  id         Int         @id @default(autoincrement())
+  product    Product     @relation(fields: [productId], references: [id])
+  productId  Int
+  category   Category    @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  priority   Int         @default(0)  // Độ ưu tiên, mặc định là 0
+
+  @@unique([productId, categoryId])
+}
 model Category {
   id          Int       @id @default(autoincrement())
   title       String    @unique
@@ -41,7 +53,44 @@ model Category {
   image       String?
   published   Boolean?  @default(false)
   meta_data   Json?
-  products    Product[] @relation("ProductCategories")
+  ProductCategories    ProductCategories[] 
+}
+model Question {
+  id          Int       @id @default(autoincrement())
+  content     String
+  product     Product   @relation(fields: [product_id], references: [id])
+  product_id  Int
+  answers     Answer[]
+  createdAt   DateTime  @default(now())
+  customer    Customer? @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  customer_id Int?
+  email       String?
+  phone       String?
+  full_name   String?
+}
+
+model Answer {
+  id          Int       @id @default(autoincrement())
+  content     String
+  question    Question  @relation(fields: [questionId], references: [id])
+  questionId  Int
+  createdAt   DateTime  @default(now())
+  author      User?     @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  author_id   Int?
+  customer    Customer? @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  customer_id Int?
+}
+
+model Rating {
+  id          Int      @id @default(autoincrement())
+  rate        Int
+  content     String?
+  images      String[]
+  product_id  Int
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  customer_id Int
+  like_count  Int      @default(0)
 }
 
 
@@ -87,19 +136,27 @@ model Option {
   product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
-model SpecificationsType {
+model SpecificationsGroup {
   id             Int                     @id @default(autoincrement())
   name           String
   specifications ProductSpecifications[]
+  type_id        Int
+  type           SpecificationsType      @relation(fields: [type_id], references: [id], onDelete: Cascade)
+}
+
+model SpecificationsType {
+  id     Int                   @id @default(autoincrement())
+  name   String
+  groups SpecificationsGroup[]
 }
 
 model ProductSpecifications {
-  id      Int                @id @default(autoincrement())
-  type_id Int
-  name    String
-  value   String
-  type    SpecificationsType @relation(fields: [type_id], references: [id], onDelete: Cascade)
-  product Product[]          @relation("ProductToProductSpecifications")
+  id       Int                 @id @default(autoincrement())
+  name     String
+  value    String
+  product  Product[]           @relation("ProductToProductSpecifications")
+  group    SpecificationsGroup @relation(fields: [group_id], references: [id])
+  group_id Int
 }
 
 model Cart {
@@ -209,6 +266,7 @@ model User {
   username   String
   avt        String?
   posts      Article[]
+  answers    Answer[]
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   role       Role      @relation(fields: [roleId], references: [id])
@@ -223,18 +281,21 @@ model Role {
 }
 
 model Customer {
-  id         Int       @id @default(autoincrement())
-  email      String?   @unique
+  id         Int        @id @default(autoincrement())
+  email      String?    @unique
   password   String
   name       String
-  phone      String    @unique
+  phone      String     @unique
   orders     Order[]
   carts      Cart[]
   gender     Gender?
   address    Address[]
+  ratings    Rating[]
+  questions  Question[]
+  answer     Answer[]
   birthday   DateTime?
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at DateTime   @default(now())
+  updated_at DateTime?  @updatedAt
 }
 
 enum Gender {
@@ -324,7 +385,7 @@ model Setting {
   key            String           @unique
   value          Json?
   description    String?
-  access_control String? // Ví dụ: role_id hoặc user_id
+  access_control Int[]  
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
   SettingHistory SettingHistory[]
@@ -360,15 +421,11 @@ model Location {
   wardsStore     Store[]          @relation("WardStore")
 }
 
-
-model Vendor {
+model Brand {
   id        Int       @id @default(autoincrement())
-  name      String
-  address   String?
-  phone     String?
-  email     String?
-  website   String?
+  name      String    @unique
+  slug      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  products Product[] 
+  products  Product[]
 }

@@ -10,8 +10,10 @@ export class LocationService {
     return this.prisma.location.create({ data: createLocationDto });
   }
 
-  async findAll(): Promise<Location[]> {
-    return this.prisma.location.findMany();
+  async findAll(where?: Prisma.LocationWhereInput): Promise<Location[]> {
+    return this.prisma.location.findMany({
+      where : where
+    });
   }
   async findOne(id: number): Promise<Location | null> {
     const Location = await this.prisma.location.findUnique({
