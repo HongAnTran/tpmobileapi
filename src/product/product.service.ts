@@ -41,7 +41,7 @@ export class ProductService {
     select?: Prisma.ProductSelect
   }) {
     const { skip, take, cursor, where, orderBy, select } = params;
-    const products = await this.prisma.product.findMany({
+    const datas = await this.prisma.product.findMany({
       skip,
       take,
       cursor,
@@ -54,8 +54,10 @@ export class ProductService {
       where
     });
 
+
+
     return {
-      products,
+      datas,
       total
     };
   }

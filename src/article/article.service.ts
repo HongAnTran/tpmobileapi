@@ -23,7 +23,7 @@ export class ArticleService {
 
   }) {
     const { skip, take, cursor, where, orderBy, select } = params;
-    const articles = await this.prisma.article.findMany({
+    const datas = await this.prisma.article.findMany({
       skip,
       take,
       cursor,
@@ -36,8 +36,9 @@ export class ArticleService {
       where,
     });
 
+   
     return {
-      articles,
+      datas,
       total,
     };
   }
