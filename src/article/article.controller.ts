@@ -44,7 +44,7 @@ export class ArticleController {
         id: true,
         title: true,
         category: true,
-        authorId: true,
+        author_id: true,
         author: true,
         category_id: true,
         description: true,

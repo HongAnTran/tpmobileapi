@@ -27,7 +27,7 @@ model Product {
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
   options           Option[]
-  categories        ProductCategories[]             
+  categories        ProductCategories[]
   variants          ProductVariant[]
   specifications    ProductSpecifications[] @relation("ProductToProductSpecifications")
   images            ProductImage[]
@@ -36,25 +36,27 @@ model Product {
 }
 
 model ProductCategories {
-  id         Int         @id @default(autoincrement())
-  product    Product     @relation(fields: [productId], references: [id])
-  productId  Int
-  category   Category    @relation(fields: [categoryId], references: [id])
-  categoryId Int
-  priority   Int         @default(0)  // Độ ưu tiên, mặc định là 0
+  id         Int      @id @default(autoincrement())
+  product    Product  @relation(fields: [product_id], references: [id])
+  product_id  Int
+  category   Category @relation(fields: [category_id], references: [id])
+  category_id Int
+  priority   Int      @default(0) // Độ ưu tiên, mặc định là 0
 
-  @@unique([productId, categoryId])
+  @@unique([product_id, category_id])
 }
+
 model Category {
-  id          Int       @id @default(autoincrement())
-  title       String    @unique
-  slug        String    @unique
-  description String?
-  image       String?
-  published   Boolean?  @default(false)
-  meta_data   Json?
-  ProductCategories    ProductCategories[] 
+  id                Int                 @id @default(autoincrement())
+  title             String              @unique
+  slug              String              @unique
+  description       String?
+  image             String?
+  published         Boolean?            @default(false)
+  meta_data         Json?
+  ProductCategories ProductCategories[]
 }
+
 model Question {
   id          Int       @id @default(autoincrement())
   content     String
@@ -72,8 +74,8 @@ model Question {
 model Answer {
   id          Int       @id @default(autoincrement())
   content     String
-  question    Question  @relation(fields: [questionId], references: [id])
-  questionId  Int
+  question    Question  @relation(fields: [question_id], references: [id])
+  question_id  Int
   createdAt   DateTime  @default(now())
   author      User?     @relation(fields: [author_id], references: [id], onDelete: Cascade)
   author_id   Int?
@@ -92,8 +94,6 @@ model Rating {
   customer_id Int
   like_count  Int      @default(0)
 }
-
-
 
 model ProductVariant {
   id                 Int           @id @default(autoincrement())
@@ -253,10 +253,10 @@ model ProductOrder {
   variant_options     String[]
   quantity            Int
   image               String
-  cartId              Int?
-  orderId             Int?
-  cart                Cart?    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  Order               Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  cart_id              Int?
+  order_id             Int?
+  cart                Cart?    @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  Order               Order?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -269,8 +269,8 @@ model User {
   answers    Answer[]
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
-  role       Role      @relation(fields: [roleId], references: [id])
-  roleId     Int
+  role       Role      @relation(fields: [role_id], references: [id])
+  role_id     Int
   meta_data  Json?
 }
 
@@ -311,9 +311,10 @@ enum LocationType {
 }
 
 model Address {
-  id          Int       @id @default(autoincrement())
-  name        String
-  phone       String    @unique
+  id      Int    @id @default(autoincrement())
+  name    String
+  phone   String @unique
+  detail_address String
   created_at  DateTime  @default(now())
   province    Location  @relation("Province", fields: [province_id], references: [id])
   district    Location  @relation("District", fields: [district_id], references: [id])
@@ -343,14 +344,14 @@ model Article {
   slug        String           @unique
   status      Int
   content     String?
-  authorId    Int?
+  author_id    Int?
   category_id Int?
   thumnal_url String?
   description String?
   meta_data   Json?
   created_at  DateTime         @default(now())
   updated_at  DateTime?        @updatedAt
-  author      User?            @relation(fields: [authorId], references: [id])
+  author      User?            @relation(fields: [author_id], references: [id])
   category    CategoryArticle? @relation(fields: [category_id], references: [id])
 }
 
@@ -385,7 +386,7 @@ model Setting {
   key            String           @unique
   value          Json?
   description    String?
-  access_control Int[]  
+  access_control Int[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
   SettingHistory SettingHistory[]
