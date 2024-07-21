@@ -38,9 +38,7 @@ export class ProductController {
     const categoriesSlugArr = categories ? categories.split(",") : []
     const categoryId = Number(category_id)
 
-    const includeParams = include ? include.split(",") : [
-      "categories",
-    ]
+    const includeParams = include ? include.split(",") : []
 
     const priceRange = price ? price.split(",").map(num => {
       const number = Number(num)
