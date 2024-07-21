@@ -16,10 +16,11 @@ export class ProductService {
       const product = await this.prisma.product.findUnique({
         where: query,
         include: {
-          categories: { select: { category: { select: { id: true, slug: true, title: true } } }, where: { category: { published: true } } },
+          sub_categories: { select: { category: { select: { id: true, slug: true, title: true } } }, where: { category: { published: true } } },
           options: { orderBy: { position: "asc" } },
           specifications: true,
-          variants: { orderBy: { position: "asc" } }
+          variants: { orderBy: { position: "asc" } },
+          category: { select: { id: true, slug: true, title: true } }
         },
       });
       if (!product) {

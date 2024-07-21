@@ -10,13 +10,12 @@ export class PagesService {
   constructor(private prisma: PrismaService) { }
 
   async create(createPageDto: CreatePageDto): Promise<Page> {
-    const { title, slug, content_html, short_description, meta_data } = createPageDto;
+    const { title, slug, content_html, meta_data } = createPageDto;
     return this.prisma.page.create({
       data: {
         title,
         slug,
         content_html,
-        short_description,
         meta_data,
       },
     });
@@ -53,7 +52,6 @@ export class PagesService {
       data: {
         title,
         content_html,
-        short_description,
         meta_data,
         updated_at: new Date(), // Update updated_at field
       },

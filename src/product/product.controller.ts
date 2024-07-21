@@ -36,6 +36,8 @@ export class ProductController {
 
     const productIds = ids ? ids.split(",").map(id => Number(id)) : []
     const categoriesSlugArr = categories ? categories.split(",") : []
+    const categoryId = Number(category_id)
+
     const includeParams = include ? include.split(",") : [
       "categories",
     ]
@@ -46,6 +48,7 @@ export class ProductController {
     }) : []
 
     let queryOptions: Prisma.ProductWhereInput | Prisma.ProductWhereInput[] = undefined
+    let queryOptionsCategory: Prisma.ProductWhereInput | Prisma.ProductWhereInput[] = undefined
 
 
     const capacityValues = capacity?.split(",") || []
@@ -86,6 +89,24 @@ export class ProductController {
         options: { some: { values: { hasSome: capacityValues } } }
       }
     }
+
+    if (categoryId) {
+      queryOptionsCategory = {
+        OR: [
+          { category_id: categoryId },
+          { sub_categories: { some: { category_id: categoryId } } }
+        ]
+
+      }
+    }
+
+    if (categoriesSlugArr.length) {
+      queryOptionsCategory = {
+        OR: [{ sub_categories: { some: { category: { slug: { in: categoriesSlugArr } } } }, category: { slug: { in: categoriesSlugArr } } }]
+      }
+    }
+
+
     const where: Prisma.ProductWhereInput = {
       status: status ? Number(status) : undefined,
       id: productIds.length ? { in: productIds } : undefined,
@@ -94,9 +115,10 @@ export class ProductController {
         lte: priceRange[1]
       } : undefined,
 
-      categories: category_id ? { some: { id: +category_id } } : categoriesSlugArr.length ? {
-        some: { category: { slug: { in: categoriesSlugArr } } }
-      } : undefined,
+      // sub_categories: category_id ? { some: { id: +category_id } } : categoriesSlugArr.length ? {
+      //   some: { category: { slug: { in: categoriesSlugArr } } }
+      // } : undefined,
+      ...queryOptionsCategory,
       ...queryOptions,
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
     };
@@ -116,7 +138,7 @@ export class ProductController {
         ...includeQuery,
         available: true,
         barcode: true,
-        categories: {
+        sub_categories: {
           select: {
             priority: true,
             category: {
@@ -130,6 +152,15 @@ export class ProductController {
           },
           where: { category: { published: true }, priority: 0 }
         },
+        category: {
+          select: {
+            id: true,
+            published: true,
+            slug: true,
+            title: true
+          }
+        },
+        category_id: true,
         compare_at_price: true,
         images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" }, take: 2 },
         id: true,

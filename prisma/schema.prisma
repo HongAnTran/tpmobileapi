@@ -27,7 +27,9 @@ model Product {
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
   options           Option[]
-  categories        ProductCategories[]
+  sub_categories    ProductCategories[]
+  category_id       Int
+  category          Category                @relation(fields: [category_id], references: [id])
   variants          ProductVariant[]
   specifications    ProductSpecifications[] @relation("ProductToProductSpecifications")
   images            ProductImage[]
@@ -36,12 +38,12 @@ model Product {
 }
 
 model ProductCategories {
-  id         Int      @id @default(autoincrement())
-  product    Product  @relation(fields: [product_id], references: [id])
+  id          Int      @id @default(autoincrement())
+  product     Product  @relation(fields: [product_id], references: [id])
   product_id  Int
-  category   Category @relation(fields: [category_id], references: [id])
+  category    Category @relation(fields: [category_id], references: [id])
   category_id Int
-  priority   Int      @default(0) // Độ ưu tiên, mặc định là 0
+  priority    Int      @default(0) // Độ ưu tiên, mặc định là 0
 
   @@unique([product_id, category_id])
 }
@@ -54,7 +56,8 @@ model Category {
   image             String?
   published         Boolean?            @default(false)
   meta_data         Json?
-  ProductCategories ProductCategories[]
+  productCategories ProductCategories[]
+  products          Product[]
 }
 
 model Question {
@@ -75,7 +78,7 @@ model Answer {
   id          Int       @id @default(autoincrement())
   content     String
   question    Question  @relation(fields: [question_id], references: [id])
-  question_id  Int
+  question_id Int
   createdAt   DateTime  @default(now())
   author      User?     @relation(fields: [author_id], references: [id], onDelete: Cascade)
   author_id   Int?
@@ -253,8 +256,8 @@ model ProductOrder {
   variant_options     String[]
   quantity            Int
   image               String
-  cart_id              Int?
-  order_id             Int?
+  cart_id             Int?
+  order_id            Int?
   cart                Cart?    @relation(fields: [cart_id], references: [id], onDelete: Cascade)
   Order               Order?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
@@ -270,7 +273,7 @@ model User {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   role       Role      @relation(fields: [role_id], references: [id])
-  role_id     Int
+  role_id    Int
   meta_data  Json?
 }
 
@@ -281,21 +284,23 @@ model Role {
 }
 
 model Customer {
-  id         Int        @id @default(autoincrement())
-  email      String?    @unique
-  password   String
-  name       String
-  phone      String     @unique
-  orders     Order[]
-  carts      Cart[]
-  gender     Gender?
-  address    Address[]
-  ratings    Rating[]
-  questions  Question[]
-  answer     Answer[]
-  birthday   DateTime?
-  created_at DateTime   @default(now())
-  updated_at DateTime?  @updatedAt
+  id          Int        @id @default(autoincrement())
+  email       String?    @unique
+  password    String
+  name        String
+  phone       String     @unique
+  orders      Order[]
+  carts       Cart[]
+  gender      Gender?
+  address     Address[]
+  ratings     Rating[]
+  questions   Question[]
+  answer      Answer[]
+  birthday    DateTime?
+  provider    String
+  provider_id String?
+  created_at  DateTime   @default(now())
+  updated_at  DateTime?  @updatedAt
 }
 
 enum Gender {
@@ -311,20 +316,20 @@ enum LocationType {
 }
 
 model Address {
-  id      Int    @id @default(autoincrement())
-  name    String
-  phone   String @unique
+  id             Int       @id @default(autoincrement())
+  name           String
+  phone          String    @unique
   detail_address String
-  created_at  DateTime  @default(now())
-  province    Location  @relation("Province", fields: [province_id], references: [id])
-  district    Location  @relation("District", fields: [district_id], references: [id])
-  ward        Location  @relation("Ward", fields: [ward_id], references: [id])
-  ward_id     Int
-  district_id Int
-  province_id Int
-  updated_at  DateTime? @updatedAt
-  customer_id Int
-  customer    Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  created_at     DateTime  @default(now())
+  province       Location  @relation("Province", fields: [province_id], references: [id])
+  district       Location  @relation("District", fields: [district_id], references: [id])
+  ward           Location  @relation("Ward", fields: [ward_id], references: [id])
+  ward_id        Int
+  district_id    Int
+  province_id    Int
+  updated_at     DateTime? @updatedAt
+  customer_id    Int
+  customer       Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
 }
 
 model CategoryArticle {
@@ -344,7 +349,7 @@ model Article {
   slug        String           @unique
   status      Int
   content     String?
-  author_id    Int?
+  author_id   Int?
   category_id Int?
   thumnal_url String?
   description String?
@@ -356,29 +361,28 @@ model Article {
 }
 
 model Store {
-  id          Int      @id @default(autoincrement())
-  name        String
-  phone       String?
-  address     String?
-  url_map     String?
-  province    Location @relation("ProvinceStore", fields: [province_id], references: [id])
-  district    Location @relation("DistrictStore", fields: [district_id], references: [id])
-  ward        Location @relation("WardStore", fields: [ward_id], references: [id])
-  ward_id     Int
-  district_id Int
-  province_id Int
+  id             Int      @id @default(autoincrement())
+  name           String
+  phone          String?
+  detail_address String?
+  url_map        String?
+  province       Location @relation("ProvinceStore", fields: [province_id], references: [id])
+  district       Location @relation("DistrictStore", fields: [district_id], references: [id])
+  ward           Location @relation("WardStore", fields: [ward_id], references: [id])
+  ward_id        Int
+  district_id    Int
+  province_id    Int
 }
 
 model Page {
-  id                Int       @id @default(autoincrement())
-  title             String    @unique
-  slug              String    @unique
-  content_html      String
-  short_description String?
-  meta_data         Json?
-  created_at        DateTime  @default(now())
-  updated_at        DateTime? @updatedAt
-  status            Int       @default(0) // 0: Draft, 1: Published, etc.
+  id           Int       @id @default(autoincrement())
+  title        String    @unique
+  slug         String    @unique
+  content_html String
+  meta_data    Json?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime? @updatedAt
+  status       Int       @default(0) // 0: Draft, 1: Published, etc.
 }
 
 model Setting {
@@ -425,8 +429,18 @@ model Location {
 model Brand {
   id        Int       @id @default(autoincrement())
   name      String    @unique
+  logo      String?
   slug      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   products  Product[]
+}
+
+model File {
+  id         Int      @id @default(autoincrement())
+  id_root    String
+  url        String
+  format     String
+  created_at DateTime @default(now())
+  name       String
 }
