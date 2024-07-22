@@ -155,8 +155,8 @@ model SpecificationsType {
 
 model ProductSpecifications {
   id       Int                 @id @default(autoincrement())
-  name     String
   value    String
+  link     String?
   product  Product[]           @relation("ProductToProductSpecifications")
   group    SpecificationsGroup @relation(fields: [group_id], references: [id])
   group_id Int
