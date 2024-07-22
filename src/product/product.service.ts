@@ -20,7 +20,11 @@ export class ProductService {
           options: { orderBy: { position: "asc" } },
           specifications: true,
           variants: { orderBy: { position: "asc" } },
-          category: { select: { id: true, slug: true, title: true } }
+          category: { select: { id: true, slug: true, title: true } },
+          images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" } },
+          brand: { select: { id: true, name: true, slug: true } },
+          ratings: true,
+          questions:true
         },
       });
       if (!product) {
