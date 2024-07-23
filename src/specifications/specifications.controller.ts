@@ -6,12 +6,12 @@ import { Prisma } from '@prisma/client';
 export class SpecificationsController {
   constructor(private readonly specificationsService: SpecificationsService) { }
 
-  @Post('type')
+  @Post('types')
   createType(@Body() data: Prisma.SpecificationsTypeCreateInput) {
     return this.specificationsService.createType(data);
   }
 
-  @Post('group')
+  @Post('groups')
   createGroup(@Body() data: Prisma.SpecificationsGroupCreateInput) {
     return this.specificationsService.createGroup(data);
   }
@@ -68,5 +68,13 @@ export class SpecificationsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.specificationsService.remove(+id);
+  }
+  @Delete('types/:id')
+  removeType(@Param('id') id: string) {
+    return this.specificationsService.removeType(+id);
+  }
+  @Delete('groups/:id')
+  removeGroup(@Param('id') id: string) {
+    return this.specificationsService.removeGroup(+id);
   }
 }

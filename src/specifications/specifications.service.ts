@@ -70,4 +70,16 @@ export class SpecificationsService {
       where: { id },
     });
   }
+
+  async removeType(id: number) {
+    return this.prisma.specificationsType.delete({
+      where: { id },
+    });
+  }
+
+  async removeGroup(id: number) {
+    return this.prisma.specificationsGroup.delete({
+      where: { id },
+    });
+  }
 }

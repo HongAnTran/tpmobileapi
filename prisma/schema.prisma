@@ -22,6 +22,7 @@ model Product {
   barcode           String?                 @unique
   short_description String?
   meta_data         Json?
+  meta_tags         Json?
   price             Float                   @default(0)
   compare_at_price  Float                   @default(0)
   price_max         Float                   @default(0)
