@@ -24,7 +24,8 @@ export class ProductService {
           images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" } },
           brand: { select: { id: true, name: true, slug: true } },
           ratings: true,
-          questions:true
+         
+
         },
       });
       if (!product) {

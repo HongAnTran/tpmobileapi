@@ -173,6 +173,7 @@ export class ProductController {
         brand: { select: { id: true, slug: true, name: true } },
         updated_at: true,
         ratings: { select: { rate: true } },
+        meta_tags : true
 
       },
       orderBy

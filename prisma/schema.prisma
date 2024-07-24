@@ -159,7 +159,7 @@ model ProductSpecifications {
   value    String
   link     String?
   product  Product[]           @relation("ProductToProductSpecifications")
-  group    SpecificationsGroup @relation(fields: [group_id], references: [id])
+  group    SpecificationsGroup @relation(fields: [group_id], references: [id] ,onDelete: Cascade)
   group_id Int
 }
 
