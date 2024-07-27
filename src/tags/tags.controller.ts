@@ -19,8 +19,8 @@ export class TagsController {
     };
 
     return this.tagsService.findAll({
-      skip: Number(skip) ?? undefined,
-      take: Number(take) ?? undefined,
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
       where,
     });
   }

@@ -17,15 +17,16 @@ export class OptionsValueController {
     @Query('skip') skip?: string,
     @Query('take') take?: string,
     @Query('option_id') optionId?: string,
-    @Query('variant_id') variantId?: string) {
+    @Query('variant_id') variantId?: string) 
+    {
     const where: Prisma.OptionValueWhereInput = {
       option_id: optionId ? +optionId : undefined,
       variants: variantId ? { some: { id: +variantId } } : undefined
     };
 
     return this.optionsValueService.findAll({
-      skip: Number(skip) ?? undefined,
-      take: Number(take) ?? undefined,
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
       where,
     });
   }

@@ -23,8 +23,8 @@ export class ProductImageController {
     }
 
     return this.productImageService.findAll({
-      skip: Number(skip) ?? undefined,
-      take: Number(take) ?? undefined,
+      skip: Number(skip) ? Number(skip) : undefined,
+      take: Number(take) ? Number(take) : undefined,
       where,
     });
   }
