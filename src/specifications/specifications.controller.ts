@@ -39,12 +39,14 @@ export class SpecificationsController {
     skip?: string;
     take?: string;
     group_id?: string
+    product_id?: string
     keyword?: string
   }) {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
     const where: Prisma.ProductSpecificationsWhereInput = query.group_id ? {
       group_id: query.group_id ? parseInt(query.group_id, 10) : undefined,
+      product: query.product_id ? { some: { id: parseInt(query.group_id, 10) } } : undefined,
       value: query.keyword ? { contains: query.keyword, mode: "insensitive" } : undefined
     } : {}
 
