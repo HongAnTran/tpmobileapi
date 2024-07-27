@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { Prisma } from '@prisma/client';
 
@@ -12,15 +12,15 @@ export class TagsController {
   }
 
   @Get()
-  findAll(@Query('skip', ParseIntPipe) skip?: number, @Query('take', ParseIntPipe) take?: number,
-    @Query('product_id', ParseIntPipe) productId?: number) {
+  findAll(@Query('skip') skip?: string, @Query('take') take?: string,
+    @Query('product_id') productId?: string) {
     const where: Prisma.TagsWhereInput = {
-      products : productId ? {some : {id : productId}} : undefined
+      products : productId ? {some : {id : +productId}} : undefined
     };
 
     return this.tagsService.findAll({
-      skip: skip ?? undefined,
-      take: take ?? undefined,
+      skip: Number(skip) ?? undefined,
+      take: Number(take) ?? undefined,
       where,
     });
   }

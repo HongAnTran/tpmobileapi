@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { OptionsValueService } from './options-value.service';
 import { Prisma } from '@prisma/client';
 
@@ -13,17 +13,19 @@ export class OptionsValueController {
   }
 
   @Get()
-  findAll(@Query('skip', ParseIntPipe) skip?: number, @Query('take', ParseIntPipe) take?: number,
-    @Query('option_id', ParseIntPipe) optionId?: number,
-    @Query('variant_id', ParseIntPipe) variantId?: number) {
+  findAll(
+    @Query('skip') skip?: string,
+    @Query('take') take?: string,
+    @Query('option_id') optionId?: string,
+    @Query('variant_id') variantId?: string) {
     const where: Prisma.OptionValueWhereInput = {
-      option_id: optionId ? optionId : undefined,
-      variants: variantId ? { some: { id: variantId } } : undefined
+      option_id: optionId ? +optionId : undefined,
+      variants: variantId ? { some: { id: +variantId } } : undefined
     };
 
     return this.optionsValueService.findAll({
-      skip: skip ?? undefined,
-      take: take ?? undefined,
+      skip: Number(skip) ?? undefined,
+      take: Number(take) ?? undefined,
       where,
     });
   }
@@ -31,17 +33,17 @@ export class OptionsValueController {
 
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.optionsValueService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.optionsValueService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateOptionsValueDto: Prisma.OptionValueUpdateInput) {
-    return this.optionsValueService.update(id, updateOptionsValueDto);
+  update(@Param('id') id: string, @Body() updateOptionsValueDto: Prisma.OptionValueUpdateInput) {
+    return this.optionsValueService.update(+id, updateOptionsValueDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.optionsValueService.remove(id);
+  remove(@Param('id') id: string) {
+    return this.optionsValueService.remove(+id);
   }
 }

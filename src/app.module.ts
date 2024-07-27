@@ -27,6 +27,7 @@ import { BrandModule } from './brand/brand.module';
 import { FilesModule } from './files/files.module';
 import { OptionsValueModule } from './options-value/options-value.module';
 import { TagsModule } from './tags/tags.module';
+import { ProductImageModule } from './product-image/product-image.module';
 
 
 
@@ -80,7 +81,8 @@ import { TagsModule } from './tags/tags.module';
     BrandModule,
     FilesModule,
     OptionsValueModule,
-    TagsModule
+    TagsModule,
+    ProductImageModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
