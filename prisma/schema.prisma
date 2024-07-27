@@ -27,6 +27,7 @@ model Product {
   compare_at_price  Float                   @default(0)
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
+  related           Int[]                   @default([])
   options           Option[]
   sub_categories    ProductCategories[]
   category_id       Int
@@ -36,6 +37,17 @@ model Product {
   images            ProductImage[]
   ratings           Rating[]
   questions         Question[]
+  tags              Tags[]
+
+}
+
+model Tags{
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  published   Boolean  @default(false)
+  products   Product[]
 }
 
 model ProductCategories {
@@ -67,12 +79,14 @@ model Question {
   product     Product   @relation(fields: [product_id], references: [id])
   product_id  Int
   answers     Answer[]
-  createdAt   DateTime  @default(now())
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
   customer    Customer? @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   customer_id Int?
   email       String?
   phone       String?
   full_name   String?
+  
 }
 
 model Answer {
@@ -85,6 +99,8 @@ model Answer {
   author_id   Int?
   customer    Customer? @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   customer_id Int?
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 }
 
 model Rating {
@@ -97,6 +113,8 @@ model Rating {
   customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   customer_id Int
   like_count  Int      @default(0)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 }
 
 model ProductVariant {
@@ -108,6 +126,7 @@ model ProductVariant {
   position           Int
   compare_at_price   Float
   price              Float
+  price_origin       Float         @default(0)
   sku                String        @unique
   title              String
   updated_at         DateTime?     @updatedAt
@@ -118,6 +137,7 @@ model ProductVariant {
   product            Product       @relation(fields: [product_id], references: [id], onDelete: Cascade)
   image              ProductImage? @relation(fields: [image_id], references: [id])
   image_id           Int?
+  optionValues       OptionValue[]  
 }
 
 model ProductImage {
@@ -131,15 +151,34 @@ model ProductImage {
   product_id     Int
 }
 
+
 model Option {
   id         Int      @id @default(autoincrement())
   name       String
   position   Int
   product_id Int
   values     String[]
+  attributes OptionValue[]
+  style      OptionStyle @default(RECTANGLE)
   product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
+model OptionValue {
+  id         Int      @id @default(autoincrement())
+  value      String
+  slug       String  
+  hex_color  String?
+  option_id  Int
+  option     Option  @relation(fields: [option_id], references: [id], onDelete: Cascade)
+  variants   ProductVariant[]
 
+}
+enum OptionStyle {
+  IMAGE
+  COLOR
+  CIRCLE
+  RECTANGLE
+  RADIO
+}
 model SpecificationsGroup {
   id             Int                     @id @default(autoincrement())
   name           String
@@ -172,6 +211,8 @@ model Cart {
   items       ProductOrder[]
   customer_id Int?
   customer    Customer?      @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 }
 
 model Order {
@@ -190,6 +231,8 @@ model Order {
   items       ProductOrder[]
   customer_id Int?
   customer    Customer?      @relation(fields: [customer_id], references: [id])
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 }
 
 model Shipping {
@@ -212,6 +255,8 @@ model Shipping {
   estimated_delivery_date DateTime? // Ngày dự kiến giao hàng
   shipping_method         String? // Phương thức vận chuyển
   delivery_status         String? // Trạng thái giao hàng
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 }
 
 enum ShippingStatus {

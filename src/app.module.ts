@@ -25,6 +25,8 @@ import { RatingModule } from './rating/rating.module';
 import { QuestionModule } from './question/question.module';
 import { BrandModule } from './brand/brand.module';
 import { FilesModule } from './files/files.module';
+import { OptionsValueModule } from './options-value/options-value.module';
+import { TagsModule } from './tags/tags.module';
 
 
 
@@ -76,7 +78,9 @@ import { FilesModule } from './files/files.module';
     RatingModule,
     QuestionModule,
     BrandModule,
-    FilesModule
+    FilesModule,
+    OptionsValueModule,
+    TagsModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
