@@ -25,9 +25,10 @@ import { RatingModule } from './rating/rating.module';
 import { QuestionModule } from './question/question.module';
 import { BrandModule } from './brand/brand.module';
 import { FilesModule } from './files/files.module';
-import { OptionsValueModule } from './options-value/options-value.module';
 import { TagsModule } from './tags/tags.module';
 import { ProductImageModule } from './product-image/product-image.module';
+import { AttributesModule } from './attributes/attributes.module';
+import { AttributesValueModule } from './attributes-value/attributes-value.module';
 
 
 
@@ -80,9 +81,10 @@ import { ProductImageModule } from './product-image/product-image.module';
     QuestionModule,
     BrandModule,
     FilesModule,
-    OptionsValueModule,
     TagsModule,
-    ProductImageModule
+    ProductImageModule,
+    AttributesModule,
+    AttributesValueModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

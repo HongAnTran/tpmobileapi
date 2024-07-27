@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from './../prisma.service';
 import { Prisma } from '@prisma/client';
 
-
 @Injectable()
-export class OptionsValueService {
+export class AttributeValuesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.OptionValueCreateInput) {
-    return this.prisma.optionValue.create({
+  async create(data: Prisma.AttributeValuesCreateInput) {
+    return this.prisma.attributeValues.create({
       data,
     });
   }
@@ -20,9 +19,9 @@ export class OptionsValueService {
   }: {
     skip?: number;
     take?: number;
-    where?: Prisma.OptionValueWhereInput;
+    where?: Prisma.AttributeValuesWhereInput;
   }) {
-    return this.prisma.optionValue.findMany({
+    return this.prisma.attributeValues.findMany({
       where,
       skip,
       take,
@@ -30,20 +29,20 @@ export class OptionsValueService {
   }
 
   async findOne(id: number) {
-    return this.prisma.optionValue.findUnique({
+    return this.prisma.attributeValues.findUnique({
       where: { id },
     });
   }
 
-  async update(id: number, data: Prisma.OptionValueUpdateInput) {
-    return this.prisma.optionValue.update({
+  async update(id: number, data: Prisma.AttributeValuesUpdateInput) {
+    return this.prisma.attributeValues.update({
       where: { id },
       data,
     });
   }
 
   async remove(id: number) {
-    return this.prisma.optionValue.delete({
+    return this.prisma.attributeValues.delete({
       where: { id },
     });
   }

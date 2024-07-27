@@ -38,27 +38,38 @@ model Product {
   ratings           Rating[]
   questions         Question[]
   tags              Tags[]
-
+  attributes        ProductAttributes[]
 }
 
-model Tags{
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  slug        String   @unique
+model Tags {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  slug        String    @unique
   description String?
-  published   Boolean  @default(false)
-  products   Product[]
+  published   Boolean   @default(false)
+  products    Product[]
 }
 
 model ProductCategories {
   id          Int      @id @default(autoincrement())
-  product     Product  @relation(fields: [product_id], references: [id] , onDelete: Cascade)
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id  Int
   category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
   category_id Int
-  priority    Int?      
+  priority    Int?
 
   @@unique([product_id, category_id])
+}
+
+model ProductAttributes {
+  id           Int     @id @default(autoincrement())
+  product      Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id   Int
+  attribute    Attributes   @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
+  attribute_id Int
+  position     Int
+  @@unique([product_id, attribute_id])
+  values       AttributeValues[]
 }
 
 model Category {
@@ -79,14 +90,13 @@ model Question {
   product     Product   @relation(fields: [product_id], references: [id])
   product_id  Int
   answers     Answer[]
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
   customer    Customer? @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   customer_id Int?
   email       String?
   phone       String?
   full_name   String?
-  
 }
 
 model Answer {
@@ -99,45 +109,65 @@ model Answer {
   author_id   Int?
   customer    Customer? @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   customer_id Int?
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
 }
 
 model Rating {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   rate        Int
   content     String?
   images      String[]
   product_id  Int
-  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  customer    Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   customer_id Int
-  like_count  Int      @default(0)
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  like_count  Int       @default(0)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
 }
 
 model ProductVariant {
-  id                 Int           @id @default(autoincrement())
-  barcode            String?       @unique
+  id                 Int               @id @default(autoincrement())
+  barcode            String?           @unique
   option1            String
   option2            String
   option3            String
   position           Int
   compare_at_price   Float
   price              Float
-  price_origin       Float         @default(0)
-  sku                String        @unique
+  price_origin       Float             @default(0)
+  sku                String            @unique
   title              String
-  updated_at         DateTime?     @updatedAt
-  created_at         DateTime      @default(now())
+  updated_at         DateTime?         @updatedAt
+  created_at         DateTime          @default(now())
   inventory_quantity Int
   available          Boolean
   product_id         Int
-  product            Product       @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  image              ProductImage? @relation(fields: [image_id], references: [id])
+  product            Product           @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  image              ProductImage?     @relation(fields: [image_id], references: [id])
   image_id           Int?
-  optionValues       OptionValue[]  
+  attribute_values   AttributeValues[]
+}
+
+model Attributes {
+  id               Int                 @id @default(autoincrement())
+  name             String
+  values           String[]
+  attribute_values AttributeValues[]
+  style            OptionStyle         @default(RECTANGLE)
+  products         ProductAttributes[]
+}
+
+model AttributeValues {
+  id           Int              @id @default(autoincrement())
+  value        String
+  slug         String
+  hex_color    String?
+  attribute_id Int
+  attribute    Attributes       @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
+  variants     ProductVariant[]
+  productAttributes ProductAttributes[]
 }
 
 model ProductImage {
@@ -147,31 +177,20 @@ model ProductImage {
   position       Int
   productVariant ProductVariant[]
   is_featured    Boolean          @default(false)
-  product        Product          @relation(fields: [product_id], references: [id] ,onDelete: Cascade)
+  product        Product          @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id     Int
 }
 
-
 model Option {
-  id         Int      @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   name       String
   position   Int
   product_id Int
   values     String[]
-  attributes OptionValue[]
   style      OptionStyle @default(RECTANGLE)
-  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product    Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
-model OptionValue {
-  id         Int      @id @default(autoincrement())
-  value      String
-  slug       String  
-  hex_color  String?
-  option_id  Int
-  option     Option  @relation(fields: [option_id], references: [id], onDelete: Cascade)
-  variants   ProductVariant[]
 
-}
 enum OptionStyle {
   IMAGE
   COLOR
@@ -179,6 +198,7 @@ enum OptionStyle {
   RECTANGLE
   RADIO
 }
+
 model SpecificationsGroup {
   id             Int                     @id @default(autoincrement())
   name           String
@@ -198,7 +218,7 @@ model ProductSpecifications {
   value    String
   link     String?
   product  Product[]           @relation("ProductToProductSpecifications")
-  group    SpecificationsGroup @relation(fields: [group_id], references: [id] ,onDelete: Cascade)
+  group    SpecificationsGroup @relation(fields: [group_id], references: [id], onDelete: Cascade)
   group_id Int
 }
 
@@ -211,8 +231,8 @@ model Cart {
   items       ProductOrder[]
   customer_id Int?
   customer    Customer?      @relation(fields: [customer_id], references: [id], onDelete: Cascade)
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at  DateTime       @default(now())
+  updated_at  DateTime?      @updatedAt
 }
 
 model Order {
@@ -231,8 +251,8 @@ model Order {
   items       ProductOrder[]
   customer_id Int?
   customer    Customer?      @relation(fields: [customer_id], references: [id])
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at  DateTime       @default(now())
+  updated_at  DateTime?      @updatedAt
 }
 
 model Shipping {
@@ -255,8 +275,8 @@ model Shipping {
   estimated_delivery_date DateTime? // Ngày dự kiến giao hàng
   shipping_method         String? // Phương thức vận chuyển
   delivery_status         String? // Trạng thái giao hàng
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at              DateTime       @default(now())
+  updated_at              DateTime?      @updatedAt
 }
 
 enum ShippingStatus {
