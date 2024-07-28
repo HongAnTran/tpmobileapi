@@ -157,7 +157,8 @@ export class ProductController {
         updated_at: true,
         meta_tags : true,
         tags : true,
-        variants : {select : {id:true,option1 : true,option2 :true}}
+        variants : {select : {id:true,option1 : true,option2 :true}},
+        options : true
       },
       orderBy
     });

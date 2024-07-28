@@ -68,8 +68,8 @@ model ProductAttributes {
   attribute    Attributes   @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
   attribute_id Int
   position     Int
-  @@unique([product_id, attribute_id])
   values       AttributeValues[]
+  @@unique([product_id, attribute_id])
 }
 
 model Category {
