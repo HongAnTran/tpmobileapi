@@ -33,6 +33,10 @@ export class ProductVariantService {
   async findOne(id: number) {
     return this.prisma.productVariant.findUnique({
       where: { id },
+      include  :{
+        attribute_values : true,
+        image : true
+      }
     });
   }
 

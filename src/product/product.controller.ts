@@ -135,21 +135,6 @@ export class ProductController {
       select: {
         ...includeQuery,
         available: true,
-        // barcode: true,
-        // sub_categories: {
-        //   select: {
-        //     priority: true,
-        //     category: {
-        //       select: {
-        //         id: true,
-        //         title: true,
-        //         slug: true,
-        //         published: true
-        //       }
-        //     }
-        //   },
-        //   where: { category: { published: true }, priority: 0 }
-        // },
         category: {
           select: {
             id: true,
@@ -162,21 +147,17 @@ export class ProductController {
         compare_at_price: true,
         images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" }, take: 2 },
         id: true,
-        // created_at: true,
         price: true,
         price_max: true,
         price_min: true,
         slug: true,
-        // published_at: true,
         title: true,
         status: true,
         brand: { select: { id: true, slug: true, name: true } },
         updated_at: true,
-        // ratings: { select: { rate: true } },
         meta_tags : true,
         tags : true,
-        
-
+        variants : {select : {id:true,option1 : true,option2 :true}}
       },
       orderBy
     });
