@@ -58,19 +58,19 @@ export class ProductController {
       queryOptions = {
         AND: [
           {
-            options: {
+            attributes: {
               some: {
                 values: {
-                  has: color
+                  some: { value: {in : colorValues} }
                 }
               }
             }
           },
           {
-            options: {
+            attributes: {
               some: {
                 values: {
-                  hasSome: capacityValues
+                  some: { value: { in: capacityValues } }
                 }
               }
             }
@@ -79,12 +79,24 @@ export class ProductController {
       }
     } else if (colorValues.length) {
       queryOptions = {
-        options: { some: { values: { hasSome: colorValues } } }
+        attributes: {
+          some: {
+            values: {
+              some: { value: {in : colorValues} }
+            }
+          }
+        }
       }
     }
     else if (capacityValues.length) {
       queryOptions = {
-        options: { some: { values: { hasSome: capacityValues } } }
+        attributes: {
+          some: {
+            values: {
+              some: { value: { in: capacityValues } }
+            }
+          }
+        }
       }
     }
 
@@ -155,9 +167,9 @@ export class ProductController {
         status: true,
         brand: { select: { id: true, slug: true, name: true } },
         updated_at: true,
-        meta_tags : true,
-        tags : true,
- 
+        meta_tags: true,
+        tags: true,
+
       },
       orderBy
     });

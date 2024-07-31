@@ -10,7 +10,6 @@ import { SpecificationsModule } from './specifications/specifications.module';
 import { ArticleModule } from './article/article.module';
 import { CategoryArticleModule } from "./category-article/category-article.module"
 import { ProductVariantModule } from './product-variant/product-variant.module';
-import { OptionsModule } from './options/options.module';
 import { OrdersModule } from './orders/orders.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
@@ -70,7 +69,6 @@ import { ProductAttributesModule } from './product-attributes/product-attributes
     ArticleModule,
     CategoryArticleModule,
     ProductVariantModule,
-    OptionsModule,
     OrdersModule,
     PagesModule,
     SettingsModule,

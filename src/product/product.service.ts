@@ -87,7 +87,6 @@ export class ProductService {
     return this.prisma.product.delete({
       where,
       include: {
-        options: true,
         variants: true,
       }
     });
