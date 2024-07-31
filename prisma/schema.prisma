@@ -28,7 +28,7 @@ model Product {
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
   related           Int[]                   @default([])
-  options           Option[]
+  // options           Option[]
   sub_categories    ProductCategories[]
   category_id       Int
   category          Category                @relation(fields: [category_id], references: [id])
@@ -62,13 +62,14 @@ model ProductCategories {
 }
 
 model ProductAttributes {
-  id           Int     @id @default(autoincrement())
-  product      Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  id           Int               @id @default(autoincrement())
+  product      Product           @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id   Int
-  attribute    Attributes   @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
+  attribute    Attributes        @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
   attribute_id Int
   position     Int
   values       AttributeValues[]
+
   @@unique([product_id, attribute_id])
 }
 
@@ -130,9 +131,6 @@ model Rating {
 model ProductVariant {
   id                 Int               @id @default(autoincrement())
   barcode            String?           @unique
-  option1            String
-  option2            String
-  option3            String
   position           Int
   compare_at_price   Float
   price              Float
@@ -142,6 +140,7 @@ model ProductVariant {
   updated_at         DateTime?         @updatedAt
   created_at         DateTime          @default(now())
   inventory_quantity Int
+  sold_quantity      Int               @default(0)
   available          Boolean
   product_id         Int
   product            Product           @relation(fields: [product_id], references: [id], onDelete: Cascade)
@@ -152,20 +151,20 @@ model ProductVariant {
 
 model Attributes {
   id               Int                 @id @default(autoincrement())
-  name             String
+  name             String              @unique
   attribute_values AttributeValues[]
   style            OptionStyle         @default(RECTANGLE)
   products         ProductAttributes[]
 }
 
 model AttributeValues {
-  id           Int              @id @default(autoincrement())
-  value        String
-  slug         String
-  hex_color    String?
-  attribute_id Int
-  attribute    Attributes       @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
-  variants     ProductVariant[]
+  id                Int                 @id @default(autoincrement())
+  value             String              @unique
+  slug              String              @unique
+  hex_color         String?
+  attribute_id      Int
+  attribute         Attributes          @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
+  variants          ProductVariant[]
   productAttributes ProductAttributes[]
 }
 
@@ -180,15 +179,15 @@ model ProductImage {
   product_id     Int
 }
 
-model Option {
-  id         Int         @id @default(autoincrement())
-  name       String
-  position   Int
-  product_id Int
-  values     String[]
-  style      OptionStyle @default(RECTANGLE)
-  product    Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
-}
+// model Option {
+//   id         Int         @id @default(autoincrement())
+//   name       String
+//   position   Int
+//   product_id Int
+//   values     String[]
+//   style      OptionStyle @default(RECTANGLE)
+//   product    Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
+// }
 
 enum OptionStyle {
   IMAGE
@@ -200,7 +199,7 @@ enum OptionStyle {
 
 model SpecificationsGroup {
   id             Int                     @id @default(autoincrement())
-  name           String
+  name           String                   @unique
   specifications ProductSpecifications[]
   type_id        Int
   type           SpecificationsType      @relation(fields: [type_id], references: [id], onDelete: Cascade)
@@ -208,7 +207,7 @@ model SpecificationsGroup {
 
 model SpecificationsType {
   id     Int                   @id @default(autoincrement())
-  name   String
+  name   String                
   groups SpecificationsGroup[]
 }
 

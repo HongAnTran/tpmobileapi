@@ -37,7 +37,9 @@ export class ProductAttributesService {
   async update(id: number, data: Prisma.ProductAttributesUpdateInput) {
     return this.prisma.productAttributes.update({
       where: { id },
-      data,
+      data: {
+        values : {set : {value : "123" ,id : 1}}
+      }
     });
   }
 
