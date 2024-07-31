@@ -29,7 +29,6 @@ import { TagsModule } from './tags/tags.module';
 import { ProductImageModule } from './product-image/product-image.module';
 import { AttributesModule } from './attributes/attributes.module';
 import { AttributesValueModule } from './attributes-value/attributes-value.module';
-import { ProductAtrributeModule } from './product-atrribute/product-atrribute.module';
 import { ProductAttributesModule } from './product-attributes/product-attributes.module';
 
 
@@ -87,7 +86,6 @@ import { ProductAttributesModule } from './product-attributes/product-attributes
     ProductImageModule,
     AttributesModule,
     AttributesValueModule,
-    ProductAtrributeModule,
     ProductAttributesModule
   ],
   controllers: [AppController],
