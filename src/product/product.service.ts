@@ -76,6 +76,7 @@ export class ProductService {
     where: Prisma.ProductWhereUniqueInput;
     data: Prisma.ProductUpdateInput;
   }): Promise<Product> {
+
     const { where, data } = params;
     return this.prisma.product.update({
       data,
