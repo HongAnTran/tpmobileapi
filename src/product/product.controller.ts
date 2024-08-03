@@ -124,10 +124,6 @@ export class ProductController {
         gte: priceRange[0],
         lte: priceRange[1]
       } : undefined,
-
-      // sub_categories: category_id ? { some: { id: +category_id } } : categoriesSlugArr.length ? {
-      //   some: { category: { slug: { in: categoriesSlugArr } } }
-      // } : undefined,
       ...queryOptionsCategory,
       ...queryOptions,
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),

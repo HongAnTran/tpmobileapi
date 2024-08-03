@@ -68,7 +68,7 @@ model ProductAttributes {
   attribute    Attributes        @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
   attribute_id Int
   position     Int
-  values       AttributeValues[]
+  values       AttributeValues[] 
 
   @@unique([product_id, attribute_id])
 }
@@ -152,6 +152,7 @@ model ProductVariant {
 model Attributes {
   id               Int                 @id @default(autoincrement())
   name             String              @unique
+  key              String              @default("")
   attribute_values AttributeValues[]
   style            OptionStyle         @default(RECTANGLE)
   products         ProductAttributes[]

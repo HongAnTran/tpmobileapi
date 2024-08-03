@@ -22,7 +22,7 @@ export class ProductService {
           images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" } },
           brand: { select: { id: true, name: true, slug: true } },
           tags: true,
-          attributes: { select: { position: true, id: true, attribute: true, values: true } }
+          attributes: { select: { position: true, id: true, attribute: true, values: true } , orderBy : {position : "asc"} }
         },
       });
       if (!product) {
