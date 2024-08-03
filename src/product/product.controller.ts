@@ -81,8 +81,9 @@ export class ProductController {
       queryOptions = {
         attributes: {
           some: {
+
             values: {
-              some: { value: {in : colorValues} }
+              some: { value: {in : colorValues} ,  }
             }
           }
         }
