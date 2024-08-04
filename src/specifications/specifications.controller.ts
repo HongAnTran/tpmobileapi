@@ -44,11 +44,11 @@ export class SpecificationsController {
   }) {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
-    const where: Prisma.ProductSpecificationsWhereInput = query.group_id ? {
+    const where: Prisma.ProductSpecificationsWhereInput =  {
       group_id: query.group_id ? parseInt(query.group_id, 10) : undefined,
-      product: query.product_id ? { some: { id: parseInt(query.product_id, 10) } } : undefined,
+      product: query.product_id ? { some: {id : parseInt(query.product_id, 10) } } : undefined,
       value: query.keyword ? { contains: query.keyword, mode: "insensitive" } : undefined
-    } : {}
+    } 
 
     return this.specificationsService.findAll({
       where,
