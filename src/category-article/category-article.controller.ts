@@ -35,14 +35,16 @@ export class CategoryArticleController {
     take?: string;
     orderBy?: string
     orderType?: string
+    published?:number
   }): Promise<CategoryArticle[]> {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
+    const published = typeof query.published === "undefined" ? true :  Boolean(+query.published)
     return this.categoryArticleService.categories({
       skip: skip,
       take: take,
       where: {
-        published: true
+        published: published
       },
       orderBy: {
         [query.orderBy]: query.orderType
