@@ -22,15 +22,13 @@ export class ProductController {
     ids?: string
     include?: string,
     keyword?: string,
-    color?: string
-    capacity?: string
     price?: string
-    ram?: string
     sortBy?: string
     sortType?: Prisma.SortOrder
+    attributes?:string
   }) {
     const HUN = 1000000
-    const { ids, include, keyword, status, color, capacity, price, ram, sortBy, sortType, page, limit, categories, category_id } = query
+    const { ids, include, keyword, status, price, sortBy, sortType, page, limit, categories, category_id , attributes } = query
     const take = limit ? Number(limit) : 50;
     const skip = page ? (Number(page) - 1) * take : undefined;
 
@@ -48,72 +46,35 @@ export class ProductController {
     let queryOptions: Prisma.ProductWhereInput | Prisma.ProductWhereInput[] = undefined
     let queryOptionsCategory: Prisma.ProductWhereInput | Prisma.ProductWhereInput[] = undefined
 
-
-    const capacityValues = capacity?.split(",") || []
-    const colorValues = color?.split(",") || []
-
-
-
-    if (colorValues.length && capacityValues.length) {
-      queryOptions = {
-        AND: [
-          {
-            attributes: {
-              some: {
-                values: {
-                  some: { value: {in : colorValues} }
-                }
-              }
-            }
-          },
-          {
-            attributes: {
-              some: {
-                values: {
-                  some: { value: { in: capacityValues } }
-                }
-              }
-            }
-          }
-        ]
-      }
-    } else if (colorValues.length) {
+    const attributesValues = attributes?.split(",") || []
+    if (attributesValues.length) {
       queryOptions = {
         attributes: {
           some: {
-
             values: {
-              some: { value: {in : colorValues} ,  }
+              some: { value: { in: attributesValues } }
             }
           }
         }
       }
     }
-    else if (capacityValues.length) {
-      queryOptions = {
-        attributes: {
-          some: {
-            values: {
-              some: { value: { in: capacityValues } }
-            }
-          }
-        }
-      }
-    }
-
     if (categoryId) {
       queryOptionsCategory = {
         OR: [
           { category_id: categoryId },
           { sub_categories: { some: { category_id: categoryId } } }
         ]
-
       }
     }
-
     if (categoriesSlugArr.length) {
       queryOptionsCategory = {
-        OR: [{ sub_categories: { some: { category: { slug: { in: categoriesSlugArr } } } }, category: { slug: { in: categoriesSlugArr } } }]
+        OR: [
+          {
+            
+            sub_categories: { some: { category: { slug: { in: categoriesSlugArr } } } },
+            category: { slug: { in: categoriesSlugArr } }
+          }
+        ]
       }
     }
 
