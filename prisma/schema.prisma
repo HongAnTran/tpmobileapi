@@ -152,7 +152,7 @@ model ProductVariant {
 model Attributes {
   id               Int                 @id @default(autoincrement())
   name             String              @unique
-  key              String              @default("")
+  key              String?             @unique
   attribute_values AttributeValues[]
   style            OptionStyle         @default(RECTANGLE)
   products         ProductAttributes[]
