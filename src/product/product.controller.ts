@@ -33,7 +33,7 @@ export class ProductController {
 
     const productIds = ids ? ids.split(",").map(id => Number(id)) : []
     const categoriesSlugArr = categories ? categories.split(",") : []
-    
+
     const categoryId = Number(category_id)
 
     const includeParams = include ? include.split(",") : []
@@ -81,7 +81,10 @@ export class ProductController {
       queryOptionsCategory = {
         OR: [
           {
-            sub_categories: { some: { category: { slug: { in: categoriesSlugArr } } } },
+            sub_categories: { some: { category: { slug: { in: categoriesSlugArr } } } }
+
+          },
+          {
             category: { slug: { in: categoriesSlugArr } }
           }
         ]
@@ -98,6 +101,7 @@ export class ProductController {
       } : undefined,
       ...queryOptionsCategory,
       ...queryOptions,
+
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
     };
 
