@@ -42,7 +42,7 @@ export class OrdersController {
   async mail(@Body() mail: { text: string }) {
     try {
 
-      return this.mailService.sendMail({
+      return await this.mailService.sendMail({
         from: process.env.ADMIN_EMAIL_ADDRESS,
         subject: "TP Mobile Store - Đơn đặt hàng mới",
         to: process.env.ADMIN_EMAIL_ADDRESS,
