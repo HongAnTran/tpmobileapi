@@ -129,7 +129,7 @@ export class ProductController {
         },
         category_id: true,
         compare_at_price: true,
-        images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" }, take: 2 },
+        images: { where: { is_featured: true }, select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, take: 1 },
         id: true,
         price: true,
         price_max: true,

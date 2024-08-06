@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, BadReque
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { Order, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import * as crypto from 'crypto';
 import { MailService } from 'src/mail/mail.service';
 
@@ -20,7 +20,7 @@ export class OrdersController {
   }
 
   @Put("/checkout/:id")
-  async checkout(@Param('id') id: string, @Body() checkoutOrder: Pick<Prisma.OrderUpdateInput , "customer" |"discount" | "note" | "payment" | "promotions" | "ship_price"  | "shipping">) {
+  async checkout(@Param('id') id: string, @Body() checkoutOrder: Pick<Prisma.OrderUpdateInput, "customer" | "discount" | "note" | "payment" | "promotions" | "ship_price" | "shipping">) {
     try {
       const data: Prisma.OrderUpdateInput = { status: 5, ...checkoutOrder }
       const res = await this.ordersService.update(+id, data);
@@ -32,6 +32,22 @@ export class OrdersController {
         context: res
       })
       return res
+    } catch (error) {
+      throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
+    }
+  }
+
+
+  @Post("/mail")
+  async mail(@Body() mail: { text: string }) {
+    try {
+
+      return this.mailService.sendMail({
+        from: process.env.ADMIN_EMAIL_ADDRESS,
+        subject: "TP Mobile Store - Đơn đặt hàng mới",
+        to: process.env.ADMIN_EMAIL_ADDRESS,
+        text: mail.text
+      })
     } catch (error) {
       throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
     }
