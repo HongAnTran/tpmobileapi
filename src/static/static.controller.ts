@@ -28,7 +28,10 @@ export class StaticController {
     const body: Prisma.FileCreateManyInput[] = fileUploads.map(file => ({
       format: file.format, 
       name: file.name,
-      url: `${process.env.BASE_URL}/${process.env.STATIC_FOLDER}/${file.name}`
+      url: `${process.env.BASE_URL}/${process.env.STATIC_FOLDER}/${file.name}`,
+      size:file.size
+
+      
     }))
 
     return this.staticService.createFiles(body)
