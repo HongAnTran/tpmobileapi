@@ -46,7 +46,8 @@ export class OrdersController {
         from: process.env.ADMIN_EMAIL_ADDRESS,
         subject: "TP Mobile Store - Đơn đặt hàng mới",
         to: process.env.ADMIN_EMAIL_ADDRESS,
-        text: mail.text
+        text: mail.text,
+        html: '<b>welcome</b>', // HTML body content
       })
     } catch (error) {
       throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })

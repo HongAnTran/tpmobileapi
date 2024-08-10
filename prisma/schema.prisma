@@ -68,7 +68,7 @@ model ProductAttributes {
   attribute    Attributes        @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
   attribute_id Int
   position     Int
-  values       AttributeValues[] 
+  values       AttributeValues[]
 
   @@unique([product_id, attribute_id])
 }
@@ -200,7 +200,7 @@ enum OptionStyle {
 
 model SpecificationsGroup {
   id             Int                     @id @default(autoincrement())
-  name           String                   @unique
+  name           String                  @unique
   specifications ProductSpecifications[]
   type_id        Int
   type           SpecificationsType      @relation(fields: [type_id], references: [id], onDelete: Cascade)
@@ -208,7 +208,7 @@ model SpecificationsGroup {
 
 model SpecificationsType {
   id     Int                   @id @default(autoincrement())
-  name   String                
+  name   String
   groups SpecificationsGroup[]
 }
 
@@ -503,9 +503,22 @@ model Brand {
 
 model File {
   id         Int      @id @default(autoincrement())
-  id_root    String
+  id_root    String?
   url        String
   format     String
   created_at DateTime @default(now())
   name       String
+  size       Int
+  folder_id  Int?
+  folder     Folder?  @relation(fields: [folder_id], references: [id])
+}
+
+model Folder {
+  id         Int      @id @default(autoincrement())
+  name       String
+  parent_id  Int?
+  created_at DateTime @default(now())
+  parent     Folder?  @relation("FolderToFolder", fields: [parent_id], references: [id])
+  children   Folder[] @relation("FolderToFolder")
+  files      File[]
 }
