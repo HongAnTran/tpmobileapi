@@ -24,10 +24,10 @@ async function bootstrap() {
   const prismaService = app.get(PrismaService);
   await prismaService.$connect();
 
-  const uploadDir = join(process.cwd(), 'uploads');
-  if (!existsSync(uploadDir)) {
-    mkdirSync(uploadDir);
-  }
+  // const uploadDir = join(process.cwd(), 'uploads');
+  // if (!existsSync(uploadDir)) {
+  //   mkdirSync(uploadDir);
+  // }
 
 
   await app.listen(4000);
