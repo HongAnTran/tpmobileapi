@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { join } from 'path';
+
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -13,7 +16,6 @@ import { ProductVariantModule } from './product-variant/product-variant.module';
 import { OrdersModule } from './orders/orders.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
-import { join } from 'path';
 import { PagesModule } from './pages/pages.module';
 import { SettingsModule } from './settings/settings.module';
 import { CartsModule } from './carts/carts.module';
@@ -23,13 +25,13 @@ import { StoreModule } from './store/store.module';
 import { RatingModule } from './rating/rating.module';
 import { QuestionModule } from './question/question.module';
 import { BrandModule } from './brand/brand.module';
-import { FilesModule } from './files/files.module';
 import { TagsModule } from './tags/tags.module';
 import { ProductImageModule } from './product-image/product-image.module';
 import { AttributesModule } from './attributes/attributes.module';
 import { AttributesValueModule } from './attributes-value/attributes-value.module';
 import { ProductAttributesModule } from './product-attributes/product-attributes.module';
-
+import { StaticModule } from './static/static.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 
 
@@ -62,6 +64,10 @@ import { ProductAttributesModule } from './product-attributes/product-attributes
         },
       },
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', process.env.STATIC_FOLDER), // Đường dẫn tới thư mục 'uploads'
+      serveRoot: `/${process.env.STATIC_FOLDER}`, // URL để truy cập các tệp trong thư mục 'uploads'
+    }),
     ProductModule,
     CategoryProductModule,
     UsersModule,
@@ -79,12 +85,12 @@ import { ProductAttributesModule } from './product-attributes/product-attributes
     RatingModule,
     QuestionModule,
     BrandModule,
-    FilesModule,
     TagsModule,
     ProductImageModule,
     AttributesModule,
     AttributesValueModule,
-    ProductAttributesModule
+    ProductAttributesModule,
+    StaticModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
