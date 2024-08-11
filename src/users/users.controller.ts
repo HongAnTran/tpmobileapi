@@ -13,7 +13,9 @@ export class UsersController {
     const { roleId, ...res } = createUserDto
     return this.usersService.create({
       ...res,
-      role: { connect: { id: roleId } }
+      roles:{
+        connect : {id :  roleId}
+      },
     });
   }
 

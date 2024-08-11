@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ArticleService } from './article.service';
-import { UpdateArticleDto } from './dto/update-article.dto';
 import { Prisma } from '@prisma/client';
 
 @Controller('articles')
