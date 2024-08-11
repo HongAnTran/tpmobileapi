@@ -28,7 +28,7 @@ export class ProductController {
   }) {
     const HUN = 1000000
     const { ids, include, keyword, status, price, sortBy, sortType, page, limit, categories, category_id, ...attributes } = query
-    const take = limit ? Number(limit) : 50;
+    const take = limit ? Number(limit) <= 50 ? Number(limit)  : 50 : 50
     const skip = page ? (Number(page) - 1) * take : undefined;
 
     const productIds = ids ? ids.split(",").map(id => Number(id)) : []

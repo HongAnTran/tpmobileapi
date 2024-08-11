@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, BadRequestException, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, BadRequestException, Put, Query } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -50,13 +50,33 @@ export class OrdersController {
         html: '<b>welcome</b>', // HTML body content
       })
     } catch (error) {
+      console.log(error)
       throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
     }
   }
 
   @Get()
-  findAll() {
-    return this.ordersService.findAll({});
+  findAll(@Query() query: {
+    page?: string;
+    limit?: string;
+    status?: string
+    code?: string
+    customerId?: string
+  }) {
+    const { limit, page, status, code, customerId } = query
+    const take = limit ? Number(limit) <= 50 ? Number(limit) : 50 : 50
+    const skip = page ? (Number(page) - 1) * take : undefined;
+
+
+    return this.ordersService.findAll({
+      take,
+      skip,
+      where: {
+        status: +status ? +status : undefined,
+        code: code,
+        customer_id: customerId ? +customerId : undefined
+      }
+    });
   }
 
   @Get(':id')
