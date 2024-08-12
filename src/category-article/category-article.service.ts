@@ -27,7 +27,7 @@ export class CategoryArticleService {
       where,
       orderBy,
     });
-    const count = this.prisma.categoryArticle.count({ where })
+    const count = await this.prisma.categoryArticle.count({ where })
 
     return {
       datas,

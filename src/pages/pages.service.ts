@@ -46,15 +46,9 @@ export class PagesService {
   }
 
   async update(id: number, updatePageDto: UpdatePageDto): Promise<Page> {
-    const { title, content_html, short_description, meta_data } = updatePageDto;
     return this.prisma.page.update({
       where: { id },
-      data: {
-        title,
-        content_html,
-        meta_data,
-        updated_at: new Date(), // Update updated_at field
-      },
+      data: updatePageDto,
     });
   }
 
