@@ -24,7 +24,7 @@ export class OrdersService {
       data,
       include: {
         items: true,
-        
+
       }
     });
   }
@@ -138,6 +138,8 @@ export class OrdersService {
       if (!order) {
         throw new NotFoundException(`order with token ${token} not found`);
       }
+
+      return order
     } catch (error) {
       throw new NotFoundException(`order with token ${token} not found`);
     }
