@@ -90,7 +90,7 @@ export class OrdersController {
     return this.ordersService.findOne(+id);
   }
 
-  @Get('token/:token')
+  @Get('/token/:token')
   findOneByToken(@Param('token') token: string) {
     return this.ordersService.findOneByToken(token);
   }
