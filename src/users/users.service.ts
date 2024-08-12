@@ -72,8 +72,13 @@ export class UsersService {
   async getPermissions() {
     return this.prisma.permission.findMany();
   }
-  async findAll(): Promise<User[]> {
-    return this.prisma.user.findMany({ include: { roles: true } });
+  async findAll() {
+    const datas = await this.prisma.user.findMany({ include: { roles: true } });
+    const count = await this.prisma.user.count()
+    return {
+      datas,
+      count
+    }
   }
   async findOne(id: number): Promise<User | null> {
     const User = await this.prisma.user.findUnique({

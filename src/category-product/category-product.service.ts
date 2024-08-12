@@ -18,15 +18,21 @@ export class CategoryProductService {
     cursor?: Prisma.CategoryWhereUniqueInput;
     where?: Prisma.CategoryWhereInput;
     orderBy?: Prisma.CategoryOrderByWithRelationInput;
-  }): Promise<Category[]> {
+  }){
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.category.findMany({
+    const datas = await this.prisma.category.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
     });
+    const count = this.prisma.category.count({ where })
+
+    return {
+      datas,
+      count
+    }
   }
 
 

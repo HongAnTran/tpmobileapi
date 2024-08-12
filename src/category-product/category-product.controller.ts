@@ -35,7 +35,7 @@ export class CategoryProductController {
     take?: string;
     orderBy?: string
     orderType?: string
-  }): Promise<Category[]> {
+  }) {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
     return this.categoryProductService.categories({

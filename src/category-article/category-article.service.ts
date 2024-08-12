@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import {  CategoryArticle, Prisma } from '@prisma/client';
+import { CategoryArticle, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoryArticleService {
@@ -18,15 +18,21 @@ export class CategoryArticleService {
     cursor?: Prisma.CategoryArticleWhereUniqueInput;
     where?: Prisma.CategoryArticleWhereInput;
     orderBy?: Prisma.CategoryArticleOrderByWithRelationInput;
-  }): Promise<CategoryArticle[]> {
+  }) {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.categoryArticle.findMany({
+    const datas = await this.prisma.categoryArticle.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
     });
+    const count = this.prisma.categoryArticle.count({ where })
+
+    return {
+      datas,
+      count
+    }
   }
 
 
