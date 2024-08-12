@@ -5,6 +5,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Prisma } from '@prisma/client';
 import * as crypto from 'crypto';
 import { MailService } from 'src/mail/mail.service';
+import { OrderStatus } from 'src/common/types/Order.type';
 
 @Controller('orders')
 export class OrdersController {
@@ -12,17 +13,13 @@ export class OrdersController {
 
   @Post()
   create(@Body() createOrderDto: Pick<Prisma.OrderCreateInput, "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price">) {
-
-    const token = crypto.randomBytes(16).toString('hex');
-    const code = crypto.randomBytes(16).toString('hex');
-    const data: Prisma.OrderCreateInput = { ...createOrderDto, token, code: code, status: 3 }
-    return this.ordersService.create(data);
+    return this.ordersService.createOderReview(createOrderDto);
   }
 
   @Put("/checkout/:id")
   async checkout(@Param('id') id: string, @Body() checkoutOrder: Pick<Prisma.OrderUpdateInput, "customer" | "discount" | "note" | "payment" | "promotions" | "ship_price" | "shipping">) {
     try {
-      const data: Prisma.OrderUpdateInput = { status: 5, ...checkoutOrder }
+      const data: Prisma.OrderUpdateInput = { status: OrderStatus.PENDING, ...checkoutOrder }
       const res = await this.ordersService.update(+id, data);
       this.mailService.sendMail({
         from: process.env.ADMIN_EMAIL_ADDRESS,
@@ -36,24 +33,32 @@ export class OrdersController {
       throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
     }
   }
-
-
-  @Post("/mail")
-  async mail(@Body() mail: { text: string }) {
-    try {
-
-      return await this.mailService.sendMail({
-        from: process.env.ADMIN_EMAIL_ADDRESS,
-        subject: "TP Mobile Store - Đơn đặt hàng mới",
-        to: process.env.ADMIN_EMAIL_ADDRESS,
-        text: mail.text,
-        html: '<b>welcome</b>', // HTML body content
-      })
-    } catch (error) {
-      console.log(error)
-      throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
-    }
+  @Patch('/status/:id')
+  updateStatus(@Param('id') id: string, @Body() updateOrderDto: Pick<Prisma.OrderUpdateInput, "status">) {
+    return this.ordersService.update(+id, updateOrderDto);
   }
+
+  // @Patch('/confirm/:id')
+  // confirmOrder(@Param('id') id: string, @Body() updateOrderDto:Pick<Prisma.OrderUpdateInput , "status">) {
+  //   return this.ordersService.update(+id, updateOrderDto);
+  // }
+
+  // @Post("/mail")
+  // async mail(@Body() mail: { text: string }) {
+  //   try {
+
+  //     return await this.mailService.sendMail({
+  //       from: process.env.ADMIN_EMAIL_ADDRESS,
+  //       subject: "TP Mobile Store - Đơn đặt hàng mới",
+  //       to: process.env.ADMIN_EMAIL_ADDRESS,
+  //       text: mail.text,
+  //       html: '<b>welcome</b>', // HTML body content
+  //     })
+  //   } catch (error) {
+  //     console.log(error)
+  //     throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
+  //   }
+  // }
 
   @Get()
   findAll(@Query() query: {
@@ -62,8 +67,9 @@ export class OrdersController {
     status?: string
     code?: string
     customerId?: string
+    notStatus?: string
   }) {
-    const { limit, page, status, code, customerId } = query
+    const { limit, page, status, code, customerId, notStatus } = query
     const take = limit ? Number(limit) <= 50 ? Number(limit) : 50 : 50
     const skip = page ? (Number(page) - 1) * take : undefined;
 
@@ -72,7 +78,7 @@ export class OrdersController {
       take,
       skip,
       where: {
-        status: +status ? +status : undefined,
+        status: +status ? +status : +notStatus ? { not: +notStatus } : undefined,
         code: code,
         customer_id: customerId ? +customerId : undefined
       }
@@ -89,10 +95,7 @@ export class OrdersController {
     return this.ordersService.findOneByToken(token);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: Prisma.OrderUpdateInput) {
-    return this.ordersService.update(+id, updateOrderDto);
-  }
+
 
   @Delete(':id')
   remove(@Param('id') id: string) {

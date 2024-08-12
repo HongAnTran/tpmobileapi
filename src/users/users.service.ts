@@ -1,13 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PermissionType, Prisma, Role, User } from '@prisma/client';
+import { hashPassword } from 'src/common/hepler/hassPassword';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) { }
 
-  async create(createUserDto: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({ data: createUserDto, include: { roles: true } });
+  async create(createUserDto: Prisma.UserCreateInput, roles: number[]): Promise<User> {
+    const hashPass = await hashPassword(createUserDto.password)
+    const user = await this.prisma.user.create({ data: { ...createUserDto, password: hashPass }, include: { roles: true } });
+    for (const roleId of roles) {
+      await this.assignRole(user.id, roleId);
+    }
+    return user
   }
   async createRole(createRoleDto: Prisma.RoleCreateInput): Promise<Role> {
     return this.prisma.role.create({ data: createRoleDto });
@@ -27,7 +33,7 @@ export class UsersService {
       where: {
         userId: userId
       },
-      include: { role: {include:{permission : true}} }
+      include: { role: { include: { permission: true } } }
     })
   }
 

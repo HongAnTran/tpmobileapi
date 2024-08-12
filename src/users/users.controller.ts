@@ -10,16 +10,13 @@ export class UsersController {
 
   @Post()
   async createUser(@Body() data: {  name : string , username :string,email: string; password: string; roles: number[] }) {
-    const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = await this.usersService.create({
       email: data.email,
-      password: hashedPassword,
+      password: data.password,
       name:data.name,
       username:data.username
-    });
-    for (const roleId of data.roles) {
-      await this.usersService.assignRole(user.id, roleId);
-    }
+    },data.roles);
+   
     return user;
   }
 

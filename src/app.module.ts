@@ -32,7 +32,7 @@ import { AttributesValueModule } from './attributes-value/attributes-value.modul
 import { ProductAttributesModule } from './product-attributes/product-attributes.module';
 import { StaticModule } from './static/static.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
-
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 
@@ -68,6 +68,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       rootPath: join(__dirname, '..', process.env.STATIC_FOLDER), // Đường dẫn tới thư mục 'uploads'
       serveRoot: `/${process.env.STATIC_FOLDER}`, // URL để truy cập các tệp trong thư mục 'uploads'
     }),
+    ScheduleModule.forRoot(),
     ProductModule,
     CategoryProductModule,
     UsersModule,
