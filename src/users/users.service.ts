@@ -77,7 +77,8 @@ export class UsersService {
     const count = await this.prisma.user.count()
     return {
       datas,
-      count
+      total: count
+
     }
   }
   async findOne(id: number): Promise<User | null> {

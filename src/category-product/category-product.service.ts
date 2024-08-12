@@ -31,7 +31,7 @@ export class CategoryProductService {
 
     return {
       datas,
-      count
+      total  : count
     }
   }
 
