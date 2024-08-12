@@ -1,10 +1,11 @@
 import { PrismaService } from 'src/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { Prisma } from '@prisma/client';
+import { Order, Prisma } from '@prisma/client';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrderStatus } from 'src/common/types/Order.type';
 import * as crypto from 'crypto';
+import { ResponseList } from 'src/common/types/Common.type';
 
 @Injectable()
 export class OrdersService {
@@ -18,13 +19,12 @@ export class OrdersService {
 
   async createOderReview(input: Pick<Prisma.OrderCreateInput, "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price">) {
     const token = crypto.randomBytes(12).toString('hex');
-    const code = "DH" + crypto.randomBytes(6).toString("hex");
+    const code = "DH" + crypto.randomBytes(3).toString("hex");
     const data: Prisma.OrderCreateInput = { ...input, token, code: code, status: OrderStatus.DRAFT }
     return this.prisma.order.create({
       data,
       include: {
         items: true,
-
       }
     });
   }
@@ -98,11 +98,19 @@ export class OrdersService {
     take?: number;
     where?: Prisma.OrderWhereInput;
   }) {
-    return this.prisma.order.findMany({
+    const orders = await this.prisma.order.findMany({
       where,
       skip,
       take,
     });
+    const count = await this.prisma.order.count({ where: where })
+    const response: ResponseList<Order> = {
+      datas: orders,
+      total: count
+    }
+
+    return response
+
   }
 
   async findOne(id: number) {
