@@ -169,13 +169,5 @@ export class ProductController {
     return this.productService.deleteProduct({ id: Number(id) });
   }
 
-  @Delete('image:id')
-  removeImage(@Param('id') id: string) {
-    return this.productService.deleteProductImage({ id: Number(id) });
-  }
 
-  @Post('removeLink')
-  async script() {
-    return this.productService.removeLink()
-  }
 }

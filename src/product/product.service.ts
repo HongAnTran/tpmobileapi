@@ -34,7 +34,6 @@ export class ProductService {
     }
   }
 
-  // Lấy danh sách sản phẩm với các tùy chọn như phân trang, lọc, sắp xếp
   async products(params: {
     skip?: number;
     take?: number;
@@ -56,9 +55,6 @@ export class ProductService {
     const total = await this.prisma.product.count({
       where
     });
-
-
-
     return {
       datas,
       total
@@ -90,19 +86,5 @@ export class ProductService {
         variants: true,
       }
     });
-  }
-
-  async deleteProductImage(where: Prisma.ProductImageWhereUniqueInput): Promise<ProductImage> {
-    return this.prisma.productImage.delete({
-      where,
-    });
-  }
-
-
-  async removeLink() {
-    const products = await this.prisma.product.findMany({ select: { id: true, description_html: true } })
-
-    await Promise.all(products.map(product => this.prisma.product.update({ where: { id: product.id }, data: { description_html: product.description_html.replace(/<a\b[^>]*>(.*?)<\/a>/gi, '$1') } })))
-    return true
   }
 }
