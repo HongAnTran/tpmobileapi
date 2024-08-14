@@ -35,5 +35,6 @@ export class PagesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.pagesService.remove(+id);
+
   }
 }

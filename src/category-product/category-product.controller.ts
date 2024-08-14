@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, NotFoundException, Patch } from '@nestjs/common';
 import { CategoryProductService } from './category-product.service';
 import { Category, Prisma } from '@prisma/client';
 
@@ -51,7 +51,7 @@ export class CategoryProductController {
     return this.categoryProductService.createCategory(data);
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() data: Prisma.CategoryUpdateInput,

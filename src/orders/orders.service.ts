@@ -20,7 +20,7 @@ export class OrdersService {
   async createOderReview(input: Pick<Prisma.OrderCreateInput, "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price">) {
     const token = crypto.randomBytes(12).toString('hex');
     const code = "DH" + crypto.randomBytes(3).toString("hex");
-    const data: Prisma.OrderCreateInput = { ...input, token, code: code, status: OrderStatus.DRAFT }
+    const data: Prisma.OrderCreateInput = { ...input, token, code: code.toUpperCase(), status: OrderStatus.DRAFT }
     return this.prisma.order.create({
       data,
       include: {

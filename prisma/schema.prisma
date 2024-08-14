@@ -368,19 +368,19 @@ model UserRole {
 }
 
 model RolePermission {
-  id           Int        @id @default(autoincrement())
-  role         Role       @relation(fields: [roleId], references: [id])
+  id           Int            @id @default(autoincrement())
+  role         Role           @relation(fields: [roleId], references: [id])
   roleId       Int
-  permission   Permission @relation(fields: [permissionId], references: [id])
+  permission   Permission     @relation(fields: [permissionId], references: [id])
   permissionId Int
-  type   PermissionType
+  type         PermissionType
 
   @@unique([roleId, permissionId])
 }
 
 enum PermissionType {
-READ_ONLY
-READ_WRITE
+  READ_ONLY
+  READ_WRITE
 }
 
 model Customer {
@@ -491,6 +491,7 @@ model Setting {
   value          Json?
   description    String?
   access_control Int[]
+  active         Boolean         @default(true)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
   SettingHistory SettingHistory[]
