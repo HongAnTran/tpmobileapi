@@ -173,4 +173,9 @@ export class ProductController {
   removeImage(@Param('id') id: string) {
     return this.productService.deleteProductImage({ id: Number(id) });
   }
+
+  @Post('removeLink')
+  async script() {
+    return this.productService.removeLink()
+  }
 }

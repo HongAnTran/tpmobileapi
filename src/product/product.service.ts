@@ -22,7 +22,7 @@ export class ProductService {
           images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" } },
           brand: { select: { id: true, name: true, slug: true } },
           tags: true,
-          attributes: { select: { position: true, id: true, attribute: true, values: true } , orderBy : {position : "asc"} }
+          attributes: { select: { position: true, id: true, attribute: true, values: true }, orderBy: { position: "asc" } }
         },
       });
       if (!product) {
@@ -96,5 +96,13 @@ export class ProductService {
     return this.prisma.productImage.delete({
       where,
     });
+  }
+
+
+  async removeLink() {
+    const products = await this.prisma.product.findMany({ select: { id: true, description_html: true } })
+
+    await Promise.all(products.map(product => this.prisma.product.update({ where: { id: product.id }, data: { description_html: product.description_html.replace(/<a\b[^>]*>(.*?)<\/a>/gi, '$1') } })))
+    return true
   }
 }
