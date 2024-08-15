@@ -93,24 +93,29 @@ export class OrdersService {
     skip,
     take,
     where,
+    select,
+    orderBy
   }: {
     skip?: number;
     take?: number;
     where?: Prisma.OrderWhereInput;
+    select?:Prisma.OrderSelect
+    orderBy?: Prisma.OrderOrderByWithRelationInput;
+
   }) {
     const orders = await this.prisma.order.findMany({
       where,
       skip,
       take,
+      select,
+      orderBy
     });
     const count = await this.prisma.order.count({ where: where })
     const response: ResponseList<Order> = {
       datas: orders,
       total: count
     }
-
     return response
-
   }
 
   async findOne(id: number) {

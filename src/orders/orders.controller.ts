@@ -83,6 +83,19 @@ export class OrdersController {
         status: +status ? +status : +notStatus ? { not: +notStatus } : undefined,
         code: code,
         customer_id: customerId ? +customerId : undefined
+      },
+      select :{
+        id :true,
+        status : true,
+        customer_id : true,
+        customer : true,
+        total_price : true,
+        shipping : {select : {status : true,shipping_method : true}},
+        payment : {select : {status : true,method : true}},
+        code : true,
+        created_at : true,
+        updated_at : true,
+        temp_price : true
       }
     });
   }
