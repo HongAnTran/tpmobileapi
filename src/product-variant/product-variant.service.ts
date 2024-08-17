@@ -48,7 +48,7 @@ export class ProductVariantService {
   }
 
   async remove(id: number) {
-    return this.prisma.productVariant.delete({
+    return this.prisma.productVariant.deleteMany({
       where: { id },
     });
   }

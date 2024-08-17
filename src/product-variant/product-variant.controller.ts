@@ -32,14 +32,18 @@ export class ProductVariantController {
     return this.productVariantService.update(+id, updateProductVariantDto);
   }
 
+  
+  @Post('delete/many')
+  removeMany(@Query('ids') ids?: string) {
+    const idsVariant  = ids.split(",").map(Number)
+    return this.productVariantService.removeMany(idsVariant)
+  }
+
+  
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productVariantService.remove(+id);
   }
 
-  @Delete('many')
-  removeMany(@Query('ids') ids?: string) {
-    const idsVariant  = ids.split(",").map(Number)
-    return this.productVariantService.removeMany(idsVariant);
-  }
+
 }
