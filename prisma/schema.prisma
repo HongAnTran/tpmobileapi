@@ -39,6 +39,8 @@ model Product {
   questions         Question[]
   tags              Tags[]
   attributes        ProductAttributes[]
+
+  @@index([category_id, status])
 }
 
 model Tags {
@@ -252,6 +254,9 @@ model Order {
   customer    Customer?      @relation(fields: [customer_id], references: [id])
   created_at  DateTime       @default(now())
   updated_at  DateTime?      @updatedAt
+
+  @@index([status])
+
 }
 
 model Shipping {

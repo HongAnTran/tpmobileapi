@@ -52,4 +52,16 @@ export class ProductVariantService {
       where: { id },
     });
   }
+
+
+  async removeMany(ids: number[]) {
+    return this.prisma.productVariant.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+  
 }
