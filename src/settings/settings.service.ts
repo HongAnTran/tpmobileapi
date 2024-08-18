@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma.service';
 import { Setting } from '@prisma/client';
 import { CreateSettingDto } from './dto/create-setting.dto';
 import { UpdateSettingDto } from './dto/update-setting.dto';
+import { ResponseList } from 'src/common/types/Common.type';
 
 @Injectable()
 export class SettingsService {
@@ -20,8 +21,12 @@ export class SettingsService {
     });
   }
 
-  async findAll(): Promise<Setting[]> {
-    return this.prisma.setting.findMany();
+  async findAll(): Promise<ResponseList<Setting>> {
+    const [datas, total] = await Promise.all([this.prisma.setting.findMany(), this.prisma.setting.count()])
+    return {
+      datas,
+      total
+    }
   }
 
   async findOne(id: number): Promise<Setting | null> {

@@ -13,30 +13,31 @@ export class ArticleController {
 
   @Get()
   findAll(
-    @Query('skip') skip?: string,
-    @Query('take') take?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
     @Query('category_id') category_id?: string,
     @Query('keyword') keyword?: string,
     @Query('status') status?: string,
-    @Query('orderBy') orderBy?: Prisma.ArticleOrderByWithRelationInput,
+    @Query('sort_by') sortBy?: string,
+    @Query('sort_type') sortType?:Prisma.SortOrder,
 
   ) {
-
+    const take = limit ? Number(limit) <= 50 ? Number(limit) : 50 : 50
+    const skip = page ? (Number(page) - 1) * take : undefined;
     const where: Prisma.ArticleWhereInput = {
       category_id: category_id ? Number(category_id) : undefined,
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
       status: status ? Number(status) : undefined
     }
+
+    let orderBy: Prisma.ArticleOrderByWithRelationInput = { [sortBy]: sortType }
+
     const params = {
-      skip: skip ? parseInt(skip, 10) : undefined,
-      take: take ? parseInt(take, 10) : undefined,
+      skip: skip,
+      take: take,
       orderBy,
       ...where
     };
-
-
-
-
     return this.articleService.findAll({
       ...params,
       select: {
