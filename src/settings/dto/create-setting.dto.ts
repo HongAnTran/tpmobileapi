@@ -8,7 +8,6 @@ export class CreateSettingDto {
   key: string;
 
   @IsOptional()
-  @IsJSON()
   value?: any;
 
   @IsOptional()

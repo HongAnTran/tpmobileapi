@@ -6,7 +6,6 @@ export class UpdateSettingDto {
 
 
   @IsOptional()
-  @IsJSON()
   value?: any;
 
   @IsOptional()
