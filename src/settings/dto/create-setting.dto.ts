@@ -1,6 +1,6 @@
 // src/settings/dto/create-setting.dto.ts
 
-import { IsString, IsOptional, IsJSON, IsNotEmpty, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsJSON, IsNotEmpty, IsArray, IsBoolean } from 'class-validator';
 
 export class CreateSettingDto {
   @IsString()
@@ -14,6 +14,9 @@ export class CreateSettingDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsBoolean()
+  active?: boolean;
 
   @IsOptional()
   @IsArray()
