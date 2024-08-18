@@ -32,6 +32,7 @@ export class SettingsService {
   async findOne(id: number): Promise<Setting | null> {
     const setting = await this.prisma.setting.findUnique({
       where: { id },
+      include: { SettingHistory: true }
     });
     if (!setting) {
       throw new NotFoundException(`Setting with id ${id} not found`);
@@ -42,6 +43,8 @@ export class SettingsService {
   async findOneKey(key: string): Promise<Setting | null> {
     const setting = await this.prisma.setting.findUnique({
       where: { key },
+      include: { SettingHistory: true }
+
     });
     if (!setting) {
       throw new NotFoundException(`Setting with id ${key} not found`);
