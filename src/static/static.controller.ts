@@ -6,57 +6,99 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 export class StaticController {
   constructor(private readonly staticService: StaticService) { }
 
+
   @Post('upload/images')
   @UseInterceptors(FilesInterceptor('file', 5, {
-    limits: { fileSize: 5 * 1024 * 1024 }, //limit 5mb
+    limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB
   }))
-
-  async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[], @Query() query: { isOptimize?: boolean, width?: number, height?: number }) {
-    const { isOptimize, width, height } = query
-    const fileUploads = []
+  async uploadMultipleFiles(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Query() query: { isOptimize?: boolean, width?: number, height?: number }
+  ) {
+    const { isOptimize, width, height } = query;
+    const fileUploads = [];
 
     for await (const file of files) {
+      let res;
       if (isOptimize) {
-        const res = await this.staticService.saveFileOptimize(file, width, height)
-        fileUploads.push(res)
+        res = await this.staticService.saveFileOptimize(file, width, height);
       } else {
-        const res = await this.staticService.saveFileNormal(file)
-        fileUploads.push(res)
+        res = await this.staticService.saveFileNormal(file);
       }
+
+      const createStaticDto: Prisma.FileCreateInput = {
+        format: res.format,
+        name: res.name,
+        url: `${process.env.BASE_URL}/${process.env.STATIC_FOLDER}/${res.name}`,
+        size: res.size,
+      };
+
+      // Tạo file và push kết quả vào mảng
+      const createdFile = await this.staticService.createFile(createStaticDto);
+      fileUploads.push(createdFile);
     }
 
-    const body: Prisma.FileCreateManyInput[] = fileUploads.map(file => ({
-      format: file.format, 
-      name: file.name,
-      url: `${process.env.BASE_URL}/${process.env.STATIC_FOLDER}/${file.name}`,
-      size:file.size
-
-      
-    }))
-
-    return this.staticService.createFiles(body)
-
+    return fileUploads; // Trả về danh sách các file vừa được tạo
   }
 
-  @Post()
-  create(@Body() createStaticDto: Prisma.FileCreateInput) {
+  @Post("files")
+  createFile(@Body() createStaticDto: Prisma.FileCreateInput) {
     return this.staticService.createFile(createStaticDto);
   }
+  @Post("folders")
+  createFolder(@Body() createStaticDto: Prisma.FolderCreateInput) {
+    return this.staticService.createFolder(createStaticDto);
+  }
+  @Get("files")
+  findAll(@Query() query: {
+    page?: string;
+    limit?: string;
+    folder_id?: string
 
-  @Get()
-  findAll() {
-    return this.staticService.findFiles();
+  }) {
+    const { folder_id, limit, page } = query
+    const take = limit ? Number(limit) <= 50 ? Number(limit) : 50 : 50
+    const skip = page ? (Number(page) - 1) * take : undefined;
+    const where: Prisma.FileWhereInput = folder_id
+    ? { folder_id: +folder_id } 
+    : { folder_id: null }; 
+    return this.staticService.findFiles({
+      skip,
+      take,
+      where
+    });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get("folders")
+  findAllFolder(@Query() query: {
+    page?: string;
+    limit?: string;
+    parent_id?: string;
+  }) {
+    const { parent_id, limit, page } = query;
+  
+    const take = limit ? Number(limit) <= 50 ? Number(limit) : 50 : 50;
+    const skip = page ? (Number(page) - 1) * take : undefined;
+  
+    const where: Prisma.FolderWhereInput = parent_id
+      ? { parent_id: +parent_id } // Nếu parent_id được cung cấp, lọc theo parent_id
+      : { parent_id: null }; // Nếu không có parent_id, lọc những thư mục có parent_id là null
+  
+    return this.staticService.findFolders({
+      skip,
+      take,
+      where,
+    });
+  }
+
+  @Get('files/:id')
+  findOneFile(@Param('id') id: string) {
     return this.staticService.findOne(+id);
   }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateStaticDto: UpdateStaticDto) {
-  //   return this.staticService.update(+id, updateStaticDto);
-  // }
+  @Get('folders/:id')
+  findOneFolder(@Param('id') id: string) {
+    return this.staticService.findOnefolder(+id);
+  }
 
   @Delete('files/:id')
   removeFile(@Param('id') id: string) {

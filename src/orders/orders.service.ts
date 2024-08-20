@@ -112,8 +112,8 @@ export class OrdersService {
     });
     const count = await this.prisma.order.count({ where: where })
     const response: ResponseList<Order> = {
+      total: count,
       datas: orders,
-      total: count
     }
     return response
   }

@@ -28,14 +28,26 @@ export class StaticService {
     })
   }
 
-  findFiles(where?: Prisma.FileWhereInput) {
+  findFiles({
+    skip,
+    take,
+    where
+  }: { take: number, skip: number, where?: Prisma.FileWhereInput }) {
     return this.prisma.file.findMany({
-      where: where
+      where,
+      take,
+      skip
     })
   }
-  findFolders(where : Prisma.FolderWhereInput) {
+  findFolders({
+    skip,
+    take,
+    where
+  }: { take: number, skip: number, where?: Prisma.FolderWhereInput }) {
     return this.prisma.folder.findMany({
-      where : where
+      where,
+      take,
+      skip
     })
   }
 
@@ -44,7 +56,11 @@ export class StaticService {
       where: { id }
     })
   }
-
+  findOnefolder(id: number) {
+    return this.prisma.folder.findUnique({
+      where: { id }
+    })
+  }
 
   removeFile(id: number) {
     return this.prisma.file.delete({
@@ -57,23 +73,25 @@ export class StaticService {
     })
   }
   async saveFileNormal(file: Express.Multer.File) {
-    const filename = uuid() + '.webp';
+    const image = sharp(file.buffer);
+    const metadata = await image.metadata();
+
+    const format = metadata.format || 'webp'; // Sử dụng định dạng từ metadata, nếu không có thì dùng mặc định là 'webp'
+    const filename = uuid() + `.${format}`;
 
     const uploadPath = path.join(process.env.STATIC_FOLDER, filename);
 
     fs.writeFileSync(uploadPath, file.buffer);
-    const image = sharp(file.buffer);
-    const metadata = await image.metadata();
+
     return {
       name: filename,
       nameOrigin: file.originalname,
-      format: metadata.format,
+      format: format,
       size: file.size,
       height: metadata.height,
       width: metadata.width
-    }
+    };
   }
-
   async saveFileOptimize(file: Express.Multer.File, width?: number, height?: number) {
     const filename = uuid() + '.webp';
     const res = await sharp(file.buffer)

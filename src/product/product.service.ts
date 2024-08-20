@@ -56,8 +56,8 @@ export class ProductService {
       where
     });
     return {
-      datas,
-      total
+      total,
+      datas
     };
   }
   // Tạo mới một sản phẩm
