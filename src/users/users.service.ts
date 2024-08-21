@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PermissionType, Prisma, Role, User } from '@prisma/client';
-import { hashPassword } from 'src/common/hepler/hassPassword';
+import { hashPassword } from 'src/common/helper/hassPassword';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()

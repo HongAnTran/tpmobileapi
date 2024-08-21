@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, Query, BadRequestException } from '@nestjs/common';
 import { StaticService } from './static.service';
 import { Prisma } from '@prisma/client';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -9,19 +9,23 @@ export class StaticController {
 
   @Post('upload/images')
   @UseInterceptors(FilesInterceptor('file', 5, {
-    limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB
+    limits: { fileSize: 2 * 1024 * 1024 }, // Limit 2MB
   }))
-  async uploadMultipleFiles(
+  async uploadMultipleFilesImage(
     @UploadedFiles() files: Express.Multer.File[],
     @Query() query: { isOptimize?: boolean, width?: number, height?: number }
   ) {
+
+    if (files.length > 5) {
+      throw new BadRequestException('You can only upload up to 5 files.');
+    }
     const { isOptimize, width, height } = query;
     const fileUploads = [];
 
     for await (const file of files) {
       let res;
-      if (isOptimize) {
-        res = await this.staticService.saveFileOptimize(file, width, height);
+      if (isOptimize && width && height) {
+        res = await this.staticService.saveFileOptimize(file, +width, +height);
       } else {
         res = await this.staticService.saveFileNormal(file);
       }
@@ -33,12 +37,12 @@ export class StaticController {
         size: res.size,
       };
 
-      // Tạo file và push kết quả vào mảng
+   
       const createdFile = await this.staticService.createFile(createStaticDto);
       fileUploads.push(createdFile);
     }
 
-    return fileUploads; // Trả về danh sách các file vừa được tạo
+    return fileUploads; 
   }
 
   @Post("files")
@@ -60,8 +64,8 @@ export class StaticController {
     const take = limit ? Number(limit) <= 50 ? Number(limit) : 50 : 50
     const skip = page ? (Number(page) - 1) * take : undefined;
     const where: Prisma.FileWhereInput = folder_id
-    ? { folder_id: +folder_id } 
-    : { folder_id: null }; 
+      ? { folder_id: +folder_id }
+      : { folder_id: null };
     return this.staticService.findFiles({
       skip,
       take,
@@ -76,14 +80,14 @@ export class StaticController {
     parent_id?: string;
   }) {
     const { parent_id, limit, page } = query;
-  
+
     const take = limit ? Number(limit) <= 50 ? Number(limit) : 50 : 50;
     const skip = page ? (Number(page) - 1) * take : undefined;
-  
+
     const where: Prisma.FolderWhereInput = parent_id
       ? { parent_id: +parent_id } // Nếu parent_id được cung cấp, lọc theo parent_id
       : { parent_id: null }; // Nếu không có parent_id, lọc những thư mục có parent_id là null
-  
+
     return this.staticService.findFolders({
       skip,
       take,

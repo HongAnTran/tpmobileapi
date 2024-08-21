@@ -403,6 +403,7 @@ model Customer {
   answer      Answer[]
   birthday    DateTime?
   provider    String
+  status      Int       @default(1)
   provider_id String?
   created_at  DateTime   @default(now())
   updated_at  DateTime?  @updatedAt

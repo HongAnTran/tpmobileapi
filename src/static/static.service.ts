@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as sharp from 'sharp';
 import { v4 as uuid } from "uuid"
 import * as fs from 'fs';
+import { sanitizeName } from 'src/common/helper/hassPassword';
 @Injectable()
 export class StaticService {
 
@@ -62,11 +63,34 @@ export class StaticService {
     })
   }
 
-  removeFile(id: number) {
+  async removeFile(id: number) {
+    // Retrieve the file record from the database
+    const fileRecord = await this.prisma.file.findUnique({
+      where: { id },
+      select: { name: true }, // Assuming the file path or name is stored in the 'name' field
+    });
+
+    if (!fileRecord) {
+      throw new Error('File not found');
+    }
+
+    // Construct the file path
+    const filePath = path.join(process.env.STATIC_FOLDER, fileRecord.name);
+
+    // Delete the file from the filesystem
+    try {
+      fs.unlinkSync(filePath);
+    } catch (error) {
+      console.error(`Failed to delete file: ${error.message}`);
+      throw new Error('Failed to delete file from filesystem');
+    }
+
+    // Delete the file record from the database
     return this.prisma.file.delete({
-      where: { id }
-    })
+      where: { id },
+    });
   }
+
   removeFolder(id: number) {
     return this.prisma.folder.delete({
       where: { id }
@@ -113,12 +137,13 @@ export class StaticService {
   }
 
   createNameFileImage(originName: string, format: string, w?: number, h?: number) {
+    const name = sanitizeName(originName)
     if (w && h) {
 
-      return originName + uuid(4) + `${w}x${h}` + `.${format}`;
+      return name + uuid(4) + `-${w}x${h}` + `.${format}`;
     }
 
-    return originName + uuid(4) + `.${format}`;
+    return name + uuid(4) + `.${format}`;
   }
 
 }
