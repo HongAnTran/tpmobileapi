@@ -77,7 +77,7 @@ export class StaticService {
     const metadata = await image.metadata();
 
     const format = metadata.format || 'webp'; // Sử dụng định dạng từ metadata, nếu không có thì dùng mặc định là 'webp'
-    const filename = uuid() + `.${format}`;
+    const filename = this.createNameFileImage(file.originalname, format, metadata.width, metadata.height)
 
     const uploadPath = path.join(process.env.STATIC_FOLDER, filename);
 
@@ -92,8 +92,11 @@ export class StaticService {
       width: metadata.width
     };
   }
+
+
   async saveFileOptimize(file: Express.Multer.File, width?: number, height?: number) {
-    const filename = uuid() + '.webp';
+    const filename = this.createNameFileImage(file.originalname, "webp", width, height)
+
     const res = await sharp(file.buffer)
       .resize(width, height)
       .webp({ effort: 3 })
@@ -108,4 +111,14 @@ export class StaticService {
       width: res.width
     }
   }
+
+  createNameFileImage(originName: string, format: string, w?: number, h?: number) {
+    if (w && h) {
+
+      return originName + uuid(4) + `${w}x${h}` + `.${format}`;
+    }
+
+    return originName + uuid(4) + `.${format}`;
+  }
+
 }

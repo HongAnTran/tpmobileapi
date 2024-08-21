@@ -6,10 +6,14 @@ import { Prisma } from '@prisma/client';
 import * as crypto from 'crypto';
 import { MailService } from 'src/mail/mail.service';
 import { OrderStatus } from 'src/common/types/Order.type';
+import { SettingsService } from 'src/settings/settings.service';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService, private readonly mailService: MailService) { }
+  constructor(private readonly ordersService: OrdersService,
+     private readonly mailService: MailService,
+     private readonly settingService: SettingsService,
+    ) { }
 
   @Post()
   create(@Body() createOrderDto: Pick<Prisma.OrderCreateInput, "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price">) {
