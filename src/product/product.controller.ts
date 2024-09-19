@@ -7,6 +7,12 @@ export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
 
+  @Post("hook")
+  async hook(@Body() createProductDto: Prisma.ProductCreateInput) {
+    console.log("body",createProductDto)
+    return true
+  }
+
   @Post()
   async create(@Body() createProductDto: Prisma.ProductCreateInput) {
     return this.productService.createProduct(createProductDto)
