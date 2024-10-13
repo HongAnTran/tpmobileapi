@@ -256,7 +256,6 @@ model Order {
   updated_at  DateTime?      @updatedAt
 
   @@index([status])
-
 }
 
 model Shipping {
@@ -284,8 +283,8 @@ model Shipping {
 }
 
 enum ShippingStatus {
+  PENDING
   PROCESSING
-  SHIPPED
   DELIVERED
   CANCELLED
 }
@@ -403,7 +402,7 @@ model Customer {
   answer      Answer[]
   birthday    DateTime?
   provider    String
-  status      Int       @default(1)
+  status      Int        @default(1)
   provider_id String?
   created_at  DateTime   @default(now())
   updated_at  DateTime?  @updatedAt
@@ -497,7 +496,7 @@ model Setting {
   value          Json?
   description    String?
   access_control Int[]
-  active         Boolean         @default(true)
+  active         Boolean          @default(true)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
   SettingHistory SettingHistory[]
@@ -522,9 +521,11 @@ enum LocationTypeCode {
 model Location {
   id             Int              @id @default(autoincrement())
   name           String
+  name_with_type String?
   type           LocationTypeCode
   code           String?
   parent_code    String?
+  isDeleted      Boolean          @default(false)
   provinces      Address[]        @relation("Province")
   districts      Address[]        @relation("District")
   wards          Address[]        @relation("Ward")
