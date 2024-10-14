@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from "@nestjs/common";
 import { LocationService } from "./location.service";
 import { LocationTypeCode, Prisma } from "@prisma/client";
@@ -29,6 +30,10 @@ export class LocationController {
       keyword?: string;
     }
   ) {
+    if(!query.type){
+      throw new BadRequestException('Type is req');
+    }
+
     return this.locationService.findAll({
       type: query.type,
       parent_code: query.parent_code,

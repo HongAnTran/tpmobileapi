@@ -11,6 +11,7 @@ services:
       POSTGRES_PASSWORD: tp_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: always  # Thêm chính sách khởi động lại
 
   backup:
     image: ubuntu:latest
@@ -21,6 +22,7 @@ services:
     depends_on:
       - postgres
     entrypoint: ["/scripts/backup_entrypoint.sh"]
+    restart: always  # Thêm chính sách khởi động lại
 volumes:
   postgres_data:
   pgbackups:
