@@ -30,25 +30,29 @@ export class LocationController {
       keyword?: string;
     }
   ) {
-    if(!query.type){
-      throw new BadRequestException('Type is req');
+    if (!query.type) {
+      throw new BadRequestException("Type is req");
     }
 
     return this.locationService.findAll({
       type: query.type,
       parent_code: query.parent_code,
-      OR: [
-        {
-          name: query.keyword
-            ? { contains: query.keyword, mode: "insensitive" }
-            : undefined,
-        },
-        {
-          name_with_type: query.keyword
-            ? { contains: query.keyword, mode: "insensitive" }
-            : undefined,
-        },
-      ],
+      ...(query.keyword
+        ? {
+            OR: [
+              {
+                name: query.keyword
+                  ? { contains: query.keyword, mode: "insensitive" }
+                  : undefined,
+              },
+              {
+                name_with_type: query.keyword
+                  ? { contains: query.keyword, mode: "insensitive" }
+                  : undefined,
+              },
+            ],
+          }
+        : {}),
     });
   }
 
