@@ -1,10 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { LocationService } from './location.service';
-import { LocationTypeCode, Prisma } from '@prisma/client';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from "@nestjs/common";
+import { LocationService } from "./location.service";
+import { LocationTypeCode, Prisma } from "@prisma/client";
 
-@Controller('location')
+@Controller("location")
 export class LocationController {
-  constructor(private readonly locationService: LocationService) { }
+  constructor(private readonly locationService: LocationService) {}
 
   @Post()
   create(@Body() createLocationDto: Prisma.LocationCreateInput) {
@@ -12,25 +21,47 @@ export class LocationController {
   }
 
   @Get()
-  findAll(@Query() query: {
-    type?: LocationTypeCode
-    parent_code?: string
-  }) {
-    return this.locationService.findAll({ type: query.type, parent_code: query.parent_code });
+  findAll(
+    @Query()
+    query: {
+      type?: LocationTypeCode;
+      parent_code?: string;
+      keyword?: string;
+    }
+  ) {
+    return this.locationService.findAll({
+      type: query.type,
+      parent_code: query.parent_code,
+      OR: [
+        {
+          name: query.keyword
+            ? { contains: query.keyword, mode: "insensitive" }
+            : undefined,
+        },
+        {
+          name_with_type: query.keyword
+            ? { contains: query.keyword, mode: "insensitive" }
+            : undefined,
+        },
+      ],
+    });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.locationService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLocationDto: Prisma.LocationUpdateInput) {
+  @Patch(":id")
+  update(
+    @Param("id") id: string,
+    @Body() updateLocationDto: Prisma.LocationUpdateInput
+  ) {
     return this.locationService.update(+id, updateLocationDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.locationService.remove(+id);
   }
 }
