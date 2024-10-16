@@ -32,7 +32,7 @@ export class StaticService {
       format: res.format,
       name: res.name || res.public_id,
       url: res.secure_url,
-      size: res.size,
+      size: res.size || 0,
     };
     const createdFile = await this.createFile(createStaticDto);
     return createdFile
