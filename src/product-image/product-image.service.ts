@@ -64,7 +64,7 @@ export class ProductImageService {
 
     // Step 4: Map new URLs back to the original product images
     const updatedImages = productImages.map(image => {
-      const newUrl = uploadResults.find((result, index) => uniqueImages[index].url === image.url)?.secure_url;
+      const newUrl = uploadResults.find((result, index) => uniqueImages[index].url === image.url)?.url;
       return newUrl ? { ...image, url: newUrl } : image;
     });
 

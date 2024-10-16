@@ -14,12 +14,28 @@ export class StaticService {
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
-  uploadImageFormFileToCloudinary(file: Express.Multer.File) {
-    return this.cloudinaryService.uploadImageFromFile(file);
+  async uploadImageFormFileToCloudinary(file: Express.Multer.File) {
+    const res = await this.cloudinaryService.uploadImageFromFile(file);
+    const createStaticDto: Prisma.FileCreateInput = {
+      format: res.format,
+      name: res.name,
+      url: res.secure_url,
+      size: res.size,
+    };
+    const createdFile = await this.createFile(createStaticDto);
+    return createdFile
   }
 
-  uploadImageFormURLToCloudinary(url : string) {
-    return this.cloudinaryService.uploadImageFromUrl(url);
+ async uploadImageFormURLToCloudinary(url : string) {
+    const res = await this.cloudinaryService.uploadImageFromUrl(url);
+    const createStaticDto: Prisma.FileCreateInput = {
+      format: res.format,
+      name: res.name,
+      url: res.secure_url,
+      size: res.size,
+    };
+    const createdFile = await this.createFile(createStaticDto);
+    return createdFile
   }
 
   createFile(createStaticDto: Prisma.FileCreateInput) {
