@@ -11,6 +11,11 @@ export class ProductImageController {
     return this.productImageService.create(createProductImageDto);
   }
 
+  @Post("/updates")
+  updates() {
+    return this.productImageService.updateProductImages();
+  }
+
   @Get()
   findAll(
     @Query('skip') skip?: string,
