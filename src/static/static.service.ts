@@ -18,7 +18,7 @@ export class StaticService {
     const res = await this.cloudinaryService.uploadImageFromFile(file);
     const createStaticDto: Prisma.FileCreateInput = {
       format: res.format,
-      name: res.name,
+      name: res.name || res.original_filename,
       url: res.secure_url,
       size: res.size,
     };
@@ -30,7 +30,7 @@ export class StaticService {
     const res = await this.cloudinaryService.uploadImageFromUrl(url);
     const createStaticDto: Prisma.FileCreateInput = {
       format: res.format,
-      name: res.name,
+      name: res.name || res.public_id,
       url: res.secure_url,
       size: res.size,
     };
