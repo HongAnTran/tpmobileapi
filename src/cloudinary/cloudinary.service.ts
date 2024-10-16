@@ -27,7 +27,7 @@ export class CloudinaryService {
 
             // Lấy giá trị CLOUDINARY_URL từ biến môi trường
             const cloudinaryUrl =
-              this.configService.get<string>("CLOUDINARY_URL");
+              this.configService.get<string>("CLOUDINARY_URL_CDN");
             const cdnUrl = result.secure_url.replace(
               cloudinaryUrl,
               this.configService.get("CDN_URL") || "https://cdn.tpmobile.com.vn"
