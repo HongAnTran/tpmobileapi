@@ -1,93 +1,103 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma.service';
-import * as path from 'path';
-import * as sharp from 'sharp';
-import { v4 as uuid } from "uuid"
-import * as fs from 'fs';
-import { sanitizeName } from 'src/common/helper/hassPassword';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+import { PrismaService } from "src/prisma.service";
+import * as path from "path";
+import * as sharp from "sharp";
+import { v4 as uuid } from "uuid";
+import * as fs from "fs";
+import { sanitizeName } from "src/common/helper/hassPassword";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 @Injectable()
 export class StaticService {
-
-  constructor(private prisma: PrismaService,
-    private readonly cloudinaryService : CloudinaryService
+  constructor(
+    private prisma: PrismaService,
+    private readonly cloudinaryService: CloudinaryService
   ) {}
 
   uploadImageToCloudinary(file: Express.Multer.File) {
-      return this.cloudinaryService.uploadImage(file);
+    return this.cloudinaryService.uploadImage(file);
   }
 
   createFile(createStaticDto: Prisma.FileCreateInput) {
     return this.prisma.file.create({
-      data: createStaticDto
-    })
+      data: createStaticDto,
+    });
   }
   createFiles(createStaticDto: Prisma.FileCreateManyInput[]) {
     return this.prisma.file.createMany({
-      data: createStaticDto
-    })
+      data: createStaticDto,
+    });
   }
   createFolder(createStaticDto: Prisma.FolderCreateInput) {
     return this.prisma.folder.create({
-      data: createStaticDto
-    })
+      data: createStaticDto,
+    });
   }
 
   findFiles({
     skip,
     take,
-    where
-  }: { take: number, skip: number, where?: Prisma.FileWhereInput }) {
+    where,
+  }: {
+    take: number;
+    skip: number;
+    where?: Prisma.FileWhereInput;
+  }) {
     return this.prisma.file.findMany({
       where,
       take,
-      skip
-    })
+      skip,
+    });
   }
   findFolders({
     skip,
     take,
-    where
-  }: { take: number, skip: number, where?: Prisma.FolderWhereInput }) {
+    where,
+  }: {
+    take: number;
+    skip: number;
+    where?: Prisma.FolderWhereInput;
+  }) {
     return this.prisma.folder.findMany({
       where,
       take,
-      skip
-    })
+      skip,
+    });
   }
 
   findOne(id: number) {
     return this.prisma.file.findUnique({
-      where: { id }
-    })
+      where: { id },
+    });
   }
   findOnefolder(id: number) {
     return this.prisma.folder.findUnique({
-      where: { id }
-    })
+      where: { id },
+    });
   }
 
   async removeFile(id: number) {
     // Retrieve the file record from the database
     const fileRecord = await this.prisma.file.findUnique({
       where: { id },
-      select: { name: true }, // Assuming the file path or name is stored in the 'name' field
     });
 
     if (!fileRecord) {
-      throw new Error('File not found');
+      throw new Error("File not found");
     }
 
-    // Construct the file path
-    const filePath = path.join(process.env.STATIC_FOLDER, fileRecord.name);
+    if (fileRecord.id_root) {
+      await this.cloudinaryService.deleteImage(fileRecord.id_root);
+    } else {
+      // Construct the file path
+      const filePath = path.join(process.env.STATIC_FOLDER, fileRecord.name);
 
-    // Delete the file from the filesystem
-    try {
-      fs.unlinkSync(filePath);
-    } catch (error) {
-      console.error(`Failed to delete file: ${error.message}`);
-      throw new Error('Failed to delete file from filesystem');
+      // Delete the file from the filesystem
+      try {
+        fs.unlinkSync(filePath);
+      } catch (error) {
+        throw new Error("Failed to delete file from filesystem");
+      }
     }
 
     // Delete the file record from the database
@@ -98,15 +108,20 @@ export class StaticService {
 
   removeFolder(id: number) {
     return this.prisma.folder.delete({
-      where: { id }
-    })
+      where: { id },
+    });
   }
   async saveFileNormal(file: Express.Multer.File) {
     const image = sharp(file.buffer);
     const metadata = await image.metadata();
 
-    const format = metadata.format || 'webp'; // Sử dụng định dạng từ metadata, nếu không có thì dùng mặc định là 'webp'
-    const filename = this.createNameFileImage(file.originalname, format, metadata.width, metadata.height)
+    const format = metadata.format || "webp"; // Sử dụng định dạng từ metadata, nếu không có thì dùng mặc định là 'webp'
+    const filename = this.createNameFileImage(
+      file.originalname,
+      format,
+      metadata.width,
+      metadata.height
+    );
 
     const uploadPath = path.join(process.env.STATIC_FOLDER, filename);
 
@@ -118,13 +133,21 @@ export class StaticService {
       format: format,
       size: file.size,
       height: metadata.height,
-      width: metadata.width
+      width: metadata.width,
     };
   }
 
-
-  async saveFileOptimize(file: Express.Multer.File, width?: number, height?: number) {
-    const filename = this.createNameFileImage(file.originalname, "webp", width, height)
+  async saveFileOptimize(
+    file: Express.Multer.File,
+    width?: number,
+    height?: number
+  ) {
+    const filename = this.createNameFileImage(
+      file.originalname,
+      "webp",
+      width,
+      height
+    );
 
     const res = await sharp(file.buffer)
       .resize(width, height)
@@ -137,18 +160,21 @@ export class StaticService {
       format: res.format,
       size: res.size,
       height: res.height,
-      width: res.width
-    }
+      width: res.width,
+    };
   }
 
-  createNameFileImage(originName: string, format: string, w?: number, h?: number) {
-    const name = sanitizeName(originName)
+  createNameFileImage(
+    originName: string,
+    format: string,
+    w?: number,
+    h?: number
+  ) {
+    const name = sanitizeName(originName);
     if (w && h) {
-
       return name + uuid(4) + `-${w}x${h}` + `.${format}`;
     }
 
     return name + uuid(4) + `.${format}`;
   }
-
 }
