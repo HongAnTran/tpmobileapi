@@ -31,7 +31,7 @@ import { ProductAttributesModule } from './product-attributes/product-attributes
 import { StaticModule } from './static/static.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ScheduleModule } from '@nestjs/schedule';
-
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 
 @Module({
@@ -89,7 +89,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     AttributesModule,
     AttributesValueModule,
     ProductAttributesModule,
-    StaticModule
+    StaticModule,
+    CloudinaryModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, Upl
 import { StaticService } from './static.service';
 import { Prisma } from '@prisma/client';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
 @Controller('static')
 export class StaticController {
   constructor(private readonly staticService: StaticService) { }
@@ -42,6 +43,35 @@ export class StaticController {
       fileUploads.push(createdFile);
     }
 
+    return fileUploads; 
+  }
+
+
+  @Post('upload/clound')
+  @UseInterceptors(FilesInterceptor('file', 3, {
+    limits: { fileSize: 2 * 1024 * 1024 }, // Limit 2MB
+  }))
+  async uploadMultipleFilesImageToClound(
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    if (files.length > 3) {
+      throw new BadRequestException('You can only upload up to 5 files.');
+    }
+    const fileUploads = [];
+
+    for await (const file of files) {
+      let res = await this.staticService.uploadImageToCloudinary(file)
+      const createStaticDto: Prisma.FileCreateInput = {
+        format: res.format,
+        name: res.original_filename || res.public_id,
+        url: res.secure_url,
+        id_root: res.public_id,
+        size : res.bytes,
+        
+    };
+      const createdFile = await this.staticService.createFile(createStaticDto);
+      fileUploads.push(createdFile);
+    }
     return fileUploads; 
   }
 

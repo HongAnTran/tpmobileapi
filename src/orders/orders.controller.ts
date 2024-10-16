@@ -15,6 +15,25 @@ export class OrdersController {
      private readonly settingService: SettingsService,
     ) { }
 
+
+    @Post("/mail")
+    async mail(@Body() mail: { text: string }) {
+      try {
+  
+        return await this.mailService.sendMail({
+          from: process.env.ADMIN_EMAIL_ADDRESS,
+          subject: "TP Mobile Store - Đơn đặt hàng mới",
+          to: process.env.ADMIN_EMAIL_ADDRESS,
+          text: mail.text,
+          html: '<b>welcome</b>', // HTML body content
+        })
+      } catch (error) {
+        console.log(error)
+        throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
+      }
+    }
+
+    
   @Post()
   create(@Body() createOrderDto: Pick<Prisma.OrderCreateInput, "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price">) {
     return this.ordersService.createOderReview(createOrderDto);
@@ -47,22 +66,7 @@ export class OrdersController {
   //   return this.ordersService.update(+id, updateOrderDto);
   // }
 
-  // @Post("/mail")
-  // async mail(@Body() mail: { text: string }) {
-  //   try {
 
-  //     return await this.mailService.sendMail({
-  //       from: process.env.ADMIN_EMAIL_ADDRESS,
-  //       subject: "TP Mobile Store - Đơn đặt hàng mới",
-  //       to: process.env.ADMIN_EMAIL_ADDRESS,
-  //       text: mail.text,
-  //       html: '<b>welcome</b>', // HTML body content
-  //     })
-  //   } catch (error) {
-  //     console.log(error)
-  //     throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
-  //   }
-  // }
 
   @Get()
   findAll(@Query() query: {

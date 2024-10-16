@@ -6,11 +6,16 @@ import * as sharp from 'sharp';
 import { v4 as uuid } from "uuid"
 import * as fs from 'fs';
 import { sanitizeName } from 'src/common/helper/hassPassword';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 @Injectable()
 export class StaticService {
 
-  constructor(private prisma: PrismaService) {
+  constructor(private prisma: PrismaService,
+    private readonly cloudinaryService : CloudinaryService
+  ) {}
 
+  uploadImageToCloudinary(file: Express.Multer.File) {
+      return this.cloudinaryService.uploadImage(file);
   }
 
   createFile(createStaticDto: Prisma.FileCreateInput) {
