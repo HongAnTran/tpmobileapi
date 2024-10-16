@@ -14,8 +14,12 @@ export class StaticService {
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
-  uploadImageToCloudinary(file: Express.Multer.File) {
-    return this.cloudinaryService.uploadImage(file);
+  uploadImageFormFileToCloudinary(file: Express.Multer.File) {
+    return this.cloudinaryService.uploadImageFromFile(file);
+  }
+
+  uploadImageFormURLToCloudinary(url : string) {
+    return this.cloudinaryService.uploadImageFromUrl(url);
   }
 
   createFile(createStaticDto: Prisma.FileCreateInput) {

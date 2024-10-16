@@ -60,7 +60,7 @@ export class StaticController {
     const fileUploads = [];
 
     for await (const file of files) {
-      let res = await this.staticService.uploadImageToCloudinary(file)
+      let res = await this.staticService.uploadImageFormFileToCloudinary(file)
       const createStaticDto: Prisma.FileCreateInput = {
         format: res.format,
         name: res.original_filename || res.public_id,
@@ -73,6 +73,19 @@ export class StaticController {
       fileUploads.push(createdFile);
     }
     return fileUploads; 
+  }
+
+  @Post('upload/url')
+  async uploadImageFromUrl(@Body('imageUrl') imageUrl: string) {
+      const res = await this.staticService.uploadImageFormURLToCloudinary(imageUrl);
+      const createStaticDto: Prisma.FileCreateInput = {
+        format: res.format,
+        name: res.name,
+        url: res.secure_url,
+        size: res.size,
+      };
+      const createdFile = await this.staticService.createFile(createStaticDto);
+      return createdFile
   }
 
   @Post("files")
