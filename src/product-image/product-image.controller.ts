@@ -11,10 +11,10 @@ export class ProductImageController {
     return this.productImageService.create(createProductImageDto);
   }
 
-  @Post("/updates")
-  updates() {
-    return this.productImageService.updateProductImages();
-  }
+  // @Post("/updates")
+  // updates() {
+  //   return this.productImageService.updateProductImages();
+  // }
 
   @Get()
   findAll(

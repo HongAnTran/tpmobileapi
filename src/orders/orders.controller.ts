@@ -16,22 +16,22 @@ export class OrdersController {
     ) { }
 
 
-    @Post("/mail")
-    async mail(@Body() mail: { text: string }) {
-      try {
+    // @Post("/mail")
+    // async mail(@Body() mail: { text: string }) {
+    //   try {
   
-        return await this.mailService.sendMail({
-          from: process.env.ADMIN_EMAIL_ADDRESS,
-          subject: "TP Mobile Store - Đơn đặt hàng mới",
-          to: process.env.ADMIN_EMAIL_ADDRESS,
-          text: mail.text,
-          html: '<b>welcome</b>', // HTML body content
-        })
-      } catch (error) {
-        console.log(error)
-        throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
-      }
-    }
+    //     return await this.mailService.sendMail({
+    //       from: process.env.ADMIN_EMAIL_ADDRESS,
+    //       subject: "TP Mobile Store - Đơn đặt hàng mới",
+    //       to: process.env.ADMIN_EMAIL_ADDRESS,
+    //       text: mail.text,
+    //       html: '<b>welcome</b>', // HTML body content
+    //     })
+    //   } catch (error) {
+    //     console.log(error)
+    //     throw new BadRequestException('Something bad happened', { cause: new Error(), description: error })
+    //   }
+    // }
 
     
   @Post()

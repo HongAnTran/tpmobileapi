@@ -12,6 +12,6 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
   controllers: [StaticController],
   providers: [StaticService,PrismaService],
-  exports :[StaticService]
+  exports :[StaticService,CloudinaryModule]
 })
 export class StaticModule {}
