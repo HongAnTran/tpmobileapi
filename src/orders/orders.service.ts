@@ -43,7 +43,6 @@ export class OrdersService {
       },
     });
   }
-  // Cập nhật đơn hàng từ trạng thái "Đang chờ xử lý" sang "Đang xử lý" (Processing)
   async processOrder(id: number) {
     return this.prisma.order.update({
       where: { id },
@@ -58,7 +57,6 @@ export class OrdersService {
       },
     });
   }
-  // Cập nhật đơn hàng từ trạng thái "Đang xử lý" sang "Đang giao" (Shipped)
   async shipOrder(id: number) {
     return this.prisma.order.update({
       where: { id },
@@ -73,7 +71,6 @@ export class OrdersService {
       },
     });
   }
-  // Cập nhật đơn hàng từ trạng thái "Đang giao" sang "Hoàn tất" (Completed)
   async completeOrder(id: number) {
     return this.prisma.order.update({
       where: { id },
@@ -88,7 +85,6 @@ export class OrdersService {
       },
     });
   }
-  // Cập nhật đơn hàng từ bất kỳ trạng thái nào sang "Đã hủy" (Cancelled)
   async cancelOrder(id: number) {
     return this.prisma.order.update({
       where: { id },

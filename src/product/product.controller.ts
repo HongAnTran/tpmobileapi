@@ -10,7 +10,6 @@ export class ProductController {
   async create(@Body() createProductDto: Prisma.ProductCreateInput) {
     return this.productService.createProduct(createProductDto)
   }
-
   @Get()
   findAll(@Query() query: {
     page?: string;
@@ -148,6 +147,7 @@ export class ProductController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
+    console.log(id)
     const product = await this.productService.product(id);
     return product
   }

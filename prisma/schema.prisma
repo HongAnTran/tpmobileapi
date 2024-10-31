@@ -260,6 +260,7 @@ model Shipping {
   address_full            String
   ship_date               DateTime?
   tracking_number         String?
+  email                   String?
   phone                   String
   fullname                String
   status                  ShippingStatus @default(PROCESSING)
