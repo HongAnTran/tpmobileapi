@@ -6,13 +6,6 @@ import { Prisma, Product } from '@prisma/client';
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
-
-  @Post("hook")
-  async hook(@Body() createProductDto: Prisma.ProductCreateInput) {
-    console.log("body",createProductDto)
-    return true
-  }
-
   @Post()
   async create(@Body() createProductDto: Prisma.ProductCreateInput) {
     return this.productService.createProduct(createProductDto)
@@ -172,8 +165,6 @@ export class ProductController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.productService.deleteProduct({ id: Number(id) });
+    return this.productService.deleteSoftProduct({ id: Number(id) });
   }
-
-
 }

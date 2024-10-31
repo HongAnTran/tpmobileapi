@@ -46,4 +46,5 @@ export class ProductAttributesService {
       where: { id },
     });
   }
+
 }

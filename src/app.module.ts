@@ -63,8 +63,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', process.env.STATIC_FOLDER), // Đường dẫn tới thư mục 'uploads'
-      serveRoot: `/${process.env.STATIC_FOLDER}`, // URL để truy cập các tệp trong thư mục 'uploads'
+      rootPath: join(__dirname, '..', process.env.STATIC_FOLDER), 
+      serveRoot: `/${process.env.STATIC_FOLDER}`,
     }),
     ScheduleModule.forRoot(),
     ProductModule,

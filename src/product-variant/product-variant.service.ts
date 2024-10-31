@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from './../prisma.service';
-import { Prisma } from '@prisma/client';
-import { CreateProductVariantDto } from './dto/create-product-variant.dto';
-import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "./../prisma.service";
+import { Prisma } from "@prisma/client";
+import { CreateProductVariantDto } from "./dto/create-product-variant.dto";
+import { UpdateProductVariantDto } from "./dto/update-product-variant.dto";
 
 @Injectable()
 export class ProductVariantService {
@@ -24,7 +24,7 @@ export class ProductVariantService {
     where?: Prisma.ProductVariantWhereInput;
   }) {
     return this.prisma.productVariant.findMany({
-      where,
+      where: { ...where, available: true },
       skip,
       take,
     });
@@ -33,10 +33,10 @@ export class ProductVariantService {
   async findOne(id: number) {
     return this.prisma.productVariant.findUnique({
       where: { id },
-      include  :{
-        attribute_values : true,
-        image : true
-      }
+      include: {
+        attribute_values: true,
+        image: true,
+      },
     });
   }
 
@@ -53,6 +53,12 @@ export class ProductVariantService {
     });
   }
 
+  async removeSoft(id: number) {
+    return this.prisma.productVariant.update({
+      where: { id },
+      data: { available: false },
+    });
+  }
 
   async removeMany(ids: number[]) {
     return this.prisma.productVariant.deleteMany({
@@ -63,5 +69,15 @@ export class ProductVariantService {
       },
     });
   }
-  
+
+  async removeSoftMany(ids: number[]) {
+    return this.prisma.productVariant.updateMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      data: { available: false },
+    });
+  }
 }

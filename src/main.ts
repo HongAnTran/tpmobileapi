@@ -3,6 +3,7 @@ import { AppModule } from "./app.module";
 import { PrismaService } from "./prisma.service";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { PrismaExceptionFilter } from "./common/filters/PrismaException.filter";
 
 
 async function bootstrap() {
@@ -13,7 +14,7 @@ async function bootstrap() {
     .setVersion('0.1')
     .build();
 
-
+  app.useGlobalFilters(new PrismaExceptionFilter())
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix("v1");
   app.enableCors();
@@ -21,9 +22,6 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
   const prismaService = app.get(PrismaService);
   await prismaService.$connect();
-
-
-
   await app.listen(4000);
 }
 bootstrap();

@@ -1,15 +1,15 @@
-import { PrismaService } from 'src/prisma.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { Order, Prisma } from '@prisma/client';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { OrderStatus } from 'src/common/types/Order.type';
-import * as crypto from 'crypto';
-import { ResponseList } from 'src/common/types/Common.type';
+import { PrismaService } from "src/prisma.service";
+import { CreateOrderDto } from "./dto/create-order.dto";
+import { UpdateOrderDto } from "./dto/update-order.dto";
+import { Order, Prisma } from "@prisma/client";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { OrderStatus } from "src/common/types/Order.type";
+import * as crypto from "crypto";
+import { ResponseList } from "src/common/types/Common.type";
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.OrderCreateInput) {
     return this.prisma.order.create({
@@ -17,15 +17,30 @@ export class OrdersService {
     });
   }
 
-  async createOderReview(input: Pick<Prisma.OrderCreateInput, "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price">) {
-    const token = crypto.randomBytes(12).toString('hex');
+  async createOderReview(
+    input: Pick<
+      Prisma.OrderCreateInput,
+      | "items"
+      | "note"
+      | "total_price"
+      | "temp_price"
+      | "discount"
+      | "ship_price"
+    >
+  ) {
+    const token = crypto.randomBytes(12).toString("hex");
     const code = "DH" + crypto.randomBytes(3).toString("hex");
-    const data: Prisma.OrderCreateInput = { ...input, token, code: code.toUpperCase(), status: OrderStatus.DRAFT }
+    const data: Prisma.OrderCreateInput = {
+      ...input,
+      token,
+      code: code.toUpperCase(),
+      status: OrderStatus.DRAFT,
+    };
     return this.prisma.order.create({
       data,
       include: {
         items: true,
-      }
+      },
     });
   }
   // Cập nhật đơn hàng từ trạng thái "Đang chờ xử lý" sang "Đang xử lý" (Processing)
@@ -40,7 +55,7 @@ export class OrdersService {
         items: true,
         payment: true,
         shipping: true,
-      }
+      },
     });
   }
   // Cập nhật đơn hàng từ trạng thái "Đang xử lý" sang "Đang giao" (Shipped)
@@ -55,7 +70,7 @@ export class OrdersService {
         items: true,
         payment: true,
         shipping: true,
-      }
+      },
     });
   }
   // Cập nhật đơn hàng từ trạng thái "Đang giao" sang "Hoàn tất" (Completed)
@@ -70,7 +85,7 @@ export class OrdersService {
         items: true,
         payment: true,
         shipping: true,
-      }
+      },
     });
   }
   // Cập nhật đơn hàng từ bất kỳ trạng thái nào sang "Đã hủy" (Cancelled)
@@ -85,7 +100,7 @@ export class OrdersService {
         items: true,
         payment: true,
         shipping: true,
-      }
+      },
     });
   }
 
@@ -94,39 +109,41 @@ export class OrdersService {
     take,
     where,
     select,
-    orderBy
+    orderBy,
   }: {
     skip?: number;
     take?: number;
     where?: Prisma.OrderWhereInput;
-    select?:Prisma.OrderSelect
+    select?: Prisma.OrderSelect;
     orderBy?: Prisma.OrderOrderByWithRelationInput;
-
   }) {
     const orders = await this.prisma.order.findMany({
-      where,
+      where: { ...where, available: true },
       skip,
       take,
       select,
-      orderBy
+      orderBy,
     });
-    const count = await this.prisma.order.count({ where: where })
+    const count = await this.prisma.order.count({
+      where: { ...where, available: true },
+    });
     const response: ResponseList<Order> = {
       total: count,
       datas: orders,
-    }
-    return response
+    };
+    return response;
   }
 
   async findOne(id: number) {
     try {
-
       const order = await this.prisma.order.findUnique({
-        where: { id },
+        where: { id , available : true },
         include: {
           items: true,
-          customer: true, payment: true, shipping: true
-        }
+          customer: true,
+          payment: true,
+          shipping: true,
+        },
       });
 
       if (!order) {
@@ -138,21 +155,22 @@ export class OrdersService {
     }
   }
 
-
   async findOneByToken(token: string) {
     try {
       const order = await this.prisma.order.findUnique({
-        where: { token },
+        where: { token , available : true },
         include: {
           items: true,
-          customer: true, payment: true, shipping: true
-        }
+          customer: true,
+          payment: true,
+          shipping: true,
+        },
       });
       if (!order) {
         throw new NotFoundException(`order with token ${token} not found`);
       }
 
-      return order
+      return order;
     } catch (error) {
       throw new NotFoundException(`order with token ${token} not found`);
     }
@@ -166,8 +184,8 @@ export class OrdersService {
         customer: true,
         items: true,
         payment: true,
-        shipping: true
-      }
+        shipping: true,
+      },
     });
   }
 
@@ -182,11 +200,12 @@ export class OrdersService {
     const deleteBefore = new Date();
     deleteBefore.setDate(deleteBefore.getDate() - days);
 
-    return await this.prisma.order.deleteMany({
+    return await this.prisma.order.updateMany({
       where: {
         status: OrderStatus.DRAFT,
         created_at: { lt: deleteBefore },
       },
+      data: { available: false },
     });
   }
 }

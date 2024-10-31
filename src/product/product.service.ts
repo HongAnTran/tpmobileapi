@@ -1,28 +1,59 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { Product, Prisma, ProductImage } from '@prisma/client';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "../prisma.service";
+import { Product, Prisma, ProductImage } from "@prisma/client";
 @Injectable()
 export class ProductService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   // Tìm một sản phẩm theo id duy nhất
   async product(id: string): Promise<Product | null> {
     try {
-      const idNumber = Number(id)
-      let query: Prisma.ProductWhereUniqueInput = { slug: id }
+      const idNumber = Number(id);
+      let query: Prisma.ProductWhereUniqueInput = { slug: id  , available : true};
       if (!isNaN(idNumber)) {
-        query = { id: idNumber }
+        query = { id: idNumber , available : true};
       }
       const product = await this.prisma.product.findUnique({
         where: query,
         include: {
-          sub_categories: { select: { category: { select: { id: true, slug: true, title: true } } }, where: { category: { published: true } } },
-          variants: { orderBy: { position: "asc" }, include: { attribute_values: { select: { id: true, hex_color: true, attribute_id: true, value: true, slug: true, } }, image: true } },
+          sub_categories: {
+            select: {
+              category: { select: { id: true, slug: true, title: true } },
+            },
+            where: { category: { published: true } },
+          },
+          variants: {
+            orderBy: { position: "asc" },
+            include: {
+              attribute_values: {
+                select: {
+                  id: true,
+                  hex_color: true,
+                  attribute_id: true,
+                  value: true,
+                  slug: true,
+                },
+              },
+              image: true,
+            },
+          },
           category: { select: { id: true, slug: true, title: true } },
-          images: { select: { id: true, alt_text: true, url: true, is_featured: true, position: true }, orderBy: { position: "asc" } },
+          images: {
+            select: {
+              id: true,
+              alt_text: true,
+              url: true,
+              is_featured: true,
+              position: true,
+            },
+            orderBy: { position: "asc" },
+          },
           brand: { select: { id: true, name: true, slug: true } },
           tags: true,
-          attributes: { select: { position: true, id: true, attribute: true, values: true }, orderBy: { position: "asc" } }
+          attributes: {
+            select: { position: true, id: true, attribute: true, values: true },
+            orderBy: { position: "asc" },
+          },
         },
       });
       if (!product) {
@@ -40,24 +71,25 @@ export class ProductService {
     cursor?: Prisma.ProductWhereUniqueInput;
     where?: Prisma.ProductWhereInput;
     orderBy?: Prisma.ProductOrderByWithRelationInput;
-    select?: Prisma.ProductSelect
+    select?: Prisma.ProductSelect;
   }) {
     const { skip, take, cursor, where, orderBy, select } = params;
     const datas = await this.prisma.product.findMany({
       skip,
       take,
       cursor,
-      where,
+      where: { ...where, available: true },
+
       orderBy,
-      select
+      select,
     });
 
     const total = await this.prisma.product.count({
-      where
+      where: { ...where, available: true },
     });
     return {
       total,
-      datas
+      datas,
     };
   }
   // Tạo mới một sản phẩm
@@ -71,20 +103,27 @@ export class ProductService {
     where: Prisma.ProductWhereUniqueInput;
     data: Prisma.ProductUpdateInput;
   }): Promise<Product> {
-
     const { where, data } = params;
     return this.prisma.product.update({
       data,
       where,
     });
   }
-  // Xóa một sản phẩm
   async deleteProduct(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
     return this.prisma.product.delete({
       where,
       include: {
         variants: true,
-      }
+      },
+    });
+  }
+
+  async deleteSoftProduct(
+    where: Prisma.ProductWhereUniqueInput
+  ): Promise<Product> {
+    return this.prisma.product.update({
+      where,
+      data: { available: false },
     });
   }
 }

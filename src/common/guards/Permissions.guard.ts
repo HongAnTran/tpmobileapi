@@ -15,7 +15,7 @@ export class PermissionsGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    const userRoles = await this.userService.getUserRoles(user.id);
+    // const userRoles = await this.userService.getUserRoles(user.id);
     // Lấy tất cả các quyền của người dùng từ các vai trò của họ
 
     // Kiểm tra xem người dùng có quyền cần thiết không

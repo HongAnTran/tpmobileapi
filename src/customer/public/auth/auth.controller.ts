@@ -8,19 +8,19 @@ import { Request } from 'express';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
-  async login(@Body() loginDto: LoginCustomerDto): Promise<{ access_token: string }> {
-    return this.authService.login(loginDto);
-  }
+  // @Post('login')
+  // async login(@Body() loginDto: LoginCustomerDto): Promise<{ access_token: string }> {
+  //   return this.authService.login(loginDto);
+  // }
 
-  @Post('register')
-  async register(@Body() registerDto: RegisterCustomerDto): Promise<{ access_token: string }> {
-    return this.authService.register(registerDto);
-  }
+  // @Post('register')
+  // async register(@Body() registerDto: RegisterCustomerDto): Promise<{ access_token: string }> {
+  //   return this.authService.register(registerDto);
+  // }
 
-  @Put('refresh')
-  async refreshToken(@Req() req: Request): Promise<{ access_token: string }> {
-    const userId = req.user['id'];
-    return this.authService.refreshToken(userId);
-  }
+  // @Put('refresh')
+  // async refreshToken(@Req() req: Request): Promise<{ access_token: string }> {
+  //   const userId = req.user['id'];
+  //   return this.authService.refreshToken(userId);
+  // }
 }

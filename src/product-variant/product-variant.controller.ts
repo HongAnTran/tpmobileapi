@@ -36,13 +36,13 @@ export class ProductVariantController {
   @Post('delete/many')
   removeMany(@Query('ids') ids?: string) {
     const idsVariant  = ids.split(",").map(Number)
-    return this.productVariantService.removeMany(idsVariant)
+    return this.productVariantService.removeSoftMany(idsVariant)
   }
 
   
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.productVariantService.remove(+id);
+    return this.productVariantService.removeSoft(+id);
   }
 
 

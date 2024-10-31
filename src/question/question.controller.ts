@@ -7,10 +7,10 @@ import { UpdateQuestionDto } from './dto/update-question.dto';
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
-  @Post()
-  create(@Body() createQuestionDto: CreateQuestionDto) {
-    return this.questionService.create(createQuestionDto);
-  }
+  // @Post()
+  // create(@Body() createQuestionDto: CreateQuestionDto) {
+  //   return this.questionService.create(createQuestionDto);
+  // }
 
   @Get()
   findAll() {

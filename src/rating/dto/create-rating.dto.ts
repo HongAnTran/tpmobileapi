@@ -13,7 +13,7 @@ export class CreateRatingDto {
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
-  @ArrayMaxSize(3) // Giả định giới hạn tối đa 10 ảnh
+  @ArrayMaxSize(3)
   @IsString({ each: true })
   images?: string[];
 

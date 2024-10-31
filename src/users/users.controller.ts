@@ -8,52 +8,52 @@ import * as bcrypt from 'bcrypt';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @Post()
-  async createUser(@Body() data: {  name : string , username :string,email: string; password: string; roles: number[] }) {
-    const user = await this.usersService.create({
-      email: data.email,
-      password: data.password,
-      name:data.name,
-      username:data.username
-    },data.roles);
+  // @Post()
+  // async createUser(@Body() data: {  name : string , username :string,email: string; password: string; roles: number[] }) {
+  //   const user = await this.usersService.create({
+  //     email: data.email,
+  //     password: data.password,
+  //     name:data.name,
+  //     username:data.username
+  //   },data.roles);
    
-    return user;
-  }
+  //   return user;
+  // }
 
-  @Post("role")
-  createRole(@Body() createRoleDto: Prisma.RoleCreateInput) {
-    return this.usersService.createRole(createRoleDto);
-  }
-  @Post('permission')
-  async createPermission(@Body() data: { name: string }) {
-    return this.usersService.createPermission(data.name);
-  }
+  // @Post("role")
+  // createRole(@Body() createRoleDto: Prisma.RoleCreateInput) {
+  //   return this.usersService.createRole(createRoleDto);
+  // }
+  // @Post('permission')
+  // async createPermission(@Body() data: { name: string }) {
+  //   return this.usersService.createPermission(data.name);
+  // }
 
-  @Get('roles')
-  async getRoles() {
-    return this.usersService.getRoles();
-  }
-  @Get('permissions')
-  async getPermissions() {
-    return this.usersService.getPermissions();
-  }
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+  // @Get('roles')
+  // async getRoles() {
+  //   return this.usersService.getRoles();
+  // }
+  // @Get('permissions')
+  // async getPermissions() {
+  //   return this.usersService.getPermissions();
+  // }
+  // @Get()
+  // findAll() {
+  //   return this.usersService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.usersService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  //   return this.usersService.update(+id, updateUserDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.usersService.remove(+id);
+  // }
 }

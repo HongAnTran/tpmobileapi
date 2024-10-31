@@ -1,26 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
+import { Question } from '@prisma/client'; 
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class QuestionService {
-  create(createQuestionDto: CreateQuestionDto) {
-    return 'This action adds a new question';
+  constructor(private readonly prisma: PrismaService) {}
+
+  // async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
+  //   return this.prisma.question.create({
+  //     data: {...createQuestionDto , },
+  //   });
+  // }
+
+  async findAll(): Promise<Question[]> {
+    return this.prisma.question.findMany({
+      include: {
+        answers: true, // Nếu bạn muốn lấy kèm các câu trả lời
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all question`;
+  async findOne(id: number): Promise<Question> {
+    const question = await this.prisma.question.findUnique({
+      where: { id },
+      include: {
+        answers: true, // Nếu bạn muốn lấy kèm các câu trả lời
+      },
+    });
+
+    if (!question) {
+      throw new NotFoundException(`Question with id ${id} not found`);
+    }
+
+    return question;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} question`;
+  async update(id: number, updateQuestionDto: UpdateQuestionDto): Promise<Question> {
+    const question = await this.findOne(id); // Kiểm tra xem câu hỏi có tồn tại không
+
+    return this.prisma.question.update({
+      where: { id: question.id },
+      data: updateQuestionDto,
+    });
   }
 
-  update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    return `This action updates a #${id} question`;
-  }
+  async remove(id: number): Promise<Question> {
+    const question = await this.findOne(id); // Kiểm tra xem câu hỏi có tồn tại không
 
-  remove(id: number) {
-    return `This action removes a #${id} question`;
+    return this.prisma.question.delete({
+      where: { id: question.id },
+    });
   }
 }
