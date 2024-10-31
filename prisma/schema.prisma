@@ -470,6 +470,8 @@ model Store {
   phone          String?
   detail_address String?
   url_map        String?
+  latitude       Decimal?
+  longitude      Decimal?
   province       Location @relation("ProvinceStore", fields: [province_id], references: [id])
   district       Location @relation("DistrictStore", fields: [district_id], references: [id])
   ward           Location @relation("WardStore", fields: [ward_id], references: [id])
