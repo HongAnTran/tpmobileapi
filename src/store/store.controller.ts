@@ -1,8 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { StoreService } from './store.service';
-import { Prisma } from '@prisma/client';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from "@nestjs/common";
+import { StoreService } from "./store.service";
+import { Prisma } from "@prisma/client";
 
-@Controller('store')
+@Controller("store")
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
@@ -12,22 +21,34 @@ export class StoreController {
   }
 
   @Get()
-  findAll() {
-    return this.storeService.findAll();
-  }
+  async findAll(@Query() query: { latitude?: string; longitude?: string }) {
+    const {latitude , longitude} = query
+    const stores = await this.storeService.findAll();
+    if (Number(latitude) && Number(longitude)) {
+      const storesByDistance = this.storeService.sortStoresByDistance({
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+      },stores);
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+      return storesByDistance
+    }
+    return stores;
+  }
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.storeService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStoreDto: Prisma.StoreUpdateInput) {
+  @Patch(":id")
+  update(
+    @Param("id") id: string,
+    @Body() updateStoreDto: Prisma.StoreUpdateInput
+  ) {
     return this.storeService.update(+id, updateStoreDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.storeService.remove(+id);
   }
 }
