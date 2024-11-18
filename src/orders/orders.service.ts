@@ -6,10 +6,15 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { OrderStatus } from "src/common/types/Order.type";
 import * as crypto from "crypto";
 import { ResponseList } from "src/common/types/Common.type";
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService , 
+
+    private readonly mailService: MailService,
+
+  ) {}
 
   async create(data: Prisma.OrderCreateInput) {
     return this.prisma.order.create({
@@ -203,5 +208,15 @@ export class OrdersService {
       },
       data: { available: false },
     });
+  }
+
+
+  async sendMailRemind() {
+  return  this.mailService.sendMail({
+      from: process.env.ADMIN_EMAIL_ADDRESS,
+      subject: "Nhắc lịch đóng thuế cho Tuỳn cuti",
+      to: "tieutieulinhqaz@gmail.com",
+      template: "remind",
+    })
   }
 }

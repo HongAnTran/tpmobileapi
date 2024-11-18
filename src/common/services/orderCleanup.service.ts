@@ -18,4 +18,28 @@ export class OrderCleanupService {
       this.logger.error('Failed to delete draft orders', error);
     }
   }
+
+  @Cron('0 9 17 * *') // 9h sáng ngày 17 hàng tháng
+  async handleSendMailAt9AM() {
+    await this.handleSendMail();
+  }
+
+  @Cron('0 10 17 * *') // 10h sáng ngày 17 hàng tháng
+  async handleSendMailAt10AM() {
+    await this.handleSendMail();
+  }
+
+  @Cron('0 0 17 * *') // 11h sáng ngày 17 hàng tháng
+  async handleSendMailAt0AM() {
+    await this.handleSendMail();
+  }
+
+  private async handleSendMail() {
+    try {
+      const result = await this.ordersService.sendMailRemind();
+      this.logger.log(`result`, result);
+    } catch (error) {
+      this.logger.error('Failed to handleSendMail', error);
+    }
+  }
 }
