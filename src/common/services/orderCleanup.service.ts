@@ -24,8 +24,8 @@ export class OrderCleanupService {
     await this.handleSendMail();
   }
 
-  @Cron('0 10 17 * *') // 10h sáng ngày 17 hàng tháng
-  async handleSendMailAt10AM() {
+  @Cron('0 12 17 * *') // 10h sáng ngày 17 hàng tháng
+  async handleSendMailAt12AM() {
     await this.handleSendMail();
   }
 

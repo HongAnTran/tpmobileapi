@@ -21,6 +21,10 @@ export class OrdersController {
     return this.ordersService.createOderReview(createOrderDto);
   }
 
+  @Post("/send")
+  send() {
+    return this.ordersService.sendMailRemind()
+  }
   @Put("/checkout/:id")
   async checkout(@Param('id') id: string, @Body() checkoutOrder: Pick<Prisma.OrderUpdateInput, "customer" | "discount" | "note" | "payment" | "promotions" | "ship_price" | "shipping">) {
     try {
