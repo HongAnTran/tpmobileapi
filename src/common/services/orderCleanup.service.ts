@@ -19,17 +19,17 @@ export class OrderCleanupService {
     }
   }
 
-  @Cron('0 9 17 * *') // 9h sáng ngày 17 hàng tháng
+  @Cron('0 9 19 * *') // 9h sáng ngày 19 hàng tháng
   async handleSendMailAt9AM() {
     await this.handleSendMail();
   }
 
-  @Cron('0 12 17 * *') // 10h sáng ngày 17 hàng tháng
+  @Cron('0 12 19 * *') // 10h sáng ngày 19 hàng tháng
   async handleSendMailAt12AM() {
     await this.handleSendMail();
   }
 
-  @Cron('0 0 17 * *') // 11h sáng ngày 17 hàng tháng
+  @Cron('0 0 19 * *') // 11h sáng ngày 19 hàng tháng
   async handleSendMailAt0AM() {
     await this.handleSendMail();
   }
