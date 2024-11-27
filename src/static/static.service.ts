@@ -20,7 +20,7 @@ export class StaticService {
       format: res.format,
       name: res.name || res.original_filename,
       url: res.secure_url,
-      size: res.size,
+      size: res.size || 0,
       id_root: res.public_id,
     };
     const createdFile = await this.createFile(createStaticDto);
