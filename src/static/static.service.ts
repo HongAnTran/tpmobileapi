@@ -21,24 +21,23 @@ export class StaticService {
       name: res.name || res.original_filename,
       url: res.secure_url,
       size: res.size,
-      id_root : res.public_id
-
+      id_root: res.public_id,
     };
     const createdFile = await this.createFile(createStaticDto);
-    return createdFile
+    return createdFile;
   }
 
- async uploadImageFormURLToCloudinary(url : string) {
+  async uploadImageFormURLToCloudinary(url: string) {
     const res = await this.cloudinaryService.uploadImageFromUrl(url);
     const createStaticDto: Prisma.FileCreateInput = {
       format: res.format,
       name: res.name || res.public_id,
       url: res.secure_url,
       size: res.size || 0,
-      id_root : res.public_id
+      id_root: res.public_id,
     };
     const createdFile = await this.createFile(createStaticDto);
-    return createdFile
+    return createdFile;
   }
 
   createFile(createStaticDto: Prisma.FileCreateInput) {
@@ -70,6 +69,7 @@ export class StaticService {
       where,
       take,
       skip,
+      orderBy: { id: "desc" },
     });
   }
   findFolders({
