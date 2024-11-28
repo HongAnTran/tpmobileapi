@@ -4,7 +4,7 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -20,22 +20,27 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const message =
       exception instanceof HttpException
         ? exception.message
-        : 'Internal server error';
+        : "Internal server error";
 
     const error =
       exception instanceof HttpException
         ? exception.getResponse()
-        : 'Internal Server Error';
+        : "Internal Server Error";
 
     const details =
-      exception instanceof HttpException && typeof error === 'object'
-        ? error['details'] || []
+      exception instanceof HttpException && typeof error === "object"
+        ? error["details"] || []
         : [];
-
+    console.log({
+      statusCode: status,
+      message: message,
+      error: typeof error === "string" ? error : error["error"] || "Error",
+      details,
+    });
     response.status(status).json({
       statusCode: status,
       message: message,
-      error: typeof error === 'string' ? error : error['error'] || 'Error',
+      error: typeof error === "string" ? error : error["error"] || "Error",
       details,
     });
   }
