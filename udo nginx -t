@@ -1,0 +1,12 @@
+[0;1;31m●[0m nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: [0;1;31mfailed[0m (Result: exit-code) since Wed 2024-09-18 06:54:10 UTC; 1min 18s ago
+       Docs: man:nginx(8)
+    Process: 566712 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; [0;1;31m(code=exited, status=1/FAILURE)[0m
+
+Sep 18 06:54:10 srv508833 systemd[1]: Starting A high performance web server and a reverse proxy server...
+Sep 18 06:54:10 srv508833 nginx[566712]: nginx: [emerg] invalid number of arguments in "root" directive in /etc/nginx/sites-available/cdn.tpmobile.com.vn.save:6
+Sep 18 06:54:10 srv508833 nginx[566712]: nginx: configuration file /etc/nginx/nginx.conf test failed
+Sep 18 06:54:10 srv508833 systemd[1]: [0;1;39m[0;1;31m[0;1;39mnginx.service: Control process exited, code=exited, status=1/FAILURE[0m
+Sep 18 06:54:10 srv508833 systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mnginx.service: Failed with result 'exit-code'.[0m
+Sep 18 06:54:10 srv508833 systemd[1]: [0;1;31m[0;1;39m[0;1;31mFailed to start A high performance web server and a reverse proxy server.[0m

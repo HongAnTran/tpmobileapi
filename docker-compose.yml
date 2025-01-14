@@ -12,27 +12,5 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always  
-
-  backup:
-    image: ubuntu:latest
-    container_name: postgres_backup
-    volumes:
-      - pgbackups:/backups
-      - ~/backup-scripts:/scripts
-    depends_on:
-      - postgres
-    entrypoint: ["/scripts/backup_entrypoint.sh"]
-    restart: always  
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_DB}"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 volumes:
   postgres_data:
-  pgbackups:
-   driver: local
-   driver_opts:
-      type: none
-      o: bind
-      device: /var/www/backupdbtpmobile
