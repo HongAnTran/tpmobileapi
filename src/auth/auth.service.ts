@@ -31,4 +31,30 @@ export class AuthService {
     );
     return { user: result, accessToken, refreshToken };
   }
+
+  async logout() {
+    return { message: "Logout successfully" };
+  }
+
+  async validateUser(email: string, pass: string) {
+    const user = await this.accountService.findOneByEmail(email);
+    if (user && bcrypt.compareSync(pass, user.password)) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      const accessToken = this.jwtService.sign(
+        { sub: payload.sub },
+        { expiresIn: "30m" }
+      );
+      return { accessToken };
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
+  }
 }

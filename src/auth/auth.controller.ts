@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, UnauthorizedException } from "@nestjs/common";
 import { LoginDto } from "./dto/login.dto";
 import { AuthService } from "./auth.service";
 import { Public } from "./jwt.guard";
@@ -11,5 +11,18 @@ export class AuthController {
   @Post("login")
   async login(@Body() loginDto: LoginDto) {
     return this.authService.signIn(loginDto);
+  }
+
+  @Post("logout")
+  async logout() {
+    return this.authService.logout();
+  }
+
+  @Post("refresh")
+  async refresh(@Body() { refreshToken }: { refreshToken: string }) {
+    if (!refreshToken) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.refreshToken(refreshToken);
   }
 }

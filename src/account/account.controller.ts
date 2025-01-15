@@ -11,19 +11,22 @@ import {
 import { AccountService } from "./account.service";
 import { CreateAccountDto } from "./dto/create-account.dto";
 import { UpdateAccountDto } from "./dto/update-account.dto";
+import { Public } from "src/auth/jwt.guard";
 
 @Controller("account")
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Post()
+  @Public()
+  @Post("register-public")
   create(@Body() createAccountDto: CreateAccountDto) {
-    return this.accountService.create(createAccountDto);
+    return this.accountService.createPublic(createAccountDto);
   }
 
   @Get("profile")
   profile(@Req() req: any) {
-    return req.user;
+    const userId = req.user.id;
+    return this.accountService.findOne(userId);
   }
   @Get()
   findAll() {
