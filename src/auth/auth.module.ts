@@ -14,8 +14,9 @@ import { AccountService } from "src/account/account.service";
       signOptions: { expiresIn: "60s" },
     }),
   ],
-  controllers: [AuthController, AccountService],
+  controllers: [AuthController],
   providers: [
+    AccountService,
     AuthService,
     {
       provide: APP_GUARD,
