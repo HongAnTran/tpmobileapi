@@ -20,10 +20,10 @@ import { PrismaService } from "src/prisma.service";
   providers: [
     AuthService,
     PrismaService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
   ],
 })
 export class AuthModule {}
