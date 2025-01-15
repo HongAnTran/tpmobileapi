@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, Role, User } from '@prisma/client';
-import { hashPassword } from 'src/common/helper/hassPassword';
-import { PrismaService } from 'src/prisma.service';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma, Role, User } from "@prisma/client";
+import { hashPassword } from "src/common/helper/hassPassword";
+import { PrismaService } from "src/prisma.service";
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   // async create(createUserDto: Prisma.UserCreateInput, roles: number[]): Promise<User> {
   //   const hashPass = await hashPassword(createUserDto.password)
@@ -52,9 +52,9 @@ export class UsersService {
       include: {
         permission: {
           include: {
-            permission: true
-          }
-        }
+            permission: true,
+          },
+        },
       },
     });
   }
@@ -90,15 +90,15 @@ export class UsersService {
     return User;
   }
 
-
-
-  async update(id: number, updateUserDto: Prisma.UserUpdateInput): Promise<User> {
+  async update(
+    id: number,
+    updateUserDto: Prisma.UserUpdateInput
+  ): Promise<User> {
     // Perform the update
     return await this.prisma.user.update({
       where: { id },
-      data: updateUserDto
+      data: updateUserDto,
     });
-
   }
 
   async remove(id: number): Promise<User> {
