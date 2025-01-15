@@ -4,6 +4,7 @@ import { AuthService } from "./auth.service";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthGuard } from "./jwt.guard";
 import { APP_GUARD } from "@nestjs/core";
+import { AccountService } from "src/account/account.service";
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { APP_GUARD } from "@nestjs/core";
       signOptions: { expiresIn: "60s" },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AccountService],
   providers: [
     AuthService,
     {
