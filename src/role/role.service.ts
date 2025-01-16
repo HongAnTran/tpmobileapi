@@ -15,10 +15,9 @@ export class RoleService {
   findAll(where: Prisma.RoleWhereInput) {
     return this.prismaService.role.findMany({
       where,
-      include: { permission: true },
+      include: { permission: { include: { permission: true } } },
     });
   }
-
   findOne(id: number) {
     return this.prismaService.role.findUnique({ where: { id } });
   }
