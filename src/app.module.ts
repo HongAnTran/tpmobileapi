@@ -35,6 +35,7 @@ import { CloudinaryModule } from "./cloudinary/cloudinary.module";
 import { SentryModule } from "@sentry/nestjs/setup";
 import { AuthModule } from "./auth/auth.module";
 import { AccountModule } from "./account/account.module";
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { AccountModule } from "./account/account.module";
     CloudinaryModule,
     AuthModule,
     AccountModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

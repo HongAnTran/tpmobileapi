@@ -54,6 +54,35 @@ export class AccountService {
     }
   }
 
+  async createUser(createAccountDto: CreateAccountDto) {
+    const { email, password, provider, name, birthday, gender, phone } =
+      createAccountDto;
+    const isExists = await this.findOneByEmail(email);
+    if (isExists) {
+      throw new BadRequestException("Email already exists");
+    }
+    const hashedPassword = await hashPassword(password);
+    try {
+      const account = await this.PrismaService.account.create({
+        data: {
+          email,
+          password: hashedPassword,
+          provider: provider || "local",
+        },
+      });
+
+      const customer = await this.PrismaService.user.create({
+        data: {
+          name,
+          account_id: account.id,
+        },
+      });
+      return customer;
+    } catch (error) {
+      throw new InternalServerErrorException("Failed to create account");
+    }
+  }
+
   findAll() {
     return `This action returns all account`;
   }
@@ -64,7 +93,13 @@ export class AccountService {
   findOne(id: number) {
     return this.PrismaService.account.findUnique({
       where: { id },
-      select: { customer: true },
+      select: {
+        customer: true,
+        email: true,
+        provider: true,
+        updated_at: true,
+        created_at: true,
+      },
     });
   }
 

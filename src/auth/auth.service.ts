@@ -13,23 +13,23 @@ export class AuthService {
   ) {}
 
   async signIn(payload: LoginDto) {
-    const user = await this.accountService.findOneByEmail(payload.email);
-    if (!user) {
+    const profile = await this.accountService.findOneByEmail(payload.email);
+    if (!profile) {
       throw new UnauthorizedException();
     }
-    if (!bcrypt.compareSync(payload.password, user.password)) {
+    if (!bcrypt.compareSync(payload.password, profile.password)) {
       throw new UnauthorizedException();
     }
-    const { password, ...result } = user;
+    const { password, ...result } = profile;
     const accessToken = this.jwtService.sign(
-      { sub: user.id, email: user.email },
+      { sub: profile.id, email: profile.email },
       { expiresIn: "30m", secret: process.env.JWT_SECRET }
     );
     const refreshToken = this.jwtService.sign(
-      { sub: user.id },
+      { sub: profile.id },
       { expiresIn: "30d", secret: process.env.JWT_REFRESH_SECRET }
     );
-    return { user: result, accessToken, refreshToken };
+    return { profile: { email: result.email }, accessToken, refreshToken };
   }
 
   async logout() {
