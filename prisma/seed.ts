@@ -4,6 +4,7 @@ import {
   DEFAULT_ROLES,
   ROLE_CODE_DEFAULT,
 } from "../src/common/consts";
+import { hashPassword } from "src/common/helper/hassPassword";
 
 const prisma = new PrismaClient();
 
@@ -76,12 +77,40 @@ async function assignPermissionsToAdmin() {
   }
 }
 
+async function initAccountAdmin() {
+  const passwordHash = await hashPassword(process.env.PASS_USERNAME);
+  const payload = {
+    email: process.env.EMAIL_USERNAME,
+    password: passwordHash,
+  };
+  const existingAccount = await prisma.account.findUnique({
+    where: { email: payload.email },
+  });
+
+  if (!existingAccount) {
+    await prisma.account.create({
+      data: {
+        email: payload.email,
+        password: payload.password,
+        provider: "local",
+        account_roles: {
+          create: {
+            role: {
+              connect: { code: ROLE_CODE_DEFAULT.ADMIN },
+            },
+          },
+        },
+      },
+    });
+  }
+}
 /**
  */
 async function main() {
   await createPermissions();
   await createRoles();
   await assignPermissionsToAdmin();
+  await initAccountAdmin();
 }
 
 main()

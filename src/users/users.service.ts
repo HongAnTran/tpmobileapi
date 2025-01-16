@@ -1,106 +1,52 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, Role, User } from "@prisma/client";
-import { hashPassword } from "src/common/helper/hassPassword";
+import { ResponseList } from "src/common/types/Common.type";
 import { PrismaService } from "src/prisma.service";
+import { PaginationDto } from "../common/dtos/pagination.dto";
+import { CONFIG_APP } from "src/common/config";
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  // async create(createUserDto: Prisma.UserCreateInput, roles: number[]): Promise<User> {
-  //   const hashPass = await hashPassword(createUserDto.password)
-  //   const user = await this.prisma.user.create({ data: { ...createUserDto, password: hashPass }, include: { roles: true } });
-  //   for (const roleId of roles) {
-  //     await this.assignRole(user.id, roleId);
-  //   }
-  //   return user
-  // }
-  async createRole(createRoleDto: Prisma.RoleCreateInput): Promise<Role> {
-    return this.prisma.role.create({ data: createRoleDto });
-  }
-  // // Gán vai trò cho người dùng
-  // async assignRole(userId: number, roleId: number) {
-  //   return this.prisma.userRole.create({
-  //     data: {
-  //       userId,
-  //       roleId,
-  //     },
-  //   });
-  // }
-
-  // async getUserRoles(userId: number) {
-  //   return this.prisma.userRole.findMany({
-  //     where: {
-  //       userId: userId
-  //     },
-  //     include: { role: { include: { permission: true } } }
-  //   })
-  // }
-
-  // Gán quyền cho vai trò
-  // async assignPermission(roleId: number, permissionId: number, type: PermissionType) {
-  //   return this.prisma.rolePermission.create({
-  //     data: {
-  //       roleId,
-  //       permissionId,
-  //     },
-  //   });
-  // }
-  // Lấy danh sách vai trò cùng với quyền hạn của chúng
-  async getRoles() {
-    return this.prisma.role.findMany({
-      include: {
-        permission: {
-          include: {
-            permission: true,
-          },
-        },
-      },
-    });
-  }
-  // Tạo quyền mới
-  async createPermission(name: string) {
-    return this.prisma.permission.create({
-      data: {
-        name,
-      },
-    });
+  async findAll(paginationDto: PaginationDto): Promise<ResponseList<User>> {
+    const paga = this.getPaginationOptions(paginationDto);
+    const users = await this.prisma.user.findMany({ ...paga });
+    const total = await this.prisma.user.count();
+    return { datas: users, total };
   }
 
-  // Lấy danh sách các quyền
-  async getPermissions() {
-    return this.prisma.permission.findMany();
-  }
-  // async findAll() {
-  //   const datas = await this.prisma.user.findMany({ include: { roles: true } });
-  //   const count = await this.prisma.user.count()
-  //   return {
-  //     datas,
-  //     total: count
+  getPaginationOptions(paginationDto: PaginationDto) {
+    const {
+      page = 1,
+      limit = CONFIG_APP.MAX_SIZE_LIMIT,
+      sortBy,
+      sortType = "asc",
+      include,
+    } = paginationDto;
+    const take =
+      limit <= CONFIG_APP.MAX_SIZE_LIMIT ? limit : CONFIG_APP.MAX_SIZE_LIMIT;
+    const skip = (page - 1) * limit;
 
-  //   }
-  // }
-  async findOne(id: number): Promise<User | null> {
-    const User = await this.prisma.user.findUnique({
-      where: { id },
-    });
-    if (!User) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
-    return User;
+    const orderBy = sortBy ? { [sortBy]: sortType } : undefined;
+
+    const includeParams = include ? include.split(",") : [];
+    let includeQuery = includeParams.reduce((pre, item) => {
+      pre[item] = true;
+      return pre;
+    }, {});
+    return { skip, take, orderBy, include: includeQuery };
   }
 
   async update(
     id: number,
     updateUserDto: Prisma.UserUpdateInput
   ): Promise<User> {
-    // Perform the update
     return await this.prisma.user.update({
       where: { id },
       data: updateUserDto,
     });
   }
-
   async remove(id: number): Promise<User> {
     return this.prisma.user.delete({
       where: { id },
