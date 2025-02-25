@@ -1,17 +1,30 @@
-import { IsString, IsOptional, IsEmail, IsDate, IsEnum } from 'class-validator';
-import { Gender } from '@prisma/client';
+import {
+  IsString,
+  IsOptional,
+  IsEmail,
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsInt,
+} from "class-validator";
+import { Gender } from "@prisma/client";
+import { Transform } from "class-transformer";
 
 export class CreateCustomerDto {
+  @IsNotEmpty()
+  @IsInt()
+  @Transform(({ value }) => parseInt(value))
+  account_id: number;
+
   @IsOptional()
   @IsEmail()
   email?: string;
 
-  @IsString()
-  password: string;
-
+  @IsNotEmpty()
   @IsString()
   name: string;
 
+  @IsNotEmpty()
   @IsString()
   phone: string;
 
@@ -29,7 +42,7 @@ export class CreateCustomerDto {
   @IsOptional()
   @IsString()
   provider_id?: string;
-  
+
   @IsOptional()
   status?: number;
 }

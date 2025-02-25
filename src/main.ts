@@ -4,7 +4,7 @@ import { PrismaService } from "./prisma.service";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { PrismaExceptionFilter } from "./common/filters/PrismaException.filter";
-
+import "./instrument";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
