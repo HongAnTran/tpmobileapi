@@ -4,7 +4,7 @@ import {
   DEFAULT_ROLES,
   ROLE_CODE_DEFAULT,
 } from "../src/common/consts";
-import { hashPassword } from "src/common/helper/hassPassword";
+import { hashPassword } from "../src/common/helper/hassPassword";
 
 const prisma = new PrismaClient();
 
