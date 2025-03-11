@@ -22,16 +22,16 @@ export class StoreController {
 
   @Get()
   async findAll(@Query() query: { latitude?: string; longitude?: string }) {
-    const {latitude , longitude} = query
+    const { latitude, longitude } = query;
     const stores = await this.storeService.findAll();
-    if (Number(latitude) && Number(longitude)) {
-      const storesByDistance = this.storeService.sortStoresByDistance({
-        latitude: Number(latitude),
-        longitude: Number(longitude),
-      },stores);
+    // if (Number(latitude) && Number(longitude)) {
+    //   const storesByDistance = this.storeService.sortStoresByDistance({
+    //     latitude: Number(latitude),
+    //     longitude: Number(longitude),
+    //   },stores);
 
-      return storesByDistance
-    }
+    //   return storesByDistance
+    // }
     return stores;
   }
   @Get(":id")

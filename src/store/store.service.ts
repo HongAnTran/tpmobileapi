@@ -15,12 +15,27 @@ export class StoreService {
     return this.prisma.store.create({ data: createStoreDto });
   }
 
-  async findAll(): Promise<Store[]> {
-    return this.prisma.store.findMany();
+  async findAll() {
+    return this.prisma.store.findMany({
+      select: {
+        id: true,
+        detail_address: true,
+        name: true,
+        phone: true,
+        url_map: true,
+      },
+    });
   }
-  async findOne(id: number): Promise<Store | null> {
+  async findOne(id: number) {
     const Store = await this.prisma.store.findUnique({
       where: { id },
+      select: {
+        id: true,
+        detail_address: true,
+        name: true,
+        phone: true,
+        url_map: true,
+      },
     });
     if (!Store) {
       throw new NotFoundException(`Store with id ${id} not found`);
