@@ -9,44 +9,34 @@ export class ReportService {
 
   async reportDashboard(query: DashboardReportDto) {
     const { startDate, endDate } = query;
-
-    const totalOrders = await this.prisma.order.count({
-      where: {
-        created_at: {
-          gte: new Date(startDate),
-          lte: endDate ? new Date(endDate) : new Date(),
-        },
+    const condition = {
+      created_at: {
+        gte: new Date(startDate),
+        lte: endDate ? new Date(endDate) : new Date(),
       },
+    };
+    const conditionOrder = {
+      ...condition,
+      status: { not: OrderStatus.DRAFT },
+    };
+    const totalOrders = await this.prisma.order.count({
+      where: conditionOrder,
     });
-
     const totalRevenue = await this.prisma.order.aggregate({
       _sum: {
         total_price: true,
       },
-      where: {
-        created_at: {
-          gte: new Date(startDate),
-          lte: endDate ? new Date(endDate) : new Date(),
-        },
-      },
+      where: conditionOrder,
     });
     const completedOrders = await this.prisma.order.count({
       where: {
+        ...condition,
         status: OrderStatus.SUCCESS,
-        created_at: {
-          gte: new Date(startDate),
-          lte: endDate ? new Date(endDate) : new Date(),
-        },
       },
     });
 
     const totalUsers = await this.prisma.user.count({
-      where: {
-        created_at: {
-          gte: new Date(startDate),
-          lte: endDate ? new Date(endDate) : new Date(),
-        },
-      },
+      where: condition,
     });
 
     return {
