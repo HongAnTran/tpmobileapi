@@ -10,10 +10,10 @@ import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService , 
+  constructor(
+    private prisma: PrismaService,
 
-    private readonly mailService: MailService,
-
+    private readonly mailService: MailService
   ) {}
 
   async create(data: Prisma.OrderCreateInput) {
@@ -123,7 +123,7 @@ export class OrdersService {
       skip,
       take,
       select,
-      orderBy,
+      orderBy: orderBy ? orderBy : { id: "desc" },
     });
     const count = await this.prisma.order.count({
       where: { ...where, available: true },
@@ -138,7 +138,7 @@ export class OrdersService {
   async findOne(id: number) {
     try {
       const order = await this.prisma.order.findUnique({
-        where: { id , available : true },
+        where: { id, available: true },
         include: {
           items: true,
           customer: true,
@@ -159,7 +159,7 @@ export class OrdersService {
   async findOneByToken(token: string) {
     try {
       const order = await this.prisma.order.findUnique({
-        where: { token , available : true },
+        where: { token, available: true },
         include: {
           items: true,
           customer: true,
@@ -210,13 +210,12 @@ export class OrdersService {
     });
   }
 
-
   async sendMailRemind() {
-  return  this.mailService.sendMail({
+    return this.mailService.sendMail({
       from: process.env.ADMIN_EMAIL_ADDRESS,
       subject: "Nhắc lịch đóng thuế cho Tuỳn cuti",
       to: "tieutieulinhqaz@gmail.com",
       template: "remind",
-    })
+    });
   }
 }
