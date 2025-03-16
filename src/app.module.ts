@@ -36,6 +36,7 @@ import { SentryModule } from "@sentry/nestjs/setup";
 import { AuthModule } from "./auth/auth.module";
 import { AccountModule } from "./account/account.module";
 import { RoleModule } from './role/role.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -98,6 +99,7 @@ import { RoleModule } from './role/role.module';
     AuthModule,
     AccountModule,
     RoleModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
