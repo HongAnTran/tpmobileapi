@@ -33,10 +33,9 @@ export class CloudinaryService {
               this.configService.get("CDN_URL") || "https://cdn.tpmobile.com.vn"
             );
 
-            // Trả về kết quả đã cập nhật URL
             resolve({
               ...result,
-              secure_url: cdnUrl, // Cập nhật secure_url với URL mới
+              secure_url: cdnUrl,
             });
             resolve(result);
           }
@@ -44,7 +43,6 @@ export class CloudinaryService {
         .end(file.buffer);
     });
   }
-
 
   async uploadImageFromUrl(
     imageUrl: string
@@ -81,17 +79,13 @@ export class CloudinaryService {
       );
     });
   }
-  
 
   async deleteImage(publicId: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      cloudinary.uploader.destroy(
-        publicId,
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        }
-      );
+      cloudinary.uploader.destroy(publicId, (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      });
     });
   }
 }

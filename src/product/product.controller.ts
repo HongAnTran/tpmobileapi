@@ -186,6 +186,7 @@ export class ProductController {
         updated_at: true,
         meta_tags: true,
         tags: true,
+        attributes: true,
       },
       orderBy,
     });

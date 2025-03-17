@@ -5,13 +5,12 @@ import { Product, Prisma, ProductImage } from "@prisma/client";
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
-  // Tìm một sản phẩm theo id duy nhất
   async product(id: string): Promise<Product | null> {
     try {
       const idNumber = Number(id);
-      let query: Prisma.ProductWhereUniqueInput = { slug: id  , available : true};
+      let query: Prisma.ProductWhereUniqueInput = { slug: id, available: true };
       if (!isNaN(idNumber)) {
-        query = { id: idNumber , available : true};
+        query = { id: idNumber, available: true };
       }
       const product = await this.prisma.product.findUnique({
         where: query,
@@ -19,6 +18,8 @@ export class ProductService {
           sub_categories: {
             select: {
               category: { select: { id: true, slug: true, title: true } },
+              category_id: true,
+              id: true,
             },
             where: { category: { published: true } },
           },
