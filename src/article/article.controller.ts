@@ -1,42 +1,54 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ArticleService } from './article.service';
-import { Prisma } from '@prisma/client';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from "@nestjs/common";
+import { ArticleService } from "./article.service";
+import { Prisma } from "@prisma/client";
+import { Public } from "src/common/decorator/public.decorator";
 
-@Controller('articles')
+@Controller("articles")
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) { }
+  constructor(private readonly articleService: ArticleService) {}
 
   @Post()
   create(@Body() data: Prisma.ArticleCreateInput) {
     return this.articleService.create(data);
   }
 
+  @Public()
   @Get()
   findAll(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-    @Query('category_id') category_id?: string,
-    @Query('keyword') keyword?: string,
-    @Query('status') status?: string,
-    @Query('sort_by') sortBy?: string,
-    @Query('sort_type') sortType?:Prisma.SortOrder,
-
+    @Query("page") page?: string,
+    @Query("limit") limit?: string,
+    @Query("category_id") category_id?: string,
+    @Query("keyword") keyword?: string,
+    @Query("status") status?: string,
+    @Query("sort_by") sortBy?: string,
+    @Query("sort_type") sortType?: Prisma.SortOrder
   ) {
-    const take = limit ? Number(limit) <= 50 ? Number(limit) : 50 : 50
+    const take = limit ? (Number(limit) <= 50 ? Number(limit) : 50) : 50;
     const skip = page ? (Number(page) - 1) * take : undefined;
     const where: Prisma.ArticleWhereInput = {
       category_id: category_id ? Number(category_id) : undefined,
       ...(keyword && { title: { contains: keyword, mode: "insensitive" } }),
-      status: status ? Number(status) : undefined
-    }
+      status: status ? Number(status) : undefined,
+    };
 
-    let orderBy: Prisma.ArticleOrderByWithRelationInput = { [sortBy]: sortType }
+    let orderBy: Prisma.ArticleOrderByWithRelationInput = {
+      [sortBy]: sortType,
+    };
 
     const params = {
       skip: skip,
       take: take,
       orderBy,
-      ...where
+      ...where,
     };
     return this.articleService.findAll({
       ...params,
@@ -52,26 +64,25 @@ export class ArticleController {
         thumnal_url: true,
         created_at: true,
         updated_at: true,
-        status: true
-      }
+        status: true,
+      },
     });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Public()
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.articleService.findOne(id);
   }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() data: Prisma.ArticleUpdateInput) {
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() data: Prisma.ArticleUpdateInput) {
     return this.articleService.update({
       where: { id: parseInt(id, 10) },
       data: data,
     });
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.articleService.remove({ id: parseInt(id, 10) });
   }
 }

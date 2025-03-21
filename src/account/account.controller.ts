@@ -11,7 +11,7 @@ import {
 import { AccountService } from "./account.service";
 import { CreateAccountDto } from "./dto/create-account.dto";
 import { UpdateAccountDto } from "./dto/update-account.dto";
-import { Public } from "src/auth/jwt.guard";
+import { Public } from "src/common/decorator/public.decorator";
 
 @Controller("account")
 export class AccountController {

@@ -1,12 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
-import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma.service';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CreateArticleDto } from "./dto/create-article.dto";
+import { UpdateArticleDto } from "./dto/update-article.dto";
+import { Prisma } from "@prisma/client";
+import { PrismaService } from "src/prisma.service";
 
 @Injectable()
 export class ArticleService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
   async create(data: Prisma.ArticleCreateInput) {
     return this.prisma.article.create({
       data,
@@ -20,7 +20,6 @@ export class ArticleService {
     where?: Prisma.ArticleWhereInput;
     orderBy?: Prisma.ArticleOrderByWithRelationInput;
     select?: Prisma.ArticleSelect;
-
   }) {
     const { skip, take, cursor, where, orderBy, select } = params;
     const datas = await this.prisma.article.findMany({
@@ -29,14 +28,13 @@ export class ArticleService {
       cursor,
       where,
       orderBy,
-      select
+      select,
     });
 
     const total = await this.prisma.article.count({
       where,
     });
 
-   
     return {
       datas,
       total,
@@ -45,17 +43,17 @@ export class ArticleService {
 
   async findOne(id: string) {
     try {
-      const idNumber = Number(id)
-      let query: Prisma.ArticleWhereUniqueInput = { slug: id }
+      const idNumber = Number(id);
+      let query: Prisma.ArticleWhereUniqueInput = { slug: id };
       if (!isNaN(idNumber)) {
-        query = { id: idNumber }
+        query = { id: idNumber };
       }
       const article = await this.prisma.article.findUnique({
         where: query,
         include: {
           category: true,
           author: true,
-        }
+        },
       });
       if (!article) {
         throw new NotFoundException(`Article with ID ${id} not found`);

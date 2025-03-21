@@ -255,7 +255,7 @@ model Shipping {
   tracking_number         String?
   phone                   String
   fullname                String
-  status                  ShippingStatus @default(PROCESSING)
+  status                  ShippingStatus @default(PENDING)
   tracking_url            String?
   carrier                 String?
   estimated_delivery_date DateTime?

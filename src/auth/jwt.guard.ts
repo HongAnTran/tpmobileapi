@@ -6,12 +6,9 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
-
-import { SetMetadata } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 
 export const IS_PUBLIC_KEY = "isPublic";
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -38,10 +35,10 @@ export class AuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
       request["user"] = payload;
+      return true;
     } catch {
       throw new UnauthorizedException();
     }
-    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

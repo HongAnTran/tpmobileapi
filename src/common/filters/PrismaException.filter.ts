@@ -3,7 +3,6 @@ import {
   Catch,
   ArgumentsHost,
   HttpStatus,
-  HttpException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
@@ -29,7 +28,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         message = "Record to update not found";
         break;
       default:
-        message = exception.message;
+        message = "Server Error";
     }
     console.log({
       statusCode: status,
