@@ -39,7 +39,7 @@ model Product {
   ratings           Rating[]
   specifications    ProductSpecifications[] @relation("ProductToProductSpecifications")
   tags              Tags[]                  @relation("ProductToTags")
-
+  consultations     ProductConsultation[]
   @@index([category_id, status])
 }
 
@@ -122,13 +122,29 @@ model Rating {
   content     String?
   images      String[]
   product_id  Int
-  customer_id Int
+  customer_id Int?  
   like_count  Int       @default(0)
+  is_seeding  Boolean   @default(false) 
+  customer_seed  Json?   
   created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
-  customer    Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  customer    Customer? @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   product     Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
+model ProductConsultation {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  email       String?
+  message     String?
+  product_id  Int
+  status      Int      @default(0)
+  tags        Json?
+  created_at  DateTime @default(now())
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  @@index([product_id])
+}
+
 
 model ProductVariant {
   id                 Int               @id @default(autoincrement())
@@ -255,7 +271,7 @@ model Shipping {
   tracking_number         String?
   phone                   String
   fullname                String
-  status                  ShippingStatus @default(PROCESSING)
+  status                  ShippingStatus @default(PENDING)
   tracking_url            String?
   carrier                 String?
   estimated_delivery_date DateTime?

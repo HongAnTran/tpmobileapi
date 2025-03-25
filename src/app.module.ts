@@ -37,6 +37,7 @@ import { AuthModule } from "./auth/auth.module";
 import { AccountModule } from "./account/account.module";
 import { RoleModule } from './role/role.module';
 import { ReportModule } from './report/report.module';
+import { ProductConsultationModule } from './product-consultation/product-consultation.module';
 
 @Module({
   imports: [
@@ -100,6 +101,7 @@ import { ReportModule } from './report/report.module';
     AccountModule,
     RoleModule,
     ReportModule,
+    ProductConsultationModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
