@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AccountService } from "./account.service";
-import { UpdateAccountDto } from "./dto/update-account.dto";
 import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("account")
@@ -24,11 +23,6 @@ export class AccountController {
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.accountService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateAccountDto: UpdateAccountDto) {
-    return this.accountService.update(+id, updateAccountDto);
   }
 
   @Delete(":id")

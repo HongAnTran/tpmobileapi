@@ -5,21 +5,15 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
-  HttpStatus,
   BadRequestException,
   Put,
   Query,
 } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
-import { CreateOrderDto } from "./dto/create-order.dto";
-import { UpdateOrderDto } from "./dto/update-order.dto";
 import { Prisma } from "@prisma/client";
-import * as crypto from "crypto";
 import { MailService } from "src/mail/mail.service";
 import { OrderStatus } from "src/common/types/Order.type";
 import { SettingsService } from "src/settings/settings.service";
-import { Public } from "src/common/decorator/public.decorator";
 
 @Controller("orders")
 export class OrdersController {
@@ -29,7 +23,6 @@ export class OrdersController {
     private readonly settingService: SettingsService
   ) {}
 
-  @Public()
   @Post()
   create(
     @Body()
@@ -51,7 +44,6 @@ export class OrdersController {
     return this.ordersService.sendMailRemind();
   }
 
-  @Public()
   @Put("/checkout/:id")
   async checkout(
     @Param("id") id: string,
@@ -95,12 +87,6 @@ export class OrdersController {
   ) {
     return this.ordersService.update(+id, updateOrderDto);
   }
-
-  // @Patch('/confirm/:id')
-  // confirmOrder(@Param('id') id: string, @Body() updateOrderDto:Pick<Prisma.OrderUpdateInput , "status">) {
-  //   return this.ordersService.update(+id, updateOrderDto);
-  // }
-
   @Get()
   findAll(
     @Query()
@@ -162,14 +148,8 @@ export class OrdersController {
     return this.ordersService.findOne(+id);
   }
 
-  @Public()
   @Get("/token/:token")
   findOneByToken(@Param("token") token: string) {
     return this.ordersService.findOneByToken(token);
   }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.ordersService.remove(+id);
-  // }
 }

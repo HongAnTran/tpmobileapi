@@ -9,8 +9,14 @@ export class CustomerSystemService {
   constructor(private prisma: PrismaService) {}
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+    const { account_id, ...res } = createCustomerDto;
     return this.prisma.customer.create({
-      data: { ...createCustomerDto },
+      data: {
+        ...res,
+        full_name:
+          createCustomerDto.last_name + " " + createCustomerDto.first_name,
+        account: { connect: { id: account_id } },
+      },
     });
   }
 

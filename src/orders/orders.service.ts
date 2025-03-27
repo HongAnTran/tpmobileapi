@@ -1,6 +1,4 @@
 import { PrismaService } from "src/prisma.service";
-import { CreateOrderDto } from "./dto/create-order.dto";
-import { UpdateOrderDto } from "./dto/update-order.dto";
 import { Order, Prisma } from "@prisma/client";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { OrderStatus } from "src/common/types/Order.type";

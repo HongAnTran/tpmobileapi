@@ -1,17 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { LoginDto } from "./dto/login.dto";
 import { AccountService } from "src/account/account.service";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { CreateAccountDto } from "./dto/create-account.dto";
-import { hashPassword } from "src/common/helper/hassPassword";
 import { PrismaService } from "src/prisma.service";
-import { ROLE_CODE_DEFAULT } from "src/common/consts";
 
 @Injectable()
 export class AuthService {
@@ -66,50 +58,72 @@ export class AuthService {
     }
   }
 
-  async createPublic(createAccountDto: CreateAccountDto) {
-    const { email, password, provider, name, birthday, gender, phone, avatar } =
-      createAccountDto;
-    const isExists = await this.accountService.findOneByEmail(email);
-    if (isExists) {
-      throw new BadRequestException("Email already exists");
-    }
-    const hashedPassword = await hashPassword(password);
-    try {
-      const account = await this.PrismaService.account.create({
-        data: {
-          email,
-          password: hashedPassword,
-          provider: provider || "local",
-          account_roles: {
-            create: {
-              role: {
-                connect: { code: ROLE_CODE_DEFAULT.PUBLIC },
+  // async createPublic(createAccountDto: CreateAccountDto) {
+  //   const { email, password, provider, name, birthday, gender, phone, avatar } =
+  //     createAccountDto;
+  //   const isExists = await this.accountService.findOneByEmail(email);
+  //   if (isExists) {
+  //     throw new BadRequestException("Email already exists");
+  //   }
+  //   const hashedPassword = await hashPassword(password);
+  //   try {
+  //     const account = await this.PrismaService.account.create({
+  //       data: {
+  //         email,
+  //         password: hashedPassword,
+  //         provider: provider || "local",
+  //         account_roles: {
+  //           create: {
+  //             role: {
+  //               connect: { code: ROLE_CODE_DEFAULT.PUBLIC },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     });
+
+  //     const customer = await this.PrismaService.customer.create({
+  //       data: {
+  //         name,
+  //         birthday,
+  //         phone,
+  //         email,
+  //         gender,
+  //         account_id: account.id,
+  //       },
+  //     });
+  //     return customer;
+  //   } catch (error) {
+  //     throw new InternalServerErrorException("Failed to create account");
+  //   }
+  // }
+
+  async getProfile(id: number) {
+    const { password, ...res } = await this.PrismaService.account.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        user: true,
+        roles: {
+          include: {
+            role: {
+              include: {
+                permission: {
+                  select: {
+                    permission: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },
         },
-      });
-
-      const customer = await this.PrismaService.customer.create({
-        data: {
-          name,
-          birthday,
-          phone,
-          provider: account.provider,
-          email,
-          gender,
-          account_id: account.id,
-        },
-      });
-      return customer;
-    } catch (error) {
-      throw new InternalServerErrorException("Failed to create account");
-    }
-  }
-
-  getProfile(id: number) {
-    return this.PrismaService.customer.findUnique({
-      where: { account_id: id },
+      },
     });
+    return res;
   }
 }

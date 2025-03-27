@@ -27,6 +27,7 @@ model Product {
   brand_id          Int?
   category_id       Int
   meta_tags         Json?
+  rating            Json?
   related           Int[]                   @default([])
   brand             Brand?                  @relation(fields: [brand_id], references: [id])
   category          Category                @relation(fields: [category_id], references: [id])
@@ -244,17 +245,18 @@ model Order {
   ship_price  Float
   discount    Float
   note        String?
+  note_private      String?
   status      Int
   promotions  Json[]
   customer_id Int?
   created_at  DateTime       @default(now())
   updated_at  DateTime?      @updatedAt
+  sold_at     DateTime?       
   available   Boolean        @default(true)
   customer    Customer?      @relation(fields: [customer_id], references: [id])
   payment     Payment?
   items       ProductOrder[]
   shipping    Shipping?
-
   @@index([status])
 }
 
@@ -326,29 +328,27 @@ model ProductOrder {
 model User {
   id         Int       @id @default(autoincrement())
   name       String
-  avt        String?
+  avatar        String?
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   meta_data  Json?
-  account_id Int?      @unique
-  answers    Answer[]
   posts      Article[]
-  account    Account?  @relation(fields: [account_id], references: [id])
+  answers    Answer[]
+  account    Account? 
 }
 
 model Account {
-  id            Int           @id @default(autoincrement())
-  email         String        @unique
-  password      String
-  provider      String
-  provider_id   String?
-  status        Boolean       @default(true)
-  created_at    DateTime      @default(now())
-  updated_at    DateTime?     @updatedAt
-  account_roles AccountRole[]
-  customer      Customer?
-  user          User?
+  id         Int      @id @default(autoincrement())
+  user_id    Int     @unique
+  email      String  @unique
+  password   String
+  status     Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
+  user      User   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roles      AccountRole[]
 }
+
 
 model Role {
   id          Int              @id @default(autoincrement())
@@ -358,22 +358,22 @@ model Role {
   accounts    AccountRole[]
   permission  RolePermission[]
 }
-
-model Permission {
-  id    Int              @id @default(autoincrement())
-  name  String           @unique
-  roles RolePermission[]
-}
-
 model AccountRole {
   id        Int     @id @default(autoincrement())
   accountId Int
   roleId    Int
   account   Account @relation(fields: [accountId], references: [id])
   role      Role    @relation(fields: [roleId], references: [id])
-
   @@unique([accountId, roleId])
 }
+model Permission {
+  id    Int              @id @default(autoincrement())
+  name  String           @unique
+  code  String           @unique
+  description String?
+  roles RolePermission[]
+}
+
 
 model RolePermission {
   id           Int        @id @default(autoincrement())
@@ -381,14 +381,15 @@ model RolePermission {
   permissionId Int
   permission   Permission @relation(fields: [permissionId], references: [id])
   role         Role       @relation(fields: [roleId], references: [id])
-
   @@unique([roleId, permissionId])
 }
 
 model Customer {
   id          Int        @id @default(autoincrement())
   email       String?    @unique
-  name        String
+  first_name        String
+  last_name        String
+  full_name        String
   phone       String?    @unique
   avatar      String?    
   gender      Gender?
@@ -399,13 +400,26 @@ model Customer {
   provider_id String?
   status      Int        @default(1)
   account_id  Int?       @unique
+  meta_data   Json?
   address     Address[]
   answer      Answer[]
   carts       Cart[]
-  account     Account?   @relation(fields: [account_id], references: [id])
+  account     CustomerAccount?   @relation(fields: [account_id], references: [id])
   orders      Order[]
   questions   Question[]
   ratings     Rating[]
+}
+
+model CustomerAccount {
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  password      String
+  provider      String
+  provider_id   String?
+  status        Boolean       @default(true)
+  created_at    DateTime      @default(now())
+  updated_at    DateTime?     @updatedAt
+  customer      Customer?
 }
 
 model Address {

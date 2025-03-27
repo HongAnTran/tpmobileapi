@@ -78,9 +78,9 @@ async function assignPermissionsToAdmin() {
 }
 
 async function initAccountAdmin() {
-  const passwordHash = await hashPassword(process.env.PASS_USERNAME);
+  const passwordHash = await hashPassword(process.env.ADMIN_EMAIL_PASSWORD);
   const payload = {
-    email: process.env.EMAIL_USERNAME,
+    email: process.env.ADMIN_EMAIL_ADDRESS,
     password: passwordHash,
   };
   const existingAccount = await prisma.account.findUnique({
@@ -88,15 +88,26 @@ async function initAccountAdmin() {
   });
 
   if (!existingAccount) {
+    const user = await prisma.user.create({
+      data: {
+        name: "Admin",
+      },
+    });
     await prisma.account.create({
       data: {
         email: payload.email,
         password: payload.password,
-        provider: "local",
-        account_roles: {
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+        roles: {
           create: {
             role: {
-              connect: { code: ROLE_CODE_DEFAULT.ADMIN },
+              connect: {
+                code: ROLE_CODE_DEFAULT.ADMIN,
+              },
             },
           },
         },
