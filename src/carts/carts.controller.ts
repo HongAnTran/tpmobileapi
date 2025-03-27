@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from "@nestjs/common";
 import { CartsService } from "./carts.service";
 import { CreateCartDto } from "./dto/create-cart.dto";
 import { UpdateCartDto } from "./dto/update-cart.dto";
 import { Prisma } from "@prisma/client";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("carts")
+@UseGuards(AuthGuard)
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 

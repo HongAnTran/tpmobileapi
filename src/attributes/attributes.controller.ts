@@ -7,12 +7,13 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { AttributesService } from "./attributes.service";
 import { Prisma } from "@prisma/client";
-import { Public } from "src/common/decorator/public.decorator";
-
+import { AuthGuard } from "src/auth/jwt.guard";
 @Controller("attributes")
+@UseGuards(AuthGuard)
 export class AttributesController {
   constructor(private readonly attributesService: AttributesService) {}
 
@@ -21,7 +22,6 @@ export class AttributesController {
     return this.attributesService.create(createAttributesDto);
   }
 
-  @Public()
   @Get()
   findAll(@Query("skip") skip?: string, @Query("take") take?: string) {
     return this.attributesService.findAll({

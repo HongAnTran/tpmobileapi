@@ -11,6 +11,7 @@ import {
 import { ProductConsultationService } from "./product-consultation.service";
 import { CreateProductConsultationDto } from "./dto/create-product-consultation.dto";
 import { UpdateProductConsultationDto } from "./dto/update-product-consultation.dto";
+import { Public } from "src/common/decorator/public.decorator";
 
 @Controller("product-consultation")
 export class ProductConsultationController {
@@ -18,6 +19,7 @@ export class ProductConsultationController {
     private readonly productConsultationService: ProductConsultationService
   ) {}
 
+  @Public()
   @Post()
   create(@Body() createProductConsultationDto: CreateProductConsultationDto) {
     return this.productConsultationService.create(createProductConsultationDto);

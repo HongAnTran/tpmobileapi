@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from "@nestjs/common";
 import { BrandService } from "./brand.service";
 import { CreateBrandDto } from "./dto/create-brand.dto";
 import { UpdateBrandDto } from "./dto/update-brand.dto";
 import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("brand")
+@UseGuards(AuthGuard)
 export class BrandController {
   constructor(private readonly brandService: BrandService) {}
 

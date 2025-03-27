@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { SettingsService } from './settings.service';
-import { CreateSettingDto } from './dto/create-setting.dto';
-import { UpdateSettingDto } from './dto/update-setting.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from "@nestjs/common";
+import { SettingsService } from "./settings.service";
+import { CreateSettingDto } from "./dto/create-setting.dto";
+import { UpdateSettingDto } from "./dto/update-setting.dto";
+import { Public } from "src/common/decorator/public.decorator";
 
-@Controller('settings')
+@Controller("settings")
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
@@ -17,23 +26,24 @@ export class SettingsController {
     return this.settingsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.settingsService.findOne(+id);
   }
-  @Get('key/:id')
-  findOneKey(@Param('id') key: string) {
+
+  @Public()
+  @Get("key/:id")
+  findOneKey(@Param("id") key: string) {
     return this.settingsService.findOneKey(key);
   }
 
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSettingDto: UpdateSettingDto) {
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() updateSettingDto: UpdateSettingDto) {
     return this.settingsService.update(+id, updateSettingDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.settingsService.remove(+id);
   }
 }

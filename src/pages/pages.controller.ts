@@ -10,16 +10,12 @@ import {
 import { PagesService } from "./pages.service";
 import { CreatePageDto } from "./dto/create-page.dto";
 import { UpdatePageDto } from "./dto/update-page.dto";
+import { Public } from "src/common/decorator/public.decorator";
 
 @Controller("pages")
 export class PagesController {
   constructor(private readonly pagesService: PagesService) {}
 
-  @Post("kov")
-  create(@Body() createPageDto: any) {
-    console.log(createPageDto);
-    return true;
-  }
   @Post()
   test(@Body() createPageDto: CreatePageDto) {
     return this.pagesService.create(createPageDto);
@@ -35,6 +31,7 @@ export class PagesController {
     return this.pagesService.findOne(+id);
   }
 
+  @Public()
   @Get("slug/:slug")
   findOneBySlug(@Param("slug") slug: string) {
     return this.pagesService.findOneBySlug(slug);

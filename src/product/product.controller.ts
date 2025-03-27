@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { ProductService } from "./product.service";
 import { Prisma } from "@prisma/client";
 import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("products")
+@UseGuards(AuthGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
@@ -21,7 +24,6 @@ export class ProductController {
     return this.productService.createProduct(createProductDto);
   }
 
-  @Public()
   @Get()
   findAll(
     @Query()
@@ -196,10 +198,8 @@ export class ProductController {
     });
   }
 
-  @Public()
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    console.log(id);
     const product = await this.productService.product(id);
     return product;
   }

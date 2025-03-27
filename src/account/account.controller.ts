@@ -1,33 +1,21 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
-  Req,
+  UseGuards,
 } from "@nestjs/common";
 import { AccountService } from "./account.service";
-import { CreateAccountDto } from "./dto/create-account.dto";
 import { UpdateAccountDto } from "./dto/update-account.dto";
-import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("account")
+@UseGuards(AuthGuard)
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Public()
-  @Post("register-public")
-  create(@Body() createAccountDto: CreateAccountDto) {
-    return this.accountService.createPublic(createAccountDto);
-  }
-
-  @Get("profile")
-  profile(@Req() req: any) {
-    const userId = req.user.id;
-    return this.accountService.findOne(userId);
-  }
   @Get()
   findAll() {
     return this.accountService.findAll();

@@ -1,35 +1,43 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { UsersService } from "../users/users.service";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { LoginDto } from "./dto/login.dto";
 import { AccountService } from "src/account/account.service";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
+import { CreateAccountDto } from "./dto/create-account.dto";
+import { hashPassword } from "src/common/helper/hassPassword";
+import { PrismaService } from "src/prisma.service";
+import { ROLE_CODE_DEFAULT } from "src/common/consts";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly accountService: AccountService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private PrismaService: PrismaService
   ) {}
 
   async signIn(payload: LoginDto) {
-    const profile = await this.accountService.findOneByEmail(payload.email);
-    if (!profile) {
+    const account = await this.accountService.findOneByEmail(payload.email);
+    if (!account) {
       throw new UnauthorizedException();
     }
-    if (!bcrypt.compareSync(payload.password, profile.password)) {
+    if (!bcrypt.compareSync(payload.password, account.password)) {
       throw new UnauthorizedException();
     }
-    const { password, ...result } = profile;
     const accessToken = this.jwtService.sign(
-      { sub: profile.id, email: profile.email },
-      { expiresIn: "1d", secret: process.env.JWT_SECRET }
+      { id: account.id, email: account.email },
+      { expiresIn: "7d", secret: process.env.JWT_SECRET }
     );
     const refreshToken = this.jwtService.sign(
-      { sub: profile.id },
+      { id: account.id },
       { expiresIn: "30d", secret: process.env.JWT_REFRESH_SECRET }
     );
-    return { profile: { email: result.email }, accessToken, refreshToken };
+    return { accessToken, refreshToken };
   }
 
   async logout() {
@@ -56,5 +64,52 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException();
     }
+  }
+
+  async createPublic(createAccountDto: CreateAccountDto) {
+    const { email, password, provider, name, birthday, gender, phone, avatar } =
+      createAccountDto;
+    const isExists = await this.accountService.findOneByEmail(email);
+    if (isExists) {
+      throw new BadRequestException("Email already exists");
+    }
+    const hashedPassword = await hashPassword(password);
+    try {
+      const account = await this.PrismaService.account.create({
+        data: {
+          email,
+          password: hashedPassword,
+          provider: provider || "local",
+          account_roles: {
+            create: {
+              role: {
+                connect: { code: ROLE_CODE_DEFAULT.PUBLIC },
+              },
+            },
+          },
+        },
+      });
+
+      const customer = await this.PrismaService.customer.create({
+        data: {
+          name,
+          birthday,
+          phone,
+          provider: account.provider,
+          email,
+          gender,
+          account_id: account.id,
+        },
+      });
+      return customer;
+    } catch (error) {
+      throw new InternalServerErrorException("Failed to create account");
+    }
+  }
+
+  getProfile(id: number) {
+    return this.PrismaService.customer.findUnique({
+      where: { account_id: id },
+    });
   }
 }

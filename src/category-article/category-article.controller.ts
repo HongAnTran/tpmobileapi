@@ -8,18 +8,19 @@ import {
   Delete,
   Query,
   NotFoundException,
+  UseGuards,
 } from "@nestjs/common";
 import { CategoryArticleService } from "./category-article.service";
 import { CategoryArticle, Prisma } from "@prisma/client";
-import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("category-article")
+@UseGuards(AuthGuard)
 export class CategoryArticleController {
   constructor(
     private readonly categoryArticleService: CategoryArticleService
   ) {}
 
-  @Public()
   @Get(":id")
   async findOne(@Param("id") id: string): Promise<CategoryArticle | null> {
     try {
@@ -40,7 +41,6 @@ export class CategoryArticleController {
     }
   }
 
-  @Public()
   @Get()
   async findAll(
     @Query()

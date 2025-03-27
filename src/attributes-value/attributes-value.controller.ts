@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { AttributeValuesService } from "./attributes-value.service";
 import { Prisma } from "@prisma/client";
-import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("attribute-values")
+@UseGuards(AuthGuard)
 export class AttributeValuesController {
   constructor(
     private readonly attributeValuesService: AttributeValuesService
@@ -23,7 +25,6 @@ export class AttributeValuesController {
     return this.attributeValuesService.create(createAttributeValuesDto);
   }
 
-  @Public()
   @Get()
   findAll(
     @Query("skip") skip?: string,

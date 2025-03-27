@@ -29,6 +29,10 @@ export class CreateAccountDto {
   phone?: string;
 
   @IsOptional()
+  @IsString()
+  avatar?: string;
+
+  @IsOptional()
   @IsEnum(Gender)
   gender?: Gender;
 

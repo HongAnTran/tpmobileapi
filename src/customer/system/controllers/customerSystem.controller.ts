@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { CustomerSystemService } from '../services/customerSystem.service';
-import { CreateCustomerDto } from '../dto/create-customer.dto';
-import { UpdateCustomerDto } from '../dto/update-customer.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from "@nestjs/common";
+import { CustomerSystemService } from "../services/customerSystem.service";
+import { CreateCustomerDto } from "../dto/create-customer.dto";
+import { UpdateCustomerDto } from "../dto/update-customer.dto";
+import { AuthGuard } from "src/auth/jwt.guard";
 
-
-@Controller('customer')
+@Controller("customer")
+@UseGuards(AuthGuard)
 export class CustomerSystemController {
   constructor(private readonly customerService: CustomerSystemService) {}
 
@@ -18,18 +28,21 @@ export class CustomerSystemController {
     return this.customerService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.customerService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
+  @Patch(":id")
+  update(
+    @Param("id") id: string,
+    @Body() updateCustomerDto: UpdateCustomerDto
+  ) {
     return this.customerService.update(+id, updateCustomerDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.customerService.remove(+id);
   }
 }

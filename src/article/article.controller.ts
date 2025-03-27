@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { ArticleService } from "./article.service";
 import { Prisma } from "@prisma/client";
-import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("articles")
+@UseGuards(AuthGuard)
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
@@ -21,7 +23,6 @@ export class ArticleController {
     return this.articleService.create(data);
   }
 
-  @Public()
   @Get()
   findAll(
     @Query("page") page?: string,
@@ -69,7 +70,6 @@ export class ArticleController {
     });
   }
 
-  @Public()
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.articleService.findOne(id);

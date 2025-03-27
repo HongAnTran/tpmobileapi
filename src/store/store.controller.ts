@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import { StoreService } from "./store.service";
 import { Prisma } from "@prisma/client";
+import { Public } from "src/common/decorator/public.decorator";
 
 @Controller("store")
 export class StoreController {
@@ -20,6 +21,7 @@ export class StoreController {
     return this.storeService.create(createStoreDto);
   }
 
+  @Public()
   @Get()
   async findAll(@Query() query: { latitude?: string; longitude?: string }) {
     const { latitude, longitude } = query;

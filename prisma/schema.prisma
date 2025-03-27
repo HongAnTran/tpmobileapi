@@ -390,6 +390,7 @@ model Customer {
   email       String?    @unique
   name        String
   phone       String?    @unique
+  avatar      String?    
   gender      Gender?
   birthday    DateTime?
   created_at  DateTime   @default(now())
