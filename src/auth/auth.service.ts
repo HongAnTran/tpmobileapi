@@ -23,7 +23,7 @@ export class AuthService {
     const { password, ...result } = profile;
     const accessToken = this.jwtService.sign(
       { sub: profile.id, email: profile.email },
-      { expiresIn: "30m", secret: process.env.JWT_SECRET }
+      { expiresIn: "1d", secret: process.env.JWT_SECRET }
     );
     const refreshToken = this.jwtService.sign(
       { sub: profile.id },

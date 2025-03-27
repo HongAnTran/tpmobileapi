@@ -7,11 +7,10 @@ import {
   Param,
   Delete,
   Query,
-  NotFoundException,
 } from "@nestjs/common";
 import { ProductService } from "./product.service";
-import { Prisma, Product } from "@prisma/client";
-import { Public } from "src/auth/jwt.guard";
+import { Prisma } from "@prisma/client";
+import { Public } from "src/common/decorator/public.decorator";
 
 @Controller("products")
 export class ProductController {
