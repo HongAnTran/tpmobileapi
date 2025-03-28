@@ -20,15 +20,12 @@ import { JwtModule } from "@nestjs/jwt";
     }),
     MailerModule.forRoot({
       transport: {
-        host: "smtp.gmail.com",
+        host: "smtp.zoho.com",
         port: 465,
         secure: true,
         auth: {
-          type: "OAuth2",
           user: process.env.ADMIN_EMAIL_ADDRESS,
-          clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
-          refreshToken: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
+          pass: process.env.ADMIN_EMAIL_PASSWORD, // Mật khẩu hoặc App Password
         },
       },
       template: {
