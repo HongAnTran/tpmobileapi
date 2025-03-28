@@ -1,26 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePagePublicDto } from './dto/create-page-public.dto';
-import { UpdatePagePublicDto } from './dto/update-page-public.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class PagePublicService {
-  create(createPagePublicDto: CreatePagePublicDto) {
-    return 'This action adds a new pagePublic';
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all pagePublic`;
-  }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pagePublic`;
-  }
-
-  update(id: number, updatePagePublicDto: UpdatePagePublicDto) {
-    return `This action updates a #${id} pagePublic`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} pagePublic`;
-  }
+   async findOneBySlug(slug: string) {
+     const page = await this.prisma.page.findUnique({
+       where: { slug },
+     });
+     if (!page) {
+       throw new NotFoundException(`Page with id ${slug} not found`);
+     }
+     return page;
+   }
 }

@@ -9,8 +9,11 @@ import { StorePublicModule } from './store-public/store-public.module';
 import { CartPublicModule } from './cart-public/cart-public.module';
 import { CustomerAuthModule } from './customer-auth/customer-auth.module';
 import { PagePublicModule } from './page-public/page-public.module';
+import { AttributePublicModule } from './attribute-public/attribute-public.module';
+import { SpecificationsPublicModule } from './specifications-public/specifications-public.module';
+
 
 @Module({
-  imports: [ProductPublicModule, OrderPublicModule, CategoryPublicModule, ArticlePublicModule, CategoryArticlePublicModule, SettingPublicModule, StorePublicModule, CartPublicModule, CustomerAuthModule, PagePublicModule],
+  imports: [ProductPublicModule, OrderPublicModule, CategoryPublicModule, ArticlePublicModule, CategoryArticlePublicModule, SettingPublicModule, StorePublicModule, CartPublicModule, CustomerAuthModule, PagePublicModule, AttributePublicModule, SpecificationsPublicModule],
 })
 export class PublicModule {}

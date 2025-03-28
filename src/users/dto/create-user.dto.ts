@@ -12,15 +12,13 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @IsString()
-  username: string;
-
   @IsOptional()
   @IsString()
-  avt?: string;
+  avatar?: string;
 
+  @IsOptional()
   @IsInt()
-  roleId: number;
+  roleId?: number;
 
   @IsOptional()
   @IsJSON()

@@ -12,6 +12,7 @@ import { ProductAttributesService } from "./product-attributes.service";
 import { Prisma } from "@prisma/client";
 import { Public } from "src/common/decorator/public.decorator";
 
+
 @Controller("product-attributes")
 export class ProductAttributesController {
   constructor(

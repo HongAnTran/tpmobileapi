@@ -3,18 +3,13 @@ import { CartPublicService } from './cart-public.service';
 import { CreateCartPublicDto } from './dto/create-cart-public.dto';
 import { UpdateCartPublicDto } from './dto/update-cart-public.dto';
 
-@Controller('cart-public')
+@Controller('public/carts')
 export class CartPublicController {
   constructor(private readonly cartPublicService: CartPublicService) {}
 
   @Post()
   create(@Body() createCartPublicDto: CreateCartPublicDto) {
     return this.cartPublicService.create(createCartPublicDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.cartPublicService.findAll();
   }
 
   @Get(':id')

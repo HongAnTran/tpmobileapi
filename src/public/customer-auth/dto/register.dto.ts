@@ -8,7 +8,7 @@ import {
   IsDate,
 } from "class-validator";
 
-export class CreateAccountDto {
+export class RegisterDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
@@ -17,12 +17,19 @@ export class CreateAccountDto {
   @IsNotEmpty()
   password: string;
 
+  @IsOptional()
   @IsString()
   provider?: string;
 
+
+
   @IsNotEmpty()
   @IsString()
-  name: string;
+  first_name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  last_name: string;
 
   @IsOptional()
   @IsString()

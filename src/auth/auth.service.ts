@@ -21,12 +21,13 @@ export class AuthService {
     if (!bcrypt.compareSync(payload.password, account.password)) {
       throw new UnauthorizedException();
     }
+    const { user} = account;
     const accessToken = this.jwtService.sign(
-      { id: account.id, email: account.email },
-      { expiresIn: "7d", secret: process.env.JWT_SECRET }
+      { id: user.id  , roles : account.roles.map((role) => role.code) },
+      { expiresIn: "30m", secret: process.env.JWT_SECRET }
     );
     const refreshToken = this.jwtService.sign(
-      { id: account.id },
+      { id: user.id },
       { expiresIn: "30d", secret: process.env.JWT_REFRESH_SECRET }
     );
     return { accessToken, refreshToken };
@@ -58,70 +59,23 @@ export class AuthService {
     }
   }
 
-  // async createPublic(createAccountDto: CreateAccountDto) {
-  //   const { email, password, provider, name, birthday, gender, phone, avatar } =
-  //     createAccountDto;
-  //   const isExists = await this.accountService.findOneByEmail(email);
-  //   if (isExists) {
-  //     throw new BadRequestException("Email already exists");
-  //   }
-  //   const hashedPassword = await hashPassword(password);
-  //   try {
-  //     const account = await this.PrismaService.account.create({
-  //       data: {
-  //         email,
-  //         password: hashedPassword,
-  //         provider: provider || "local",
-  //         account_roles: {
-  //           create: {
-  //             role: {
-  //               connect: { code: ROLE_CODE_DEFAULT.PUBLIC },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     const customer = await this.PrismaService.customer.create({
-  //       data: {
-  //         name,
-  //         birthday,
-  //         phone,
-  //         email,
-  //         gender,
-  //         account_id: account.id,
-  //       },
-  //     });
-  //     return customer;
-  //   } catch (error) {
-  //     throw new InternalServerErrorException("Failed to create account");
-  //   }
-  // }
-
   async getProfile(id: number) {
-    const { password, ...res } = await this.PrismaService.account.findUnique({
+    const res = await this.PrismaService.user.findUnique({
       where: {
         id,
       },
       include: {
-        user: true,
-        roles: {
-          include: {
-            role: {
-              include: {
-                permission: {
-                  select: {
-                    permission: {
-                      select: {
-                        name: true,
-                      },
-                    },
-                  },
-                },
+        account:{
+          select:{
+            status: true,
+            email: true,
+            roles: {
+              select: {
+                code: true,
               },
             },
-          },
-        },
+          }
+        }
       },
     });
     return res;

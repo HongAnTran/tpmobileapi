@@ -11,6 +11,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { SentryModule } from "@sentry/nestjs/setup";
 import { PublicModule } from "./public/public.module";
 import { PrivateModule } from "./private/private.module";
+import { JwtModule } from "@nestjs/jwt";
 
 @Module({
   imports: [
@@ -40,6 +41,11 @@ import { PrivateModule } from "./private/private.module";
         },
       },
     }),
+        JwtModule.register({
+          global: true,
+          secret: process.env.JWT_SECRET,
+          signOptions: { expiresIn: "30m" },
+        }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", process.env.STATIC_FOLDER),
       serveRoot: `/${process.env.STATIC_FOLDER}`,

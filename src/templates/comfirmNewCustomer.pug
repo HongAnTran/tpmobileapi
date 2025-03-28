@@ -1,0 +1,72 @@
+
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    title Xác nhận email khách hàng mới từ TP Mobile Store WEB
+
+    style.
+      body {
+        font-family: Arial, sans-serif;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+        h1 {
+            color: #333;
+        }
+
+
+        h2 {
+            color: #555;
+        }
+
+
+        p {
+            color: #777;
+        }
+
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+
+        li {
+            margin: 5px 0;
+        }
+
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+
+    body
+    h2 Cảm ơn bạn đã đăng ký tài khoản tại TP Mobile Store WEB
+    p Chúng tôi rất vui mừng thông báo rằng tài khoản của bạn đã được tạo thành công. Để hoàn tất quá trình đăng ký, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào liên kết bên dưới:
+    p
+      a(href=`${process.env.APP_URL}/confirm-email/${token}`) Xác nhận địa chỉ email
+
+     
+    

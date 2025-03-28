@@ -12,7 +12,7 @@ export class AccountService {
   findOneByEmail(email: string) {
     return this.PrismaService.account.findUnique({
       where: { email },
-      include: { user: true },
+      include: { user: true , roles: true },
     });
   }
   findOne(id: number) {

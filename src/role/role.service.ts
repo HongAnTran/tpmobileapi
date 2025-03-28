@@ -15,7 +15,7 @@ export class RoleService {
   findAll(where: Prisma.RoleWhereInput) {
     return this.prismaService.role.findMany({
       where,
-      include: { permission: { include: { permission: true } } },
+      include: { permissions: true },
     });
   }
   findOne(id: number) {
@@ -35,5 +35,16 @@ export class RoleService {
 
   findAllPermission(where: Prisma.PermissionWhereInput) {
     return this.prismaService.permission.findMany({ where });
+  }
+
+  assign(id: number, permissionIds: number[]) {
+    return this.prismaService.role.update({
+      where: { id },
+      data: {
+        permissions: {
+          set: permissionIds.map((permissionId) => ({ id: permissionId })),
+        },
+      },
+    });
   }
 }

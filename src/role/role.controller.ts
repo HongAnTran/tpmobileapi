@@ -12,7 +12,7 @@ import { RoleService } from "./role.service";
 import { CreateRoleDto } from "./dto/create-role.dto";
 import { UpdateRoleDto } from "./dto/update-role.dto";
 
-@Controller("role")
+@Controller("roles")
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
@@ -41,6 +41,12 @@ export class RoleController {
   @Patch(":id")
   update(@Param("id") id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.roleService.update(+id, updateRoleDto);
+  }
+
+  @Patch("assign/:id")
+  assign(@Param("id") id: string, @Body() body: { permissionIds: number[] }) {
+    const { permissionIds } = body;
+    return this.roleService.assign(+id, permissionIds);
   }
 
   @Delete(":id")

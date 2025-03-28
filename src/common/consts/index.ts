@@ -1,48 +1,44 @@
 export const PERMISSION = {
   product: {
-    read: "read-product",
-    write: "write-product",
+    "read-product": "xem sản phẩm",
+    "write-product": "quản lý sản phẩm",
   },
   order: {
-    read: "read-order",
-    write: "write-order",
+    "read-order": "xem đơn hàng",
+    "write-order": "quản lý đơn hàng",
   },
   category: {
-    read: "read-category",
-    write: "write-category",
+    "read-category": "xem danh mục",
+    "write-category": "quản lý danh mục",
   },
   article: {
-    read: "read-article",
-    write: "write-article",
+    "read-article": "xem bài viết",
+    "write-article": "quản lý bài viết",
   },
   categoryArticle: {
-    read: "read-category-article",
-    write: "write-category-article",
+    "read-category-article": "xem danh mục bài viết",
+    "write-category-article": "quản lý danh mục bài viết",
   },
-  account: {
-    read: "read-account",
-    write: "write-account",
+  brand : {
+    "read-brand": "xem thương hiệu",
+    "write-brand": "quản lý thương hiệu",
   },
-  brand: {
-    read: "read-brand",
-    write: "write-brand",
+  customer : {
+    "read-customer": "xem khách hàng",
+    "write-customer": "quản lý khách hàng",
   },
-  customer: {
-    read: "read-customer",
-    write: "write-customer",
+  page : {
+    "read-page": "xem trang",
+    "write-page": "quản lý trang",
   },
-  page: {
-    read: "read-page",
-    write: "write-page",
+  store : {
+    "read-store": "xem cửa hàng",
+    "write-store": "quản lý cửa hàng",
   },
-  store: {
-    read: "read-store",
-    write: "write-store",
-  },
-  report: {
-    read: "read-report",
-    write: "write-report",
-  },
+  report : {
+    "read-report": "xem báo cáo",
+    "write-report": "quản lý báo cáo",
+  }
 };
 
 export enum ROLE_CODE_DEFAULT {

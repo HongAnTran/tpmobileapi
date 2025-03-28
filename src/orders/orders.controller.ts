@@ -8,13 +8,15 @@ import {
   BadRequestException,
   Put,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
 import { Prisma } from "@prisma/client";
 import { MailService } from "src/mail/mail.service";
 import { OrderStatus } from "src/common/types/Order.type";
 import { SettingsService } from "src/settings/settings.service";
-
+import { AuthGuard } from "src/auth/jwt.guard";
+@UseGuards(AuthGuard)
 @Controller("orders")
 export class OrdersController {
   constructor(
