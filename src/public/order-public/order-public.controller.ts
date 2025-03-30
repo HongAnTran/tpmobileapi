@@ -9,14 +9,11 @@ import {
 } from "@nestjs/common";
 import { OrderPublicService } from "./order-public.service";
 import { Prisma } from "@prisma/client";
-import { MailService } from "src/mail/mail.service";
-import { OrderStatus } from "src/common/types/Order.type";
 
 @Controller("public/orders")
 export class OrderPublicController {
   constructor(
     private readonly orderPublicService: OrderPublicService,
-    private readonly mailService: MailService
   ) {}
 
   @Post()
@@ -32,12 +29,12 @@ export class OrderPublicController {
       | "ship_price"
     >
   ) {
-    return this.orderPublicService.createOderReview(createOrderDto);
+    return this.orderPublicService.createOrderReview(createOrderDto);
   }
 
-  @Put("/checkout/:id")
+  @Put("/checkout/:token")
   async checkout(
-    @Param("id") id: string,
+    @Param("token") token: string,
     @Body()
     checkoutOrder: Pick<
       Prisma.OrderUpdateInput,
@@ -51,24 +48,13 @@ export class OrderPublicController {
     >
   ) {
     try {
-      const data: Prisma.OrderUpdateInput = {
-        status: OrderStatus.PENDING,
-        ...checkoutOrder,
-      };
-      const res = await this.orderPublicService.update(+id, data);
-      this.mailService.sendMail({
-        from: process.env.ADMIN_EMAIL_ADDRESS,
-        subject: "TP Mobile Store - Đơn đặt hàng mới",
-        to: process.env.ADMIN_EMAIL_ADDRESS,
-        template: "newOrder",
-        context: res,
-      });
+      const res = await this.orderPublicService.checkOut(token , checkoutOrder)
       return res;
     } catch (error) {
-      throw new BadRequestException("Something bad happened", {
-        cause: new Error(),
-        description: error,
-      });
+      console.log(error)
+      throw new BadRequestException(
+        "Đã có lỗi xảy ra vui lòng thử lại trong ít phút"
+      );
     }
   }
 

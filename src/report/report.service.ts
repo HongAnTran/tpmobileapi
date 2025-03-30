@@ -10,7 +10,7 @@ export class ReportService {
   async reportDashboard(query: DashboardReportDto) {
     const { startDate, endDate } = query;
     const condition = {
-      created_at: {
+      sold_at: {
         gte: new Date(startDate),
         lte: endDate ? new Date(endDate) : new Date(),
       },
@@ -35,10 +35,14 @@ export class ReportService {
       },
     });
 
-    const totalUsers = await this.prisma.user.count({
-      where: condition,
+    const totalUsers = await this.prisma.customerAccount.count({
+      where: {
+        active_expired_at : {
+          gte: new Date(startDate),
+          lte: endDate ? new Date(endDate) : new Date(),
+        }
+      },
     });
-
     return {
       totalOrders,
       completedOrders,

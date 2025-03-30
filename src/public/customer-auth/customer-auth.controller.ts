@@ -13,8 +13,6 @@ import { CustomerAuthService } from "./customer-auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { AuthCustomerGuard } from "./jwtCustomer.guard";
-import { Public } from "src/common/decorator/public.decorator";
-
 
 @Controller("public/auth")
 export class CustomerAuthController {
@@ -22,11 +20,10 @@ export class CustomerAuthController {
 
   @Get("profile")
   @UseGuards(AuthCustomerGuard)
-  profile(@Req () req: any) {
+  profile(@Req() req: any) {
     const { id } = req.customer;
     return this.customerAuthService.profile(id);
   }
-
 
   @Post("login")
   login(@Body() login: LoginDto) {

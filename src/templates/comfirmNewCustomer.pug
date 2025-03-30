@@ -1,72 +1,134 @@
-
 doctype html
 html
   head
     meta(charset="UTF-8")
-    title Xác nhận email khách hàng mới từ TP Mobile Store WEB
-
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Xác Nhận Tài Khoản - TP Mobile Store
     style.
       body {
-        font-family: Arial, sans-serif;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333;
       }
-      table {
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background-color: #0e2038;
+        padding: 8px;
+        text-align: center;
+        color: #ffffff;
+      }
+      .header h1 {
+        margin: 0;
+        margin-top : 8px;
+        font-size: 22px;
+        color: #ffffff;
+
+      }
+      .content {
+        padding: 20px;
+      }
+      h2 {
+        color: #0e2038;
+        font-size: 20px;
+        margin-top: 0;
+      }
+      p {
+        color: #555;
+        line-height: 1.6;
+        margin: 10px 0;
+      }
+      .cta-button {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #007BFF;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        margin: 20px 0;
+      }
+      .cta-button:hover {
+        background-color: #0056b3;
+      }
+      .info-table {
         width: 100%;
         border-collapse: collapse;
+        margin: 20px 0;
       }
-      th, td {
+      .info-table td {
+        padding: 10px;
         border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
       }
-      th {
-        background-color: #f2f2f2;
+      .info-table td.label {
+        background-color: #f9f9f9;
+        font-weight: bold;
+        width: 30%;
       }
-        h1 {
-            color: #333;
+      .footer {
+        background-color: #f4f4f4;
+        padding: 15px;
+        text-align: center;
+        font-size: 12px;
+        color: #777;
+      }
+      .footer a {
+        color: #007BFF;
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 600px) {
+        .container {
+          width: 100%;
+          margin: 10px;
         }
-
-
-        h2 {
-            color: #555;
+        .header h1 {
+          font-size: 20px;
         }
-
-
-        p {
-            color: #777;
+        .cta-button {
+          display: block;
+          width: 100%;
         }
+      }
 
+  body
+    .container
+      .header
+        img(src="https://tpmobile.com.vn/avatar_new.png" alt="TP Mobile Store" style="width: 60px; height: 60px;")
+      .content
+        h2 Xác Nhận Tài Khoản tại TP Mobile Store
+        p Kính gửi Quý Khách,
+        p Cảm ơn bạn đã đăng ký tài khoản tại <strong>TP Mobile Store</strong>. Để hoàn tất quá trình đăng ký và kích hoạt tài khoản, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào đường dẫn bên dưới:
+        p
+         - const shortUrl = `${process.env.APP_URL}/confirm-email/${token}`.length > 100 ? `${process.env.APP_URL}/confirm-email/${token}`.slice(0, 97) + '...' : `${process.env.APP_URL}/confirm-email/${token}`;
+         a(href=`${process.env.APP_URL}/confirm-email/${token}`) #{shortUrl}
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-
-        li {
-            margin: 5px 0;
-        }
-
-
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #999;
-        }
-
-    body
-    h2 Cảm ơn bạn đã đăng ký tài khoản tại TP Mobile Store WEB
-    p Chúng tôi rất vui mừng thông báo rằng tài khoản của bạn đã được tạo thành công. Để hoàn tất quá trình đăng ký, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào liên kết bên dưới:
-    p
-      a(href=`${process.env.APP_URL}/confirm-email/${token}`) Xác nhận địa chỉ email
-
-     
-    
+        
+        .info-table
+          tr
+            td.label Thời Hạn Xác Nhận 30 ngày kể từ khi nhận email này
+        
+        p Nếu bạn không đăng ký tài khoản tại TP Mobile Store, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi qua <a href="mailto:admin@tpmobile.com">admin@tpmobile.com</a> để được hỗ trợ.
+        
+      .footer
+        p &copy; 2025 TP Mobile Store. Tất cả quyền được bảo lưu.
+        p
+          | Liên hệ: 
+          a(href="mailto:admin@tpmobile.com") admin@tpmobile.com 
+          | | Hotline: 0568.44.77.99
+        p
+          | Theo dõi chúng tôi trên: 
+          a(href="https://www.facebook.com/store.tpmobile" target="_blank") Facebook 
+          | | 
+          a(href="https://tpmobile.com.vn/" target="_blank") Website

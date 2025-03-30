@@ -12,19 +12,18 @@ const prisma = new PrismaClient();
  *  create all permissions if not exist
  */
 async function createPermissions() {
-  const permissionArray = Object.entries(PERMISSION)
-  .flatMap(([_, category]) => Object.entries(category).map(([code, name]) => ({ code, name })));
+  const permissionArray = Object.entries(PERMISSION).flatMap(([_, category]) =>
+    Object.entries(category).map(([code, name]) => ({ code, name }))
+  );
 
-for (const { code, name } of permissionArray) {
-  const existingPermission = await prisma.permission.findUnique({
-    where: { code },
-  });
-
-  if (!existingPermission) {
-    await prisma.permission.create({ data: { code, name } });
+  for (const { code, name } of permissionArray) {
+    const existingPermission = await prisma.permission.findUnique({
+      where: { code },
+    });
+    if (!existingPermission) {
+      await prisma.permission.create({ data: { code, name } });
+    }
   }
-}
-
 }
 
 /**
@@ -52,11 +51,11 @@ async function assignPermissionsToAdmin() {
   if (adminRole) {
     const allPermissions = await prisma.permission.findMany();
     const permissionIds = allPermissions.map((permission) => permission.id);
-     await prisma.role.update({
+    await prisma.role.update({
       where: { id: adminRole.id },
       data: {
         permissions: {
-          connect:  permissionIds.map((id) => ({ id })),
+          connect: permissionIds.map((id) => ({ id })),
         },
       },
     });
@@ -88,11 +87,11 @@ async function initAccountAdmin() {
             id: user.id,
           },
         },
-        roles:{
+        roles: {
           connect: {
             code: ROLE_CODE_DEFAULT.ADMIN,
           },
-        }
+        },
       },
     });
   }

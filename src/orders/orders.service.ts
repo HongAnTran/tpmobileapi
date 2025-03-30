@@ -20,32 +20,6 @@ export class OrdersService {
     });
   }
 
-  async createOderReview(
-    input: Pick<
-      Prisma.OrderCreateInput,
-      | "items"
-      | "note"
-      | "total_price"
-      | "temp_price"
-      | "discount"
-      | "ship_price"
-    >
-  ) {
-    const token = crypto.randomBytes(12).toString("hex");
-    const code = "DH" + crypto.randomBytes(3).toString("hex");
-    const data: Prisma.OrderCreateInput = {
-      ...input,
-      token,
-      code: code.toUpperCase(),
-      status: OrderStatus.DRAFT,
-    };
-    return this.prisma.order.create({
-      data,
-      include: {
-        items: true,
-      },
-    });
-  }
   async processOrder(id: number) {
     return this.prisma.order.update({
       where: { id },
@@ -210,7 +184,6 @@ export class OrdersService {
 
   async sendMailRemind() {
     return this.mailService.sendMail({
-      from: process.env.ADMIN_EMAIL_ADDRESS,
       subject: "Nhắc lịch đóng thuế cho Tuỳn cuti",
       to: "tieutieulinhqaz@gmail.com",
       template: "remind",

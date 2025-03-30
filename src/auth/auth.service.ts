@@ -24,7 +24,7 @@ export class AuthService {
     const { user} = account;
     const accessToken = this.jwtService.sign(
       { id: user.id  , roles : account.roles.map((role) => role.code) },
-      { expiresIn: "30m", secret: process.env.JWT_SECRET }
+      { expiresIn: "1d", secret: process.env.JWT_SECRET }
     );
     const refreshToken = this.jwtService.sign(
       { id: user.id },

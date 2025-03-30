@@ -15,7 +15,7 @@ import { Public } from "src/common/decorator/public.decorator";
 import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("products")
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 

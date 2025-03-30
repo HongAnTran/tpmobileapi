@@ -22,6 +22,7 @@ model Product {
   meta_data         Json?
   price             Float                   @default(0)
   compare_at_price  Float                   @default(0)
+  buyback_price     Float?                   
   price_max         Float                   @default(0)
   price_min         Float                   @default(0)
   thumnail_url         String               @default("")
@@ -30,6 +31,7 @@ model Product {
   meta_tags         Json?
   rating            Json?
   related           Int[]                   @default([])
+  olderModels       Int[]                   @default([])
   brand             Brand?                  @relation(fields: [brand_id], references: [id])
   category          Category                @relation(fields: [category_id], references: [id])
   attributes        ProductAttributes[]
@@ -42,6 +44,7 @@ model Product {
   specifications    ProductSpecifications[] @relation("ProductToProductSpecifications")
   tags              Tags[]                  @relation("ProductToTags")
   consultations     ProductConsultation[]
+
   @@index([category_id, status])
 }
 
@@ -50,7 +53,7 @@ model Tags {
   name        String    @unique
   slug        String    @unique
   description String?
-  published   Boolean   @default(false)
+  published   Boolean   @default(true)
   products    Product[] @relation("ProductToTags")
 }
 
@@ -61,7 +64,6 @@ model ProductCategories {
   product_id  Int
   category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
   product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
-
   @@unique([product_id, category_id])
 }
 
@@ -72,9 +74,28 @@ model ProductAttributes {
   position     Int
   attribute    Attributes        @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
   product      Product           @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  values       AttributeValues[] @relation("AttributeValuesToProductAttributes")
-
+  values       ProductAttributeValue[] 
   @@unique([product_id, attribute_id])
+}
+model AttributeValues {
+  id                Int                 @id @default(autoincrement())
+  value             String              @unique
+  slug              String              @unique
+  hex_color         String?
+  attribute_id      Int
+  attribute         Attributes          @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
+  product_attributes ProductAttributeValue[] 
+  variants          ProductVariant[]    @relation("AttributeValuesToProductVariant")
+}
+
+model ProductAttributeValue {
+  id                  Int               @id @default(autoincrement())
+  product_attribute_id Int
+  attribute_value_id  Int
+  position           Int   @default(0)
+  productAttribute   ProductAttributes  @relation(fields: [product_attribute_id], references: [id], onDelete: Cascade)
+  attributeValue     AttributeValues    @relation(fields: [attribute_value_id], references: [id], onDelete: Cascade)
+  @@unique([product_attribute_id, attribute_value_id])
 }
 model Attributes {
   id               Int                 @id @default(autoincrement())
@@ -84,21 +105,6 @@ model Attributes {
   attribute_values AttributeValues[]
   products         ProductAttributes[]
 }
-
-model AttributeValues {
-  id                Int                 @id @default(autoincrement())
-  value             String              @unique
-  slug              String              @unique
-  hex_color         String?
-  attribute_id      Int
-  attribute         Attributes          @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
-  productAttributes ProductAttributes[] @relation("AttributeValuesToProductAttributes")
-  variants          ProductVariant[]    @relation("AttributeValuesToProductVariant")
-}
-
-
-
-
 model Category {
   id                Int                 @id @default(autoincrement())
   title             String              @unique
@@ -152,9 +158,19 @@ model Rating {
   customer_seed  Json?   
   created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
+  tags        RatingTag[]
   customer    Customer? @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   product     Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
+model RatingTag{
+  id          Int       @id @default(autoincrement())
+  code       String @unique
+  title      String
+  rating      Rating[]
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
+}
+
 model ProductConsultation {
   id          Int      @id @default(autoincrement())
   name        String
@@ -253,16 +269,52 @@ model Order {
   note_private      String?
   status      Int
   promotions  Json[]
+  coupons    Coupon[]
   customer_id Int?
   created_at  DateTime       @default(now())
   updated_at  DateTime?      @updatedAt
   sold_at     DateTime?       
   available   Boolean        @default(true)
+  shipping_type Int          @default(1)
+  tags       OrderTag[]
   customer    Customer?      @relation(fields: [customer_id], references: [id])
   payment     Payment?
   items       ProductOrder[]
   shipping    Shipping?
+  pickup          OrderPickup?
   @@index([status])
+}
+
+model Coupon {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  type        Int
+  amount      Float
+  min_value   Float
+  max_value   Float
+  max_use     Int
+  count_use   Int      @default(0)
+  available_use Int      @default(0)
+  start_date  DateTime?
+  end_date    DateTime?
+  status      Int      @default(0)
+  author_id   Int?
+  author      Customer?    @relation(fields: [author_id], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime? @updatedAt
+  usedAt      DateTime?
+  created_by  User?   @relation(fields: [created_by_id], references: [id])
+  created_by_id Int?
+  order_id    Int?
+  order       Order?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+}
+model OrderTag {
+  id          Int      @id @default(autoincrement())
+  order_id    Int
+  tag         String
+  created_at  DateTime @default(now())
+  updated_at  DateTime? @updatedAt
+  order       Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
 
 model Shipping {
@@ -289,6 +341,24 @@ model Shipping {
   email                   String?
   order                   Order          @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
+model OrderPickup {
+  id         Int      @id @default(autoincrement())
+  order_id   Int      @unique 
+  store_id   Int    
+  status     Int      
+  fullname   String   
+  phone      String   
+  email      String?  
+  note       String?  
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
+  order      Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  store      Store    @relation(fields: [store_id], references: [id])
+}
+enum ShippingType {
+  DELIVERY  
+  PICKUP    
+}
 
 model Payment {
   id             Int           @id @default(autoincrement())
@@ -303,31 +373,20 @@ model Payment {
 
 model ProductOrder {
   id                  Int             @id @default(autoincrement())
-  title               String
-  slug                String
-  category_title      String
-  category_id         Int
-  vendor              String
-  barcode             String?
   line_price          Float
   price               Float
   price_original      Float
   line_price_original Float
+  discount            Float  @default(0)
   variant_id          Int
   product_id          Int
-  product_title       String
-  variant_title       String
-  variant_options     String[]
   quantity            Int
-  image               String
   cart_id             Int?
   order_id            Int?
-  product_sid         Int?
-  variant_sid         Int?
   cart                Cart?           @relation(fields: [cart_id], references: [id], onDelete: Cascade)
   Order               Order?          @relation(fields: [order_id], references: [id], onDelete: Cascade)
-  product             Product?        @relation(fields: [product_sid], references: [id], onDelete: Cascade)
-  variant             ProductVariant? @relation(fields: [variant_sid], references: [id], onDelete: Cascade)
+  product             Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  variant             ProductVariant? @relation(fields: [variant_id], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -340,6 +399,7 @@ model User {
   posts      Article[]
   answers    Answer[]
   account    Account? 
+  coupons    Coupon[]
 }
 
 model Account {
@@ -409,10 +469,11 @@ model Customer {
   meta_data   Json?
   address     Address[]
   carts       Cart[]
-  account     CustomerAccount?   @relation(fields: [account_id], references: [id])
+  account     CustomerAccount?   @relation(fields: [account_id], references: [id] , onDelete: Cascade)
   orders      Order[]
   questions   Question[]
   ratings     Rating[]
+  coupons     Coupon[]
 }
 
 model CustomerAccount {
@@ -432,19 +493,28 @@ model CustomerAccount {
 
 model Address {
   id             Int       @id @default(autoincrement())
-  name           String
+  full_name      String
   phone          String
-  created_at     DateTime  @default(now())
+  email          String?
   ward_id        Int
   district_id    Int
   province_id    Int
-  updated_at     DateTime? @updatedAt
   customer_id    Int
   detail_address String
+  type           AddressType
+  is_default     Boolean   @default(false)
+  is_deleted     Boolean   @default(false)
+  updated_at     DateTime? @updatedAt
+  created_at     DateTime  @default(now())
   customer       Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   district       Location  @relation("District", fields: [district_id], references: [id])
   province       Location  @relation("Province", fields: [province_id], references: [id])
   ward           Location  @relation("Ward", fields: [ward_id], references: [id])
+}
+enum AddressType {
+  HOME
+  WORK
+  OTHER
 }
 
 model CategoryArticle {
@@ -470,9 +540,20 @@ model Article {
   meta_data   Json?
   created_at  DateTime         @default(now())
   updated_at  DateTime?        @updatedAt
+  published_at DateTime?
   author_id   Int?
+  tags        ArticleTag[]
   author      User?            @relation(fields: [author_id], references: [id])
   category    CategoryArticle? @relation(fields: [category_id], references: [id])
+}
+
+model ArticleTag {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  published   Boolean?  @default(false)
+  posts       Article[]
 }
 
 model Store {
@@ -483,9 +564,12 @@ model Store {
   ward_id        Int
   district_id    Int
   province_id    Int
+  available      Boolean        @default(true)
+  public        Boolean          @default(true)
   latitude       Decimal?
   longitude      Decimal?
   detail_address String?
+  order_pickup   OrderPickup[]
   district       Location @relation("DistrictStore", fields: [district_id], references: [id])
   province       Location @relation("ProvinceStore", fields: [province_id], references: [id])
   ward           Location @relation("WardStore", fields: [ward_id], references: [id])
@@ -571,6 +655,17 @@ model Folder {
   parent     Folder?  @relation("FolderToFolder", fields: [parent_id], references: [id])
   children   Folder[] @relation("FolderToFolder")
 }
+
+model PromotionSubscription {
+  id         Int      @id @default(autoincrement()) 
+  email      String   @unique 
+  isActive   Boolean  @default(false) 
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  verificationToken String?  @unique 
+  verifiedAt        DateTime? 
+}
+
 
 enum OptionStyle {
   IMAGE

@@ -25,63 +25,62 @@ export class OrdersController {
     private readonly settingService: SettingsService
   ) {}
 
-  @Post()
-  create(
-    @Body()
-    createOrderDto: Pick<
-      Prisma.OrderCreateInput,
-      | "items"
-      | "note"
-      | "total_price"
-      | "temp_price"
-      | "discount"
-      | "ship_price"
-    >
-  ) {
-    return this.ordersService.createOderReview(createOrderDto);
-  }
+  // @Post()
+  // create(
+  //   @Body()
+  //   createOrderDto: Pick<
+  //     Prisma.OrderCreateInput,
+  //     | "items"
+  //     | "note"
+  //     | "total_price"
+  //     | "temp_price"
+  //     | "discount"
+  //     | "ship_price"
+  //   >
+  // ) {
+  //   return this.ordersService.createOderReview(createOrderDto);
+  // }
 
   @Post("/send")
   send() {
     return this.ordersService.sendMailRemind();
   }
 
-  @Put("/checkout/:id")
-  async checkout(
-    @Param("id") id: string,
-    @Body()
-    checkoutOrder: Pick<
-      Prisma.OrderUpdateInput,
-      | "customer"
-      | "discount"
-      | "note"
-      | "payment"
-      | "promotions"
-      | "ship_price"
-      | "shipping"
-    >
-  ) {
-    try {
-      const data: Prisma.OrderUpdateInput = {
-        status: OrderStatus.PENDING,
-        ...checkoutOrder,
-      };
-      const res = await this.ordersService.update(+id, data);
-      this.mailService.sendMail({
-        from: process.env.ADMIN_EMAIL_ADDRESS,
-        subject: "TP Mobile Store - Đơn đặt hàng mới",
-        to: process.env.ADMIN_EMAIL_ADDRESS,
-        template: "newOrder",
-        context: res,
-      });
-      return res;
-    } catch (error) {
-      throw new BadRequestException("Something bad happened", {
-        cause: new Error(),
-        description: error,
-      });
-    }
-  }
+  // @Put("/checkout/:id")
+  // async checkout(
+  //   @Param("id") id: string,
+  //   @Body()
+  //   checkoutOrder: Pick<
+  //     Prisma.OrderUpdateInput,
+  //     | "customer"
+  //     | "discount"
+  //     | "note"
+  //     | "payment"
+  //     | "promotions"
+  //     | "ship_price"
+  //     | "shipping"
+  //   >
+  // ) {
+  //   try {
+  //     const data: Prisma.OrderUpdateInput = {
+  //       status: OrderStatus.PENDING,
+  //       ...checkoutOrder,
+  //     };
+  //     const res = await this.ordersService.update(+id, data);
+  //     this.mailService.sendMail({
+  //       subject: "TP Mobile Store - Đơn đặt hàng mới",
+  //       to: process.env.EMAIL_NOTI,
+  //       template: "newOrder",
+  //       context: res,
+  //     });
+  //     return res;
+  //   } catch (error) {
+  //     throw new BadRequestException("Something bad happened", {
+  //       cause: new Error(),
+  //       description: error,
+  //     });
+  //   }
+  // }
   @Patch("/status/:id")
   updateStatus(
     @Param("id") id: string,
@@ -141,6 +140,10 @@ export class OrdersController {
         created_at: true,
         updated_at: true,
         temp_price: true,
+        sold_at: true,
+        note: true,
+        note_private: true,
+        shipping_type: true,
       },
     });
   }

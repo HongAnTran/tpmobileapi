@@ -12,101 +12,109 @@ export class CustomerAuthService {
   constructor(
     private jwtService: JwtService,
     private prismaService: PrismaService,
-    private mailService : MailService
-
+    private mailService: MailService
   ) {}
   async signIn(payload: LoginDto) {
     const account = await this.prismaService.customerAccount.findUnique({
       where: { email: payload.email },
-      include:{
+      include: {
         customer: true,
-      }
+      },
     });
-    if (!account ) {
-      throw new UnauthorizedException("Not found account");
+    if (!account) {
+      throw new UnauthorizedException("Tài khoản không tồn tại");
     }
     if (!bcrypt.compareSync(payload.password, account.password)) {
-      throw new UnauthorizedException("Password is incorrect");
+      throw new UnauthorizedException("Mật khẩu không đúng");
     }
-    if(!account.active){
-      // how to chage status of account to active
-      throw new UnauthorizedException("NOT_ACTIVE_ACCOUNT");
+    if (!account.active) {
+      throw new UnauthorizedException("Tài khoản chưa được kích hoạt");
     }
-    const { customer  } = account;
+    const { customer } = account;
     const accessToken = this.jwtService.sign(
       { id: customer.id, email: customer.email },
       { expiresIn: "30d", secret: process.env.JWT_SECRET_VERIFY }
     );
     return { accessToken };
   }
-  async register(payload  :RegisterDto){
-    const account = await this.prismaService.customerAccount.findUnique({
-      where: { email: payload.email },
-    });
-    if (account) {
-      throw new UnauthorizedException("Email already exists");
-    }
-    const { password , email , provider , ...res } = payload;
-    const hashPass = await hashPassword(password);
+  async register(payload: RegisterDto) {
+    // Dùng transaction để đảm bảo rollback nếu có lỗi
+    return await this.prismaService.$transaction(async (prisma) => {
+      // 1. Kiểm tra email đã tồn tại
+      const account = await prisma.customerAccount.findUnique({
+        where: { email: payload.email },
+      });
+      if (account) {
+        throw new UnauthorizedException("Địa chỉ email đã tồn tại");
+      }
 
+      // 2. Chuẩn bị dữ liệu
+      const { password, email, provider, ...res } = payload;
+      const hashPass = await hashPassword(password);
+      const active_token = this.jwtService.sign(
+        { email: email },
+        { expiresIn: "30d", secret: process.env.JWT_SECRET_VERIFY }
+      );
 
-    const active_token =   this.jwtService.sign(
-      { email: email, password: hashPass },
-      { expiresIn: "30d", secret: process.env.JWT_SECRET_VERIFY }
-    )
-
-    const newAccount = await this.prismaService.customerAccount.create({
-      data: {
-        email: email,
-        password: hashPass,
-        provider: provider || "local",
-        active_token 
-      },
-    });
-    const fullName = `${res.last_name} ${res.first_name}`;
-    const customer = await this.prismaService.customer.create({
-      data :{
-        ...res,
-        email : email,
-        full_name : fullName,
-        account :{
-          connect: { id: newAccount.id },
+      // 3. Tạo tài khoản trong transaction
+      const newAccount = await prisma.customerAccount.create({
+        data: {
+          email: email,
+          password: hashPass,
+          provider: provider || "local",
         },
-        provider: provider || "local",
-      }
-    })
+      });
 
+      // 4. Tạo khách hàng trong transaction
+      const fullName = `${res.last_name} ${res.first_name}`;
+      const customer = await prisma.customer.create({
+        data: {
+          ...res,
+          email: email,
+          full_name: fullName,
+          account: {
+            connect: { id: newAccount.id },
+          },
+          provider: provider || "local",
+        },
+      });
 
-    await this.mailService.sendMail({
-     from: process.env.ADMIN_EMAIL_ADDRESS,
-      to: email,
-      subject: "Kích hoạt tài khoản",
-      template: "comfirmNewCustomer",
-      context: {
-        token : active_token
+      // 5. Gửi email (nếu lỗi thì rollback)
+      try {
+        await this.mailService.sendMailNoJob({
+          to: email,
+          subject: "TP Mobile Store - Kích hoạt tài khoản website",
+          template: "comfirmNewCustomer",
+          context: {
+            token: active_token,
+          },
+        });
+      } catch (error) {
+        console.log(error)
+        throw new Error(`Đã có lỗi xảy ra vui lòng thử lại`);
       }
-    })
-    return customer;
+
+      // 6. Trả về kết quả nếu mọi thứ thành công
+      return customer;
+    });
   }
 
   async activeAccount(token: string) {
-    const { email, password } = this.jwtService.verify(token, {
-      secret: process.env.JWT_SECRET_VERIFY,
-    });
+    const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET_VERIFY });
     const account = await this.prismaService.customerAccount.findUnique({
-      where: { email },
+      where: { email: payload.email },
     });
     if (!account) {
-      throw new UnauthorizedException("Not found account");
+      throw new UnauthorizedException("Không tìm thấy tài khoản");
     }
     if (account.active) {
-      throw new UnauthorizedException("Account already active");
+      throw new UnauthorizedException("Tài khoản đã được kích hoạt rồi");
     }
     await this.prismaService.customerAccount.update({
-      where: { email },
-      data: { active: true, active_token: null ,  active_expired_at : new Date() },
+      where: { id: account.id },
+      data: { active: true, active_expired_at: new Date() },
     });
-    return { message: "Active account successfully" };
+    return { message: "Kích hoạt tài khoản thành công" };
   }
 
   async logout() {
@@ -116,17 +124,17 @@ export class CustomerAuthService {
   async profile(id: number) {
     return this.prismaService.customer.findUnique({
       where: { id },
-      select :{
-        email : true,
-        first_name : true,
-        last_name : true,
-        phone : true,
-        full_name : true,
-        gender : true,
-        birthday : true,
-        avatar : true,
-        meta_data : true,
-      }
+      select: {
+        email: true,
+        first_name: true,
+        last_name: true,
+        phone: true,
+        full_name: true,
+        gender: true,
+        birthday: true,
+        avatar: true,
+        meta_data: true,
+      },
     });
   }
 }

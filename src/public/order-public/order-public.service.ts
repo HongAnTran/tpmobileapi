@@ -1,43 +1,67 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { OrderStatus } from "src/common/types/Order.type";
 import { PrismaService } from "src/prisma.service";
-import * as crypto from "crypto";
-
+import { MailService } from "src/mail/mail.service";
+import { v4 as uuidv4 } from "uuid";
 @Injectable()
 export class OrderPublicService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,
+  private readonly mailService: MailService
+  ) {}
 
-  async createOderReview(
+  async createOrderReview(
     input: Pick<
       Prisma.OrderCreateInput,
-      | "items"
-      | "note"
-      | "total_price"
-      | "temp_price"
-      | "discount"
-      | "ship_price"
+      "items" | "note" | "total_price" | "temp_price" | "discount" | "ship_price"
     >
   ) {
-    const token = crypto.randomBytes(12).toString("hex");
-    const code = "DH" + crypto.randomBytes(3).toString("hex");
-    const data: Prisma.OrderCreateInput = {
-      ...input,
-      token,
-      code: code.toUpperCase(),
-      status: OrderStatus.DRAFT,
-    };
-    return this.prisma.order.create({
-      data,
-      include: {
-        items: true,
-      },
-    });
-  }
+    return this.prisma.$transaction(async (prisma) => {
+      const token = uuidv4();
+      // 2. Lấy ngày hiện tại theo format `YYMMDD`
+      const today = new Date();
+      const day = today.getDate().toString().padStart(2, "0"); 
+      const month = (today.getMonth() + 1).toString().padStart(2, "0"); 
+      const year = today.getFullYear().toString().slice(-2); // '25'
+      
+      const dateCode = `${year}${month}${day}`; 
+      const presix = "DH";
+      // 3. Tìm đơn hàng gần nhất trong ngày
+      const latestOrder = await this.prisma.order.findFirst({
+        where: { code: { startsWith: `${presix}${dateCode}` } },
+        orderBy: { created_at: "desc" },
+        select: { code: true },
+      });
+      // 4. Tăng số thứ tự
+      let newIndex = "0001";
+      if (latestOrder) {
+        const lastNumber = parseInt(latestOrder.code.slice(-4), 10) + 1;
+        newIndex = lastNumber.toString().padStart(4, "0");
+      }
+    
+      const newCode = `${presix}${dateCode}${newIndex}`;
+    
+      // 5. Tạo đơn hàng
+      const data: Prisma.OrderCreateInput = {
+        ...input,
+        token,
+        code: newCode,
+        status: OrderStatus.DRAFT,
+      };
+    
+      return this.prisma.order.create({
+        data,
+        include: { items: true },
+      });
 
-  async update(id: number, data: Prisma.OrderUpdateInput) {
+    }
+  )
+  }
+  
+
+  async update(token: string, data: Prisma.OrderUpdateInput) {
     return this.prisma.order.update({
-      where: { id },
+      where: { token },
       data,
       include: {
         customer: true,
@@ -48,12 +72,71 @@ export class OrderPublicService {
     });
   }
 
+  async checkOut(token  : string, checkoutOrder: Prisma.OrderUpdateInput) {
+    return this.prisma.$transaction(async (prisma) => {
+      const order = await this.findOneByToken(token);
+      if (!order) {
+        throw new NotFoundException(`Không tìm thấy đơn hàng`);
+      }
+      if (order.status !== OrderStatus.DRAFT) {
+        throw new  BadRequestException(`Trạng thái đơn hàng không hợp lệ`);
+      }
+      if (order.items.length === 0) {
+        throw new BadRequestException(`Vui lòng thêm sản phẩm vào giỏ hàng`);
+      }
+      if (order.items.some((item) => item.product.available === false)) {
+        throw new UnprocessableEntityException(`Sản phẩm không khả dụng`);
+      }
+      const data: Prisma.OrderUpdateInput = {
+        status: OrderStatus.PENDING,
+        sold_at: new Date(),
+        ...checkoutOrder,
+      };
+      const res = await this.update(token, data);
+      await this.sendMail(res);
+      return res
+    })
+   
+  }
+
+  async sendMail(res :Prisma.OrderGetPayload<{
+    include: {
+      items: true;
+      customer: true;
+      payment: true;
+      shipping: true;
+    };
+  }> ){
+   try {
+    const email = res.shipping.email || res.customer.email;
+    if (email) {
+      await this.mailService.sendMail({
+        subject: "Xác Nhận Đơn Hàng - TP Mobile Store",
+        to: email,
+        template: "orderConfirmation",
+        context: res
+      });
+    }
+    await this.mailService.sendMail({
+      subject: "TP Mobile Store - Đơn đặt hàng mới",
+      to: process.env.EMAIL_NOTI,
+      template: "newOrder",
+      context: res
+    });
+   } catch (error) {
+    console.error("Error sending email:", error);
+   }
+  }
   async findOneByToken(token: string) {
     try {
       const order = await this.prisma.order.findUnique({
         where: { token, available: true },
         include: {
-          items: true,
+          items: {
+            include :{
+              product:true
+            }
+          },
           customer: true,
           payment: true,
           shipping: true,
