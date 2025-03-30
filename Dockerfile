@@ -12,7 +12,7 @@ RUN npm install --production
 COPY . .
 
 # Build ứng dụng NestJS
-RUN npm run build && cp -r src/templates dist/
+RUN npm run build
 
 # Chạy ứng dụng
 CMD ["node", "dist/main.js"]

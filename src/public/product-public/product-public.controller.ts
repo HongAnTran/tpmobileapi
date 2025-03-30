@@ -69,7 +69,7 @@ export class ProductPublicController {
         attributes: {
           some: {
             values: {
-              some: { value: { in: attributes[key]?.split(",") || [] } },
+              some: {attributeValue:{ value: { in: attributes[key]?.split(",") || [] }} },
             },
             attribute: {
               key: key,

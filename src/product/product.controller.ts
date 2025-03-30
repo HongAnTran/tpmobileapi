@@ -75,6 +75,18 @@ export class ProductController {
 
     let queryOptions: Prisma.ProductWhereInput | Prisma.ProductWhereInput[] =
       undefined;
+      // let queryOptions2: Prisma.ProductWhereInput = {
+      //   attributes:{
+      //     some: {
+      //       values: {
+      //         some: { attributeValue:{
+      //           value : { in: attributes[key]?.split(",") || [] } },
+      //         },
+      //         } },
+      //       },
+      //     },
+      //   }
+      // }
     let queryOptionsCategory:
       | Prisma.ProductWhereInput
       | Prisma.ProductWhereInput[] = undefined;
@@ -86,7 +98,7 @@ export class ProductController {
         attributes: {
           some: {
             values: {
-              some: { value: { in: attributes[key]?.split(",") || [] } },
+              some: {attributeValue:{ value: { in: attributes[key]?.split(",") || [] }} },
             },
             attribute: {
               key: key,
