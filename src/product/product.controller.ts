@@ -11,11 +11,10 @@ import {
 } from "@nestjs/common";
 import { ProductService } from "./product.service";
 import { Prisma } from "@prisma/client";
-import { Public } from "src/common/decorator/public.decorator";
 import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("products")
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
@@ -75,18 +74,7 @@ export class ProductController {
 
     let queryOptions: Prisma.ProductWhereInput | Prisma.ProductWhereInput[] =
       undefined;
-      // let queryOptions2: Prisma.ProductWhereInput = {
-      //   attributes:{
-      //     some: {
-      //       values: {
-      //         some: { attributeValue:{
-      //           value : { in: attributes[key]?.split(",") || [] } },
-      //         },
-      //         } },
-      //       },
-      //     },
-      //   }
-      // }
+
     let queryOptionsCategory:
       | Prisma.ProductWhereInput
       | Prisma.ProductWhereInput[] = undefined;
@@ -202,7 +190,11 @@ export class ProductController {
         attributes: {
           include: {
             attribute: true,
-            values: true,
+            values: {
+              include: {
+                attributeValue: true,
+              },
+            },
           },
         },
       },

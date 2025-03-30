@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { Prisma } from "@prisma/client";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
+import { AuthGuard } from "src/auth/jwt.guard";
+@UseGuards(AuthGuard)
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
