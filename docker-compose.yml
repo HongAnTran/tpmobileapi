@@ -32,8 +32,7 @@ services:
       - '4000:4000' # Cổng 4000 như yêu cầu của bạn
     environment:
       # Database
-      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@postgres:5432/${DATABASE_DB}?schema=public
-      - DATABASE_HOST=postgres
+      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@localhost:5432/${DATABASE_DB}?schema=public
       - DATABASE_PORT=5432
       - DATABASE_DB=${DATABASE_DB}
       - DATABASE_USER=${DATABASE_USER}
