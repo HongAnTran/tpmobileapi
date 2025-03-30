@@ -16,6 +16,7 @@ RUN npm install bcrypt
 # Build ứng dụng NestJS
 RUN npm run build
 
+RUN npx prisma generate
 # Chạy ứng dụng
 CMD ["node", "dist/src/main.js"]
 
