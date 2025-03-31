@@ -25,7 +25,7 @@ export class OrderPublicService {
       | "temp_price"
       | "discount"
       | "ship_price"
-    >
+    > , customerId?: number
   ) {
     return this.prisma.$transaction(async (prisma) => {
       const token = uuidv4();
@@ -33,6 +33,7 @@ export class OrderPublicService {
         ...input,
         token,
         code: token,
+        customer: customerId ? { connect: { id: customerId } } : undefined,
         status: OrderStatus.DRAFT,
       };
       return this.prisma.order.create({
@@ -87,7 +88,7 @@ export class OrderPublicService {
     });
   }
 
-  async checkOut(token: string, checkoutOrder: Prisma.OrderUpdateInput) {
+  async checkOut(token: string, checkoutOrder: Prisma.OrderUpdateInput , customerId?: number) {
     const res = this.prisma.$transaction(async (prisma) => {
       const order = await this.findOneByToken(token);
       if (!order) {
@@ -103,10 +104,15 @@ export class OrderPublicService {
         throw new UnprocessableEntityException(`Sản phẩm không khả dụng`);
       }
 
+      if(order.customer_id && order.customer_id !== customerId) {
+        throw new UnprocessableEntityException(`Lỗi xác thực`);
+      }
+
       const code = await this.generateCode();
       const data: Prisma.OrderUpdateInput = {
         status: OrderStatus.PENDING,
         code,
+        customer: customerId ? { connect: { id: customerId } } : undefined,
         sold_at: new Date(),
         ...checkoutOrder,
       };

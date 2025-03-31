@@ -6,6 +6,7 @@ import * as bcrypt from "bcrypt";
 import { RegisterDto } from "./dto/register.dto";
 import { hashPassword } from "src/common/helper/hassPassword";
 import { MailService } from "src/mail/mail.service";
+import { ChangePassDto } from "./dto/changePass.dto";
 
 @Injectable()
 export class CustomerAuthService {
@@ -52,7 +53,7 @@ export class CustomerAuthService {
       const { password, email, provider, ...res } = payload;
       const hashPass = await hashPassword(password);
       const active_token = this.jwtService.sign(
-        { email: email },
+        { email: email , password: hashPass },
         { expiresIn: "30d", secret: process.env.JWT_SECRET_VERIFY }
       );
 
@@ -135,6 +136,64 @@ export class CustomerAuthService {
         avatar: true,
         meta_data: true,
       },
+    });
+  }
+
+
+  async resetPassword(email: string) {
+    const account = await this.prismaService.customerAccount.findUnique({
+      where: { email },
+    });
+    if (!account) {
+      throw new UnauthorizedException("Tài khoản không tồn tại");
+    }
+    const reset_token = this.jwtService.sign(
+      { email: email },
+      { expiresIn: "30d", secret: process.env.JWT_SECRET_VERIFY }
+    );
+    await this.mailService.sendMailNoJob({
+      to: email,
+      subject: "TP Mobile Store - Đặt lại mật khẩu",
+      template: "resetPassword",
+      context: {
+        token: reset_token,
+      },
+    });
+  }
+
+  async resetPasswordConfirm(token: string, password: string) {
+    const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET_VERIFY });
+    const account = await this.prismaService.customerAccount.findUnique({
+      where: { email: payload.email },
+    });
+    if (!account) {
+      throw new UnauthorizedException("Tài khoản không tồn tại");
+    }
+    if (!account.active) {
+      throw new UnauthorizedException("Tài khoản chưa được kích hoạt");
+    }
+    const hashPass = await hashPassword(password);
+    await this.prismaService.customerAccount.update({
+      where: { id: account.id },
+      data: { password: hashPass },
+    });
+    return { message: "Đặt lại mật khẩu thành công" };
+  }
+
+  async changePass(id: number, body:ChangePassDto) {
+    const account = await this.prismaService.customerAccount.findUnique({
+      where: { id },
+    });
+    if (!account) {
+      throw new UnauthorizedException("Tài khoản không tồn tại");
+    }
+    if (!bcrypt.compareSync(body.password, account.password)) {
+      throw new UnauthorizedException("Mật khẩu không đúng");
+    }
+    const hashPass = await hashPassword(body.new_password);
+    return this.prismaService.customerAccount.update({
+      where: { id },
+      data: { password: hashPass },
     });
   }
 }
