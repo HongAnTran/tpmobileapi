@@ -1,8 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { TagsService } from './tags.service';
-import { Prisma } from '@prisma/client';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
+import { TagsService } from "./tags.service";
+import { Prisma } from "@prisma/client";
+import { AuthGuard } from "src/auth/jwt.guard";
 
-@Controller('tags')
+@Controller("tags")
+@UseGuards(AuthGuard)
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
@@ -12,10 +24,13 @@ export class TagsController {
   }
 
   @Get()
-  findAll(@Query('skip') skip?: string, @Query('take') take?: string,
-    @Query('product_id') productId?: string) {
+  findAll(
+    @Query("skip") skip?: string,
+    @Query("take") take?: string,
+    @Query("product_id") productId?: string
+  ) {
     const where: Prisma.TagsWhereInput = {
-      products : productId ? {some : {id : +productId}} : undefined
+      products: productId ? { some: { id: +productId } } : undefined,
     };
 
     return this.tagsService.findAll({
@@ -25,19 +40,21 @@ export class TagsController {
     });
   }
 
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.tagsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTagDto: Prisma.TagsUpdateInput) {
+  @Patch(":id")
+  update(
+    @Param("id") id: string,
+    @Body() updateTagDto: Prisma.TagsUpdateInput
+  ) {
     return this.tagsService.update(+id, updateTagDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.tagsService.remove(+id);
   }
 }

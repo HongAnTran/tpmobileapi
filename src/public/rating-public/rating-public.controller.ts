@@ -1,0 +1,31 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from "@nestjs/common";
+import { RatingPublicService } from "./rating-public.service";
+import { CreateRatingPublicDto } from "./dto/create-rating-public.dto";
+import { AuthCustomerGuard } from "../customer-auth/jwtCustomer.guard";
+
+@Controller("public/ratings")
+export class RatingPublicController {
+  constructor(private readonly ratingPublicService: RatingPublicService) {}
+
+  @Post()
+  @UseGuards(AuthCustomerGuard)
+  create(@Req() req: any, @Body() createRatingDto: CreateRatingPublicDto) {
+    const { id } = req.customer;
+    const { product_id, ...res } = createRatingDto;
+    return this.ratingPublicService.create({
+      ...res,
+      customer: { connect: { id: id } },
+      product: { connect: { id: product_id } },
+    });
+  }
+}

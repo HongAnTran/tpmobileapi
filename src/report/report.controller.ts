@@ -1,8 +1,16 @@
-import { Controller, Get, Query, BadRequestException } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Query,
+  BadRequestException,
+  UseGuards,
+} from "@nestjs/common";
 import { ReportService } from "./report.service";
 import { DashboardReportDto } from "./dto/dashboad-report.dto";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("report")
+@UseGuards(AuthGuard)
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 

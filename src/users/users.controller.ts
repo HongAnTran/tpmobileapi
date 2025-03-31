@@ -14,8 +14,8 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { Prisma } from "@prisma/client";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { AuthGuard } from "src/auth/jwt.guard";
-@UseGuards(AuthGuard)
 @Controller("users")
+@UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -34,35 +34,27 @@ export class UsersController {
   @Patch(":id")
   update(
     @Param("id") id: string,
-    @Body() updateUserDto: Pick<Prisma.UserUpdateInput , "avatar" |  "name" | "meta_data">
+    @Body()
+    updateUserDto: Pick<Prisma.UserUpdateInput, "avatar" | "name" | "meta_data">
   ) {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @Patch("active/:id")
-  active(
-    @Param("id") id: string,
-  ) {
+  active(@Param("id") id: string) {
     return this.usersService.active(+id);
   }
   @Patch("unactive/:id")
-  unactive(
-    @Param("id") id: string,
-  ) {
+  unactive(@Param("id") id: string) {
     return this.usersService.unactive(+id);
   }
 
   // assign role to user
   @Patch("roles/:id")
-  assignRole(
-    @Param("id") id: string,
-    @Body() body: { roleIds: number[] }
-  ) {
-
+  assignRole(@Param("id") id: string, @Body() body: { roleIds: number[] }) {
     const { roleIds } = body;
-    return this.usersService.assignRole(+id,roleIds);
+    return this.usersService.assignRole(+id, roleIds);
   }
-
 
   @Delete(":id")
   remove(@Param("id") id: string) {

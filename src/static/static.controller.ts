@@ -10,12 +10,14 @@ import {
   UploadedFiles,
   Query,
   BadRequestException,
+  UseGuards,
 } from "@nestjs/common";
 import { StaticService } from "./static.service";
 import { Prisma } from "@prisma/client";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { ConfigService } from "@nestjs/config";
+import { AuthGuard } from "src/auth/jwt.guard";
 @Controller("static")
+@UseGuards(AuthGuard)
 export class StaticController {
   constructor(private readonly staticService: StaticService) {}
 

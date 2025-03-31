@@ -1,10 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ProductImageService } from './product-image.service';
-import { Prisma } from '@prisma/client';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
+import { ProductImageService } from "./product-image.service";
+import { Prisma } from "@prisma/client";
+import { AuthGuard } from "src/auth/jwt.guard";
 
-@Controller('product-image')
+@Controller("product-image")
+@UseGuards(AuthGuard)
 export class ProductImageController {
-  constructor(private readonly productImageService: ProductImageService) { }
+  constructor(private readonly productImageService: ProductImageService) {}
 
   @Post()
   create(@Body() createProductImageDto: Prisma.ProductImageCreateInput) {
@@ -18,14 +30,13 @@ export class ProductImageController {
 
   @Get()
   findAll(
-    @Query('skip') skip?: string,
-    @Query('take') take?: string,
-    @Query('product_id') product_id?: string,
+    @Query("skip") skip?: string,
+    @Query("take") take?: string,
+    @Query("product_id") product_id?: string
   ) {
-
     const where: Prisma.ProductImageWhereInput = {
       product_id: product_id ? +product_id : undefined,
-    }
+    };
 
     return this.productImageService.findAll({
       skip: Number(skip) ? Number(skip) : undefined,
@@ -34,20 +45,21 @@ export class ProductImageController {
     });
   }
 
-
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.productImageService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductImageDto: Prisma.ProductImageUpdateInput) {
+  @Patch(":id")
+  update(
+    @Param("id") id: string,
+    @Body() updateProductImageDto: Prisma.ProductImageUpdateInput
+  ) {
     return this.productImageService.update(+id, updateProductImageDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.productImageService.remove(+id);
   }
 }

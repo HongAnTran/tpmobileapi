@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { StoreService } from "./store.service";
 import { Prisma } from "@prisma/client";
 import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
-@Controller("store")
+@Controller("stores")
+@UseGuards(AuthGuard)
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 

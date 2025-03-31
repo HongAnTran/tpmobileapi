@@ -129,7 +129,7 @@ html
           tbody
             each item in items
               tr
-                td #{item.product_title}#{item.variant_title ? " (" + item.variant_title + ")" : ""}
+                td #{item.product.title}#{item.variant.title ? " (" + item.variant.title + ")" : ""}
                 td #{item.quantity}
                 td #{item.line_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
 

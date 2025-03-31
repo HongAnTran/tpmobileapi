@@ -7,23 +7,18 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { ProductConsultationService } from "./product-consultation.service";
-import { CreateProductConsultationDto } from "./dto/create-product-consultation.dto";
 import { UpdateProductConsultationDto } from "./dto/update-product-consultation.dto";
-import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("product-consultation")
+@UseGuards(AuthGuard)
 export class ProductConsultationController {
   constructor(
     private readonly productConsultationService: ProductConsultationService
   ) {}
-
-  @Public()
-  @Post()
-  create(@Body() createProductConsultationDto: CreateProductConsultationDto) {
-    return this.productConsultationService.create(createProductConsultationDto);
-  }
 
   @Get()
   findAll(

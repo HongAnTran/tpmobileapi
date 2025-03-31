@@ -1,8 +1,17 @@
 // src/ratings/dto/create-rating.dto.ts
 
-import { IsInt, IsOptional, IsString, IsArray, ArrayNotEmpty, ArrayMaxSize } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  IsArray,
+  ArrayNotEmpty,
+  ArrayMaxSize,
+  IsNotEmpty,
+} from "class-validator";
 
 export class CreateRatingDto {
+  @IsNotEmpty()
   @IsInt()
   rate: number;
 
@@ -17,9 +26,11 @@ export class CreateRatingDto {
   @IsString({ each: true })
   images?: string[];
 
+  @IsNotEmpty()
   @IsInt()
   product_id: number;
 
+  @IsNotEmpty()
   @IsInt()
   customer_id: number;
 }

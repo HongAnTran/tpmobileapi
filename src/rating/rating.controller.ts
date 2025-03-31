@@ -7,24 +7,21 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { RatingService } from "./rating.service";
-import { CreateRatingDto } from "./dto/create-rating.dto";
 import { UpdateRatingDto } from "./dto/update-rating.dto";
 import { Prisma } from "@prisma/client";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("rating")
+@UseGuards(AuthGuard)
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
 
   @Post()
-  create(@Body() createRatingDto: CreateRatingDto) {
-    const { customer_id, product_id, ...res } = createRatingDto;
-    return this.ratingService.create({
-      ...res,
-      customer: { connect: { id: customer_id } },
-      product: { connect: { id: product_id } },
-    });
+  create(@Body() createRatingDto: Prisma.RatingCreateInput) {
+    return this.ratingService.create(createRatingDto);
   }
 
   @Get()

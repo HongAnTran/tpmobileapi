@@ -38,7 +38,7 @@ html
           tr
             //- td
             //-   img(src=item.image, alt=item.title, width="100")
-            td #{item.title} - #{item.variant_title}
+            td #{item.product.title} - #{item.variant.title}
             //- td #{item.category_title} 
             td #{item.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
             td #{item.quantity}

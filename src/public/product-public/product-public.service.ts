@@ -104,4 +104,28 @@ export class ProductPublicService {
       datas,
     };
   }
+
+  async getRating(slug: string) {
+    return this.prisma.product.findUnique({
+      where: {
+        slug,
+      },
+      select: {
+        id: true,
+        ratings: {
+          include: {
+            customer: {
+              select: {
+                first_name: true,
+                last_name: true,
+                full_name: true,
+                gender: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 }

@@ -75,7 +75,12 @@ export class OrderPublicService {
       data,
       include: {
         customer: true,
-        items: true,
+        items: {
+          include: {
+            product: true,
+            variant: true,
+          },
+        },
         payment: true,
         shipping: true,
       },

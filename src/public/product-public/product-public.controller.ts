@@ -69,7 +69,11 @@ export class ProductPublicController {
         attributes: {
           some: {
             values: {
-              some: {attributeValue:{ value: { in: attributes[key]?.split(",") || [] }} },
+              some: {
+                attributeValue: {
+                  value: { in: attributes[key]?.split(",") || [] },
+                },
+              },
             },
             attribute: {
               key: key,
@@ -166,11 +170,11 @@ export class ProductPublicController {
           include: {
             attribute: true,
             values: {
-              select:{
+              select: {
                 id: true,
                 position: true,
                 attributeValue: true,
-              }
+              },
             },
           },
         },
@@ -181,5 +185,10 @@ export class ProductPublicController {
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.productPublicService.product(id);
+  }
+
+  @Get("ratings/:slug")
+  findAllRating(@Param("slug") slug: string) {
+    return this.productPublicService.getRating(slug);
   }
 }

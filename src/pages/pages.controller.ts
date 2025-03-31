@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from "@nestjs/common";
 import { PagesService } from "./pages.service";
 import { CreatePageDto } from "./dto/create-page.dto";
 import { UpdatePageDto } from "./dto/update-page.dto";
 import { Public } from "src/common/decorator/public.decorator";
+import { AuthGuard } from "src/auth/jwt.guard";
 
 @Controller("pages")
+@UseGuards(AuthGuard)
 export class PagesController {
   constructor(private readonly pagesService: PagesService) {}
 
@@ -29,12 +32,6 @@ export class PagesController {
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.pagesService.findOne(+id);
-  }
-
-  @Public()
-  @Get("slug/:slug")
-  findOneBySlug(@Param("slug") slug: string) {
-    return this.pagesService.findOneBySlug(slug);
   }
 
   @Patch(":id")
