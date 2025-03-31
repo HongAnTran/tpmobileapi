@@ -8,7 +8,7 @@ import { MailProcessor } from "./mail.processor";
   imports: [
     BullModule.forRoot({
       redis: {
-        host: "localhost",
+        host: "redis",
         port: parseInt(process.env.REDIS_PORT) || 6379,
         password: process.env.REDIS_PASSWORD || undefined,
       },

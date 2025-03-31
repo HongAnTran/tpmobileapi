@@ -83,7 +83,7 @@ export class OrderPublicService {
   }
 
   async checkOut(token: string, checkoutOrder: Prisma.OrderUpdateInput) {
-    return this.prisma.$transaction(async (prisma) => {
+    const res = this.prisma.$transaction(async (prisma) => {
       const order = await this.findOneByToken(token);
       if (!order) {
         throw new NotFoundException(`Không tìm thấy đơn hàng`);
@@ -106,9 +106,11 @@ export class OrderPublicService {
         ...checkoutOrder,
       };
       const res = await this.update(token, data);
-      await this.sendMail(res);
       return res;
     });
+    const data = await res;
+    await this.sendMail(data);
+    return data;
   }
 
   async sendMail(
