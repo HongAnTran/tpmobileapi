@@ -18,7 +18,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Chạy ứng dụng
-CMD ["npm", "start:prod"]
+CMD ["npm", "run" ,"start:prod"]
 
 # Mở cổng 4000
 EXPOSE 4000
