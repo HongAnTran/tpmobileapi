@@ -18,6 +18,21 @@ export class OrderPublicService {
   ) {
     return this.prisma.$transaction(async (prisma) => {
       const token = uuidv4();
+      const data: Prisma.OrderCreateInput = {
+        ...input,
+        token,
+        code:token,
+        status: OrderStatus.DRAFT,
+      };
+      return this.prisma.order.create({
+        data,
+        include: { items: true },
+      });
+    }
+  )
+  }
+  
+  async generateCode() {
       // 2. Lấy ngày hiện tại theo format `YYMMDD`
       const today = new Date();
       const day = today.getDate().toString().padStart(2, "0"); 
@@ -40,24 +55,9 @@ export class OrderPublicService {
       }
     
       const newCode = `${presix}${dateCode}${newIndex}`;
-    
-      // 5. Tạo đơn hàng
-      const data: Prisma.OrderCreateInput = {
-        ...input,
-        token,
-        code: newCode,
-        status: OrderStatus.DRAFT,
-      };
-    
-      return this.prisma.order.create({
-        data,
-        include: { items: true },
-      });
 
-    }
-  )
+      return newCode;
   }
-  
 
   async update(token: string, data: Prisma.OrderUpdateInput) {
     return this.prisma.order.update({
@@ -87,8 +87,11 @@ export class OrderPublicService {
       if (order.items.some((item) => item.product.available === false)) {
         throw new UnprocessableEntityException(`Sản phẩm không khả dụng`);
       }
+
+      const code = await this.generateCode();
       const data: Prisma.OrderUpdateInput = {
         status: OrderStatus.PENDING,
+        code,
         sold_at: new Date(),
         ...checkoutOrder,
       };
@@ -96,7 +99,6 @@ export class OrderPublicService {
       await this.sendMail(res);
       return res
     })
-   
   }
 
   async sendMail(res :Prisma.OrderGetPayload<{
