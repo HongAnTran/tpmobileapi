@@ -105,6 +105,9 @@ async getMyCart(id: number) {
           connect: { id },
         }
       },
+      include:{
+        items : {include: {product: true , variant: true  }},
+      }
     });
   } else {
     return this.prismaService.cart.update({
@@ -115,6 +118,9 @@ async getMyCart(id: number) {
           connect: { id },
         }
       },
+      include:{
+        items : {include: {product: true , variant: true  }},
+      }
     });
   }
   }
