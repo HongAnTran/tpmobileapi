@@ -92,9 +92,9 @@ async getMyCart(id: number) {
     }
   }
 
-  saveMyCart(id: number, body: Prisma.CartCreateInput) {
+ async saveMyCart(id: number, body: Prisma.CartCreateInput) {
       const {token} = body
-    const cart = this.prismaService.cart.findUnique({
+    const cart = await this.prismaService.cart.findUnique({
       where: { token },
     });
     if(!cart) {
