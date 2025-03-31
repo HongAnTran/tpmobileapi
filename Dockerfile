@@ -13,12 +13,12 @@ COPY . .
 RUN npm uninstall bcrypt
 
 RUN npm install bcrypt
+RUN npx prisma generate
 # Build ứng dụng NestJS
 RUN npm run build
 
-RUN npx prisma generate
 # Chạy ứng dụng
-CMD ["node", "dist/src/main.js"]
+CMD ["npm", "start:prod"]
 
 # Mở cổng 4000
 EXPOSE 4000
