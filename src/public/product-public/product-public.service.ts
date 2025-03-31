@@ -53,7 +53,17 @@ export class ProductPublicService {
           brand: { select: { id: true, name: true, slug: true } },
           tags: true,
           attributes: {
-            select: { position: true, id: true, attribute: true, values: true },
+            select: {
+              position: true,
+              id: true,
+              attribute: true,
+              values: {
+                select: {
+                  position: true,
+                  attributeValue: true,
+                },
+              },
+            },
             orderBy: { position: "asc" },
           },
         },
