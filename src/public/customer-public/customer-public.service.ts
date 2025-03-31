@@ -83,9 +83,13 @@ async getMyCart(id: number) {
       }
     });
     if(!cart.length) {
-      return null
+      return {
+        cart : null
+      }
     }
-    return cart[0]
+    return {
+      cart : cart[0]
+    }
   }
 
   saveMyCart(id: number, body: Prisma.CartCreateInput) {
