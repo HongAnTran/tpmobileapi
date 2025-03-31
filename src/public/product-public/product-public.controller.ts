@@ -166,8 +166,10 @@ export class ProductPublicController {
           include: {
             attribute: true,
             values: {
-              include :{
-                attributeValue : true
+              select:{
+                id: true,
+                position: true,
+                attributeValue: true,
               }
             },
           },

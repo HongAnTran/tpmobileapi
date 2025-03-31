@@ -191,9 +191,11 @@ export class ProductController {
           include: {
             attribute: true,
             values: {
-              include: {
+              select:{
+                id: true,
+                position: true,
                 attributeValue: true,
-              },
+              }
             },
           },
         },
