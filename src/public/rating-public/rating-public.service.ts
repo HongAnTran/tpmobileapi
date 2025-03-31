@@ -47,6 +47,68 @@ export class RatingPublicService {
       }
     }
 
-    return this.prisma.rating.create({ data: createRatingDto });
+    const res = await this.prisma.rating.create({ data: createRatingDto });
+    await this.prisma.product.update({
+      where: {
+        id: createRatingDto.product.connect.id,
+      },
+      data: {
+        rating:{
+          
+        }
+      },
+    });
+    await this.updateProductRating(product.connect.id);
+    return res
   }
+
+  async updateProductRating(productId: number) {
+    // Lấy tất cả ratings
+    const allRatings = await this.prisma.rating.findMany({
+      where: { product_id: productId },
+      select: { rate: true, is_seeding: true },
+    });
+  
+    if (allRatings.length === 0) {
+      await this.prisma.product.update({
+        where: { id: productId },
+        data: { rating: null },
+      });
+      return;
+    }
+  
+    // Tính toán rating tổng
+    const count = allRatings.length;
+    const sum = allRatings.reduce((acc, r) => acc + r.rate, 0);
+    const average = parseFloat((sum / count).toFixed(1));
+  
+    const distribution = allRatings.reduce((acc, r) => {
+      acc[r.rate] = (acc[r.rate] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+  
+    // Lọc bỏ rating seeding
+    const realRatings = allRatings.filter(r => !r.is_seeding);
+    const countReal = realRatings.length;
+    const sumReal = realRatings.reduce((acc, r) => acc + r.rate, 0);
+    const averageReal = countReal > 0 ? parseFloat((sumReal / countReal).toFixed(1)) : null;
+  
+    const distributionReal = realRatings.reduce((acc, r) => {
+      acc[r.rate] = (acc[r.rate] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+  
+    // Cập nhật Product với cả rating tổng và rating thực
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: { 
+        rating: { 
+          average, count, distribution,
+          real: countReal > 0 ? { average: averageReal, count: countReal, distribution: distributionReal } : null
+         },
+      
+      },
+    });
+  }
+  
 }
