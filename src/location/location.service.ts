@@ -1,18 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma   , Location } from '@prisma/client';
-import { PrismaService } from 'src/prisma.service';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma, Location } from "@prisma/client";
+import { PrismaService } from "src/prisma.service";
 
 @Injectable()
 export class LocationService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
-  async create(createLocationDto: Prisma.LocationCreateInput): Promise<Location> {
+  async create(
+    createLocationDto: Prisma.LocationCreateInput
+  ): Promise<Location> {
     return this.prisma.location.create({ data: createLocationDto });
+  }
+
+  async createMany(createMany: Prisma.LocationCreateManyInput) {
+    return this.prisma.location.createMany({
+      data: createMany,
+      skipDuplicates: true,
+    });
   }
 
   async findAll(where?: Prisma.LocationWhereInput): Promise<Location[]> {
     return this.prisma.location.findMany({
-      where : where
+      where: where,
     });
   }
   async findOne(id: number): Promise<Location | null> {
@@ -25,15 +34,15 @@ export class LocationService {
     return Location;
   }
 
-
-
-  async update(id: number, updateLocationDto: Prisma.LocationUpdateInput): Promise<Location> {
+  async update(
+    id: number,
+    updateLocationDto: Prisma.LocationUpdateInput
+  ): Promise<Location> {
     // Perform the update
     return await this.prisma.location.update({
       where: { id },
-      data: updateLocationDto
+      data: updateLocationDto,
     });
-
   }
 
   async remove(id: number): Promise<Location> {

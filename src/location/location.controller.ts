@@ -20,6 +20,10 @@ export class LocationController {
   create(@Body() createLocationDto: Prisma.LocationCreateInput) {
     return this.locationService.create(createLocationDto);
   }
+  @Post("many")
+  createMany(@Body() createLocationDto: Prisma.LocationCreateManyInput) {
+    return this.locationService.createMany(createLocationDto);
+  }
 
   @Get()
   findAll(
