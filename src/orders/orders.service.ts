@@ -188,6 +188,7 @@ export class OrdersService {
       where: {
         status: OrderStatus.DRAFT,
         created_at: { lt: deleteBefore },
+        available: true,
       },
       data: { available: false },
     });
