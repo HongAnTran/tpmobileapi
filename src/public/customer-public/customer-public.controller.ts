@@ -45,6 +45,12 @@ export class CustomerPublicController {
     return this.customerPublicService.update(id, updateCustomerPublicDto);
   }
 
+  @Get("address")
+  getAddress(@Req() req: any) {
+    const { id } = req.customer;
+    return this.customerPublicService.getMyAddress(id);
+  }
+
   @Post("address")
   createAddress(@Req() req: any, @Body() body: Prisma.AddressCreateInput) {
     const { id } = req.customer;

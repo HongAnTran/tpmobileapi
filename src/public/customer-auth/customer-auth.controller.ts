@@ -20,12 +20,6 @@ import { ChangePassDto } from "./dto/changePass.dto";
 export class CustomerAuthController {
   constructor(private readonly customerAuthService: CustomerAuthService) {}
 
-  @Get("profile")
-  @UseGuards(AuthCustomerGuard)
-  profile(@Req() req: any) {
-    const { id } = req.customer;
-    return this.customerAuthService.profile(id);
-  }
 
   @Post("login")
   login(@Body() login: LoginDto) {

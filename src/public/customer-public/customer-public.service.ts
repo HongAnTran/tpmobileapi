@@ -69,7 +69,17 @@ export class CustomerPublicService {
     });
   }
 
-
+  async getMyAddress(id: number) {
+    const address = await this.prismaService.address.findMany({
+      where: { customer_id: id },
+      include: {
+        province: true,
+        district: true,
+        ward: true,
+      },
+    });
+    return address
+  }
 async getMyCart(id: number) {
     // get last cart of customer
     const cart = await this.prismaService.cart.findMany({
