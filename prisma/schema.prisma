@@ -379,7 +379,6 @@ model ProductOrder {
   price_original      Float
   line_price_original Float
   discount            Float        @default(0)
-  selected            Boolean     @default(true)
   variant_id          Int
   product_id          Int
   quantity            Int
