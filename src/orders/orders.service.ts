@@ -14,6 +14,17 @@ export class OrdersService {
     private readonly mailService: MailService
   ) {}
 
+  async  active() {
+    return this.prisma.order.updateMany({
+      where: {
+        available: false,
+      },
+      data: {
+        available: true,
+      },
+    });
+  }
+
   async create(data: Prisma.OrderCreateInput) {
     return this.prisma.order.create({
       data,

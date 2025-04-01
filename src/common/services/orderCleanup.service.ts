@@ -8,16 +8,16 @@ export class OrderCleanupService {
 
   constructor(private readonly ordersService: OrdersService) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async handleCron() {
-    try {
-      const retentionDays = parseInt(process.env.DRAFT_ORDER_RETENTION_DAYS, 10) || 3;
-      const result = await this.ordersService.removeDraftOrdersOlderThan(retentionDays);
-      this.logger.log(`Deleted ${result.count} draft orders`);
-    } catch (error) {
-      this.logger.error('Failed to delete draft orders', error);
-    }
-  }
+  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  // async handleCron() {
+  //   try {
+  //     const retentionDays = parseInt(process.env.DRAFT_ORDER_RETENTION_DAYS, 10) || 3;
+  //     const result = await this.ordersService.removeDraftOrdersOlderThan(retentionDays);
+  //     this.logger.log(`Deleted ${result.count} draft orders`);
+  //   } catch (error) {
+  //     this.logger.error('Failed to delete draft orders', error);
+  //   }
+  // }
 
   @Cron('0 9 19 * *') // 9h sáng ngày 19 hàng tháng
   async handleSendMailAt9AM() {

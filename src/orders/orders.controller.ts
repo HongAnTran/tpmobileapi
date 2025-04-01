@@ -157,4 +157,9 @@ export class OrdersController {
   findOneByToken(@Param("token") token: string) {
     return this.ordersService.findOneByToken(token);
   }
+
+  @Post("active")
+  active() {
+    return this.ordersService.active();
+  }
 }
