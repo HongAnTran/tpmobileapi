@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SubscriptionPublicService } from './subscription-public.service';
 import { CreateSubscriptionPublicDto } from './dto/create-subscription-public.dto';
 
-@Controller('subscription-public')
+@Controller('public/subscriptions')
 export class SubscriptionPublicController {
   constructor(private readonly subscriptionPublicService: SubscriptionPublicService) {}
 
