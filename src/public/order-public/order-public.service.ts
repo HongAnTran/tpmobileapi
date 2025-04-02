@@ -248,8 +248,34 @@ export class OrderPublicService {
         include: {
           items: {
             include: {
-              product: true,
-              variant: true,
+              product: {
+                select: {
+                  title: true,
+                  id: true,
+                  available: true,
+                  category: true,
+                  images: true,
+                  price: true,
+                  status: true,
+                  slug: true,
+                  thumnail_url: true,
+                  compare_at_price: true,
+                  updated_at: true,
+                },
+              },
+              variant: {
+                select: {
+                  title: true,
+                  id: true,
+                  attribute_values: true,
+                  available: true,
+                  image: true,
+                  inventory_quantity: true,
+                  sku: true,
+                  price: true,
+                  price_origin: true,
+                },
+              },
             },
           },
           customer: true,
