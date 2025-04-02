@@ -240,4 +240,34 @@ export class OrderPublicService {
       throw new NotFoundException(`order with token ${token} not found`);
     }
   }
+
+  async cancelOrder(id : number , code : string,body: {
+    cancelReason: string
+    cancelReasonCode: number
+  }){
+    const order = await this.prisma.order.findUnique({
+      where: { code },
+      include:{
+        customer : true,
+      }
+    });
+    if (!order) {
+      throw new NotFoundException(`Không tìm thấy đơn hàng`);
+    }
+    if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.PROCESSING) {
+      throw new BadRequestException(`Trạng thái đơn hàng không hợp lệ`);
+    }
+
+    if(order.customer.id !== id){
+      throw new UnprocessableEntityException(`Lỗi xác thực`);
+    }
+
+    return this.prisma.order.update({
+      where: { id },
+      data : {
+        status : OrderStatus.CANCELLED,
+        note_private : `Hủy vì ${body.cancelReason} ${body.cancelReasonCode}`,
+      }
+    })
+  }
 }
