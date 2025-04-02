@@ -147,10 +147,11 @@ export class CustomerPublicService {
           },
         },
       },
-      orderBy: {
+      orderBy: [{
         sold_at: "desc",
+      },{
         created_at: "desc",
-      },
+      }]
     });
     return orders;
   }
