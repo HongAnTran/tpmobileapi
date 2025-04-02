@@ -220,7 +220,11 @@ export class OrderPublicService {
           customer: true,
           payment: true,
           shipping: true,
-          pickup: true,
+          pickup: {
+            include: {
+              store: true,
+            },
+          },
         },
       });
       if (!order) {
