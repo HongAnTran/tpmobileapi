@@ -32,9 +32,9 @@ export class CustomerPublicController {
     return this.customerPublicService.getMyCart(id);
   }
   @Put("carts")
-  saveCart(@Req() req: any , @Body() body: Prisma.CartCreateInput) {
+  saveCart(@Req() req: any, @Body() body: Prisma.CartCreateInput) {
     const { id } = req.customer;
-    return this.customerPublicService.saveMyCart(id,body);
+    return this.customerPublicService.saveMyCart(id, body);
   }
   @Patch("update")
   update(
@@ -58,20 +58,31 @@ export class CustomerPublicController {
   }
 
   @Patch("address/:idAddress")
-  editAddress(@Req() req: any,@Param() idAddress : string, @Body() body: Prisma.AddressUpdateInput) {
+  editAddress(
+    @Req() req: any,
+    @Param() idAddress: string,
+    @Body() body: Prisma.AddressUpdateInput
+  ) {
     const { id } = req.customer;
     if (!idAddress) {
       throw new BadRequestException("idAddress is required");
     }
-    return this.customerPublicService.updateAddress(id,+idAddress, body);
+    return this.customerPublicService.updateAddress(id, +idAddress, body);
   }
 
   @Delete("address/:idAddress")
-  deleteAddress(@Req() req: any,@Param() idAddress : string) {
+  deleteAddress(@Req() req: any, @Param() idAddress: string) {
     const { id } = req.customer;
     if (!idAddress) {
       throw new BadRequestException("idAddress is required");
     }
-    return this.customerPublicService.deleteAddress(id,+idAddress);
+    return this.customerPublicService.deleteAddress(id, +idAddress);
   }
+
+  @Get("orders")
+  getOrders(@Req() req: any) {
+    const { id } = req.customer;
+    return this.customerPublicService.getMyOrders(id);
+  }
+
 }

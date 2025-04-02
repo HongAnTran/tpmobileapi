@@ -4,8 +4,8 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
-import { OrderStatus } from "src/common/types/Order.type";
+import { PaymentStatus, Prisma } from "@prisma/client";
+import { OrderPickupStatus, OrderStatus } from "src/common/types/Order.type";
 import { PrismaService } from "src/prisma.service";
 import { MailService } from "src/mail/mail.service";
 import { v4 as uuidv4 } from "uuid";
@@ -25,7 +25,8 @@ export class OrderPublicService {
       | "temp_price"
       | "discount"
       | "ship_price"
-    > , customerId?: number
+    >,
+    customerId?: number
   ) {
     return this.prisma.$transaction(async (prisma) => {
       const token = uuidv4();
@@ -76,7 +77,11 @@ export class OrderPublicService {
       data,
       include: {
         customer: true,
-        pickup: true,
+        pickup: {
+          include: {
+            store: true,
+          },
+        },
         tags: true,
         coupons: true,
         items: {
@@ -91,7 +96,11 @@ export class OrderPublicService {
     });
   }
 
-  async checkOut(token: string, checkoutOrder: Prisma.OrderUpdateInput , customerId?: number) {
+  async checkOut(
+    token: string,
+    checkoutOrder: Prisma.OrderUpdateInput,
+    customerId?: number
+  ) {
     const res = this.prisma.$transaction(async (prisma) => {
       const order = await this.findOneByToken(token);
       if (!order) {
@@ -107,9 +116,11 @@ export class OrderPublicService {
         throw new UnprocessableEntityException(`Sản phẩm không khả dụng`);
       }
 
-      if(order.customer_id && order.customer_id !== customerId) {
+      if (order.customer_id && order.customer_id !== customerId) {
         throw new UnprocessableEntityException(`Lỗi xác thực`);
       }
+
+      // verify total price
 
       const code = await this.generateCode();
       const data: Prisma.OrderUpdateInput = {
@@ -117,6 +128,20 @@ export class OrderPublicService {
         code,
         customer: customerId ? { connect: { id: customerId } } : undefined,
         sold_at: new Date(),
+        payment: {
+          create: {
+            ...checkoutOrder.payment.create,
+            status: PaymentStatus.PENDING,
+          },
+        },
+        pickup: checkoutOrder.pickup
+          ? {
+              create: {
+                ...checkoutOrder.pickup.create,
+                status: OrderPickupStatus.PENDING,
+              },
+            }
+          : undefined,
         ...checkoutOrder,
       };
       const res = await this.update(token, data);
@@ -134,11 +159,13 @@ export class OrderPublicService {
         customer: true;
         payment: true;
         shipping: true;
+        pickup: true;
       };
     }>
   ) {
     try {
-      const email = res.shipping.email || res.customer.email;
+      const email =
+        res.shipping?.email || res.pickup?.email || res.customer?.email;
       if (email) {
         await this.mailService.sendMail({
           subject: "Xác Nhận Đơn Hàng - TP Mobile Store",
@@ -197,6 +224,11 @@ export class OrderPublicService {
           customer: true,
           payment: true,
           shipping: true,
+          pickup: {
+            include: {
+              store: true,
+            },
+          },
         },
       });
       if (!order) {
@@ -207,5 +239,92 @@ export class OrderPublicService {
     } catch (error) {
       throw new NotFoundException(`order with token ${token} not found`);
     }
+  }
+
+  async findOneByCode(code: string) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: { code, available: true },
+        include: {
+          items: {
+            include: {
+              product: {
+                select: {
+                  title: true,
+                  id: true,
+                  available: true,
+                  category: true,
+                  images: true,
+                  price: true,
+                  status: true,
+                  slug: true,
+                  thumnail_url: true,
+                  compare_at_price: true,
+                  updated_at: true,
+                },
+              },
+              variant: {
+                select: {
+                  title: true,
+                  id: true,
+                  attribute_values: true,
+                  available: true,
+                  image: true,
+                  inventory_quantity: true,
+                  sku: true,
+                  price: true,
+                  price_origin: true,
+                },
+              },
+            },
+          },
+          customer: true,
+          payment: true,
+          shipping: true,
+          coupons :true,
+          pickup: {
+            include: {
+              store: true,
+            },
+          },
+        },
+      });
+      if (!order) {
+        throw new NotFoundException(`Đơn hàng không tồn tại`);
+      }
+
+      return order;
+    } catch (error) {
+      throw new NotFoundException(`Đơn hàng không tồn tại`);
+    }
+  }
+
+  async cancelOrder(id : number , code : string,body: {
+    cancelReason: string
+    cancelReasonCode: number
+  }){
+    const order = await this.prisma.order.findUnique({
+      where: { code },
+      include:{
+        customer : true,
+      }
+    });
+    if (!order || !order.available) {
+      throw new NotFoundException(`Đơn hàng không tồn tại`);
+    }
+    if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.PROCESSING) {
+      throw new BadRequestException(`Trạng thái đơn hàng không hợp lệ`);
+    }
+
+    if(order.customer.id !== id){
+      throw new UnprocessableEntityException(`Lỗi xác thực`);
+    }
+      return this.prisma.order.update({
+        where: { id },
+        data : {
+          status : OrderStatus.CANCELLED,
+          note_private : `Hủy vì ${body.cancelReason} ${body.cancelReasonCode}`,
+        }
+      })
   }
 }

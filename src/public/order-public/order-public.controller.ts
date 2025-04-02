@@ -8,6 +8,7 @@ import {
   Get,
   UseGuards,
   Req,
+  Delete,
 } from "@nestjs/common";
 import { OrderPublicService } from "./order-public.service";
 import { Prisma } from "@prisma/client";
@@ -111,4 +112,22 @@ export class OrderPublicController {
   findOneByToken(@Param("token") token: string) {
     return this.orderPublicService.findOneByToken(token);
   }
+  @Get("/code/:code")
+  findOneByCode(@Param("code") code: string) {
+    return this.orderPublicService.findOneByCode(code);
+  }
+
+  @Put("cancel/:code")
+  @UseGuards(AuthCustomerGuard)
+  cancelOrder(@Req() req: any, @Param() code: string , @Body() body: {
+    cancelReason: string
+    cancelReasonCode: number
+  }) {
+    const { id } = req.customer;
+    if (!code) {
+      throw new BadRequestException("code is required");
+    }
+    return this.orderPublicService.cancelOrder(id, code,body);
+  }
+
 }

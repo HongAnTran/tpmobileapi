@@ -53,7 +53,7 @@ export class CustomerAuthService {
       const { password, email, provider, ...res } = payload;
       const hashPass = await hashPassword(password);
       const active_token = this.jwtService.sign(
-        { email: email , password: hashPass },
+        { email: email, password: hashPass },
         { expiresIn: "30d", secret: process.env.JWT_SECRET_VERIFY }
       );
 
@@ -91,7 +91,7 @@ export class CustomerAuthService {
           },
         });
       } catch (error) {
-        console.log(error)
+        console.log(error);
         throw new Error(`Đã có lỗi xảy ra vui lòng thử lại`);
       }
 
@@ -101,7 +101,9 @@ export class CustomerAuthService {
   }
 
   async activeAccount(token: string) {
-    const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET_VERIFY });
+    const payload = this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET_VERIFY,
+    });
     const account = await this.prismaService.customerAccount.findUnique({
       where: { email: payload.email },
     });
@@ -139,7 +141,6 @@ export class CustomerAuthService {
     });
   }
 
-
   async resetPassword(email: string) {
     const account = await this.prismaService.customerAccount.findUnique({
       where: { email },
@@ -162,7 +163,9 @@ export class CustomerAuthService {
   }
 
   async resetPasswordConfirm(token: string, password: string) {
-    const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET_VERIFY });
+    const payload = this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET_VERIFY,
+    });
     const account = await this.prismaService.customerAccount.findUnique({
       where: { email: payload.email },
     });
@@ -180,7 +183,7 @@ export class CustomerAuthService {
     return { message: "Đặt lại mật khẩu thành công" };
   }
 
-  async changePass(id: number, body:ChangePassDto) {
+  async changePass(id: number, body: ChangePassDto) {
     const account = await this.prismaService.customerAccount.findUnique({
       where: { id },
     });
