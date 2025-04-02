@@ -13,6 +13,8 @@ export class CreateConsultationPublicDto {
 
   @IsOptional()
   message?: string;
+  @IsOptional()
+  gender?: string;
 
   @IsNotEmpty()
   product_id: number;

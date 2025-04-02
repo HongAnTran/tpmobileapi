@@ -25,6 +25,7 @@ export class ConsultationPublicService {
         email: createProductConsultationDto.email,
         message: createProductConsultationDto.message,
         product_id: createProductConsultationDto.product_id,
+        gender:createProductConsultationDto.gender,
         tags: createProductConsultationDto.tags,
       },
     });

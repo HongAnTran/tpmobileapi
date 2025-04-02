@@ -14,6 +14,7 @@ import { SpecificationsPublicModule } from "./specifications-public/specificatio
 import { ConsultationPublicModule } from './consultation-public/consultation-public.module';
 import { RatingPublicModule } from './rating-public/rating-public.module';
 import { CustomerPublicModule } from './customer-public/customer-public.module';
+import { SubscriptionPublicModule } from './subscription-public/subscription-public.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CustomerPublicModule } from './customer-public/customer-public.module';
     ConsultationPublicModule,
     RatingPublicModule,
     CustomerPublicModule,
+    SubscriptionPublicModule,
   ],
 })
 export class PublicModule {}
