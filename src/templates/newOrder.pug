@@ -90,6 +90,36 @@ html
             //- td #{shipping.ship_date || 'Chưa xác định'}
             //- td #{shipping.tracking_number || 'Chưa có'}
 
+ if pickup
+      h2 Vận chuyển
+      table
+        thead
+          tr
+            th Địa chỉ 
+
+            //- th Địa chỉ
+            //- th Tỉnh
+            //- th Quận/Huyện
+            //- th Phường/Xã
+            //- th Quốc gia
+            th Số điện thoại
+            th Người nhận
+            //- th Ngày giao hàng
+            //- th Mã vận đơn
+        tbody
+          tr
+            td #{pickup.store.name}
+
+            //- td #{shipping.address}
+            //- td #{shipping.province}
+            //- td #{shipping.district}
+            //- td #{shipping.ward}
+            //- td #{shipping.country}
+            td #{pickup.phone}
+            td #{pickup.fullname}
+            //- td #{shipping.ship_date || 'Chưa xác định'}
+            //- td #{shipping.tracking_number || 'Chưa có'}
+
     if payment
       h2 Thanh toán
       table

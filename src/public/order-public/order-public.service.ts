@@ -77,7 +77,11 @@ export class OrderPublicService {
       data,
       include: {
         customer: true,
-        pickup: true,
+        pickup: {
+          include: {
+            store: true,
+          },
+        },
         tags: true,
         coupons: true,
         items: {
