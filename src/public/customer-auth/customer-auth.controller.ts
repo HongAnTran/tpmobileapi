@@ -20,10 +20,14 @@ import { ChangePassDto } from "./dto/changePass.dto";
 export class CustomerAuthController {
   constructor(private readonly customerAuthService: CustomerAuthService) {}
 
-
   @Post("login")
   login(@Body() login: LoginDto) {
     return this.customerAuthService.signIn(login);
+  }
+
+  @Post("logout")
+  logout() {
+    return this.customerAuthService.logout();
   }
 
   @Post("register")
@@ -41,14 +45,17 @@ export class CustomerAuthController {
     return this.customerAuthService.resetPassword(body.email);
   }
   @Put("active-password")
-  activePassword(@Body() body: { password: string , token: string }) {
-    return this.customerAuthService.resetPasswordConfirm(body.token,body.password);
+  activePassword(@Body() body: { password: string; token: string }) {
+    return this.customerAuthService.resetPasswordConfirm(
+      body.token,
+      body.password
+    );
   }
 
   @Put("change-password")
   @UseGuards(AuthCustomerGuard)
-  changePass(@Req() req: any,@Body() body: ChangePassDto) {
+  changePass(@Req() req: any, @Body() body: ChangePassDto) {
     const { id } = req.customer;
-    return this.customerAuthService.changePass(id,body);
+    return this.customerAuthService.changePass(id, body);
   }
 }
