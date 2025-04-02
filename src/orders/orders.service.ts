@@ -123,7 +123,12 @@ export class OrdersService {
       const order = await this.prisma.order.findUnique({
         where: { id, available: true },
         include: {
-          items: true,
+          items: {
+            include : {
+              product: true,
+              variant: true,
+            }
+          },
           customer: true,
           payment: true,
           shipping: true,
