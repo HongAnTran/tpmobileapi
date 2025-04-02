@@ -112,6 +112,10 @@ export class OrderPublicController {
   findOneByToken(@Param("token") token: string) {
     return this.orderPublicService.findOneByToken(token);
   }
+  @Get("/code/:code")
+  findOneByCode(@Param("code") code: string) {
+    return this.orderPublicService.findOneByCode(code);
+  }
 
   @Put("cancel/:code")
   @UseGuards(AuthCustomerGuard)

@@ -134,7 +134,10 @@ export class CustomerPublicService {
   }
   async getMyOrders(id: number) {
     const orders = await this.prismaService.order.findMany({
-      where: { customer_id: id },
+      where: {
+        customer_id: id,
+        available: true,
+      },
       include: {
         coupons: true,
         payment: true,

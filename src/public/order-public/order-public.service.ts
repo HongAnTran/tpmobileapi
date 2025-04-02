@@ -241,6 +241,38 @@ export class OrderPublicService {
     }
   }
 
+  async findOneByCode(code: string) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: { code, available: true },
+        include: {
+          items: {
+            include: {
+              product: true,
+              variant: true,
+            },
+          },
+          customer: true,
+          payment: true,
+          shipping: true,
+          coupons :true,
+          pickup: {
+            include: {
+              store: true,
+            },
+          },
+        },
+      });
+      if (!order) {
+        throw new NotFoundException(`Đơn hàng không tồn tại`);
+      }
+
+      return order;
+    } catch (error) {
+      throw new NotFoundException(`Đơn hàng không tồn tại`);
+    }
+  }
+
   async cancelOrder(id : number , code : string,body: {
     cancelReason: string
     cancelReasonCode: number
@@ -251,8 +283,8 @@ export class OrderPublicService {
         customer : true,
       }
     });
-    if (!order) {
-      throw new NotFoundException(`Không tìm thấy đơn hàng`);
+    if (!order || !order.available) {
+      throw new NotFoundException(`Đơn hàng không tồn tại`);
     }
     if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.PROCESSING) {
       throw new BadRequestException(`Trạng thái đơn hàng không hợp lệ`);
@@ -261,13 +293,12 @@ export class OrderPublicService {
     if(order.customer.id !== id){
       throw new UnprocessableEntityException(`Lỗi xác thực`);
     }
-
-    return this.prisma.order.update({
-      where: { id },
-      data : {
-        status : OrderStatus.CANCELLED,
-        note_private : `Hủy vì ${body.cancelReason} ${body.cancelReasonCode}`,
-      }
-    })
+      return this.prisma.order.update({
+        where: { id },
+        data : {
+          status : OrderStatus.CANCELLED,
+          note_private : `Hủy vì ${body.cancelReason} ${body.cancelReasonCode}`,
+        }
+      })
   }
 }
