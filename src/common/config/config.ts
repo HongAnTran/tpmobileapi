@@ -1,0 +1,1 @@
+export const TELE_CHATID = process.env.TELE_CHATID;

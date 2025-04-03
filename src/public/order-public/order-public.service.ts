@@ -9,11 +9,15 @@ import { OrderPickupStatus, OrderStatus } from "src/common/types/Order.type";
 import { PrismaService } from "src/prisma.service";
 import { MailService } from "src/mail/mail.service";
 import { v4 as uuidv4 } from "uuid";
+import { TelebotService } from "src/telebot/telebot.service";
+import { TELE_CHATID } from "src/common/config/config";
+import { formatCurrency } from "src/common/helper/curency";
 @Injectable()
 export class OrderPublicService {
   constructor(
     private prisma: PrismaService,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
+    private telebotService : TelebotService
   ) {}
 
   async createOrderReview(
@@ -152,14 +156,25 @@ export class OrderPublicService {
     return data;
   }
 
+  
+
   async sendMail(
     res: Prisma.OrderGetPayload<{
       include: {
-        items: true;
+        items: {
+          include:{
+            product: true;
+            variant: true;
+          }
+        };
         customer: true;
         payment: true;
         shipping: true;
-        pickup: true;
+        pickup: {
+          include: {
+            store: true;
+          };
+        };
       };
     }>
   ) {
@@ -174,12 +189,40 @@ export class OrderPublicService {
           context: res,
         });
       }
-      await this.mailService.sendMail({
-        subject: "TP Mobile Store - Đơn đặt hàng mới",
-        to: process.env.EMAIL_NOTI,
-        template: "newOrder",
-        context: res,
-      });
+
+      let message = ""
+      if(res.pickup){
+        message = `Đơn hàng ${res.code} Vừa được tạo.
+        Thông tin đơn hàng:
+        - Tên khách hàng: ${res.pickup.fullname}
+        - SDT: ${res.pickup.phone}
+        - Email: ${res.pickup.email}
+        - SP: ${res.items.map((item) => {
+          return `${item.product.title}-${item.variant.title} - ${item.quantity} - ${formatCurrency(item.line_price)}đ`;
+        })}
+        - Tổng : ${formatCurrency(res.total_price)}
+        - Note: ${res.note}
+        - Địa chỉ lấy hàng: ${res.pickup.store.name}
+        `
+      }
+
+      if(res.shipping){
+        message = `Đơn hàng ${res.code} Vừa được tạo.
+        Thông tin đơn hàng:
+        - Ngày bán: ${res.sold_at.toLocaleDateString('vi-VN')}
+        - Tên khách hàng: ${res.shipping.fullname}
+        - SDT: ${res.shipping.phone}
+        - Email: ${res.shipping.email}
+        - Địa chỉ giao hàng: ${res.shipping.address_full}
+        - SP: ${res.items.map((item) => {
+          return `${item.product.title}-${item.variant.title} - ${item.quantity} - ${formatCurrency(item.line_price)}đ`;
+        })}
+        - Tổng : ${formatCurrency(res.total_price)}
+        - Note: ${res.note}
+        `
+      }
+
+      await this.telebotService.queueMessage(TELE_CHATID , message);
     } catch (error) {
       console.error("Error sending email:", error);
     }

@@ -53,7 +53,6 @@ export class ConsultationPublicService {
       - SĐT: ${newConsultation.phone}
       - Email: ${newConsultation.email || 'Không có'}
       - Sản phẩm: ${newConsultation.product.title}
-      - Sản phẩm gía: ${newConsultation.product.price}
       - Tin nhắn: ${newConsultation.message || 'Không có'}
       - Giới tính: ${newConsultation.gender || 'Không xác định'}
       - ngày tạo: ${newConsultation.created_at.toLocaleDateString('vi-VN')}
