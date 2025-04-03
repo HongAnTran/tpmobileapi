@@ -15,6 +15,7 @@ import { BullBoardModule } from "@bull-board/nestjs";
 import { ExpressAdapter } from "@bull-board/express";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
+import { TelebotModule } from './telebot/telebot.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
     }),
     PrivateModule,
     PublicModule,
+    TelebotModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
