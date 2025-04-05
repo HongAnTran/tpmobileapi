@@ -67,7 +67,7 @@ export class StaticController {
   )
   async uploadMultipleFilesImageToClound(
     @UploadedFiles() files: Express.Multer.File[],
-    @Query('folder_id') folderId?: number
+    @Query('folder_id') folderId?: string
   ) {
     if (files.length > 5) {
       throw new BadRequestException("You can only upload up to 5 files.");
@@ -75,7 +75,7 @@ export class StaticController {
     const fileUploads = [];
 
     for await (const file of files) {
-      let res = await this.staticService.uploadImageFormFileToCloudinary(file , folderId);
+      let res = await this.staticService.uploadImageFormFileToCloudinary(file , +folderId);
       fileUploads.push(res);
     }
     return fileUploads;
