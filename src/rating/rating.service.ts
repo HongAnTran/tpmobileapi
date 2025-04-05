@@ -62,9 +62,14 @@ export class RatingService {
   }
 
   async updateManyProductRating( products: number[]) {
-    for (const id of products) {
-      await this.updateProductRating(id);
-    }
+ try {
+      for await (const id of products) {
+        await this.updateProductRating(id);
+      }
+      return {status : true}
+ } catch (error) {
+      return {status : false}
+ }
   }
   async updateProductRating(productId: number) {
     const allRatings = await this.prisma.rating.findMany({
