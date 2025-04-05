@@ -14,7 +14,7 @@ export class StaticService {
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
-  async uploadImageFormFileToCloudinary(file: Express.Multer.File) {
+  async uploadImageFormFileToCloudinary(file: Express.Multer.File , folderId?: number) {
     const res = await this.cloudinaryService.uploadImageFromFile(file);
     const createStaticDto: Prisma.FileCreateInput = {
       format: res.format,
@@ -22,6 +22,9 @@ export class StaticService {
       url: res.secure_url,
       size: res.size || 0,
       id_root: res.public_id,
+      folder: folderId ?{
+        connect: { id: folderId}
+      } : undefined
     };
     const createdFile = await this.createFile(createStaticDto);
     return createdFile;

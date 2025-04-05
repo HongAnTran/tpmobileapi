@@ -23,6 +23,10 @@ export class RatingController {
   create(@Body() createRatingDto: Prisma.RatingCreateInput) {
     return this.ratingService.create(createRatingDto);
   }
+  @Post("many")
+  createMany(@Body() createRatingDto: Prisma.RatingCreateManyInput[]) {
+    return this.ratingService.createMany(createRatingDto);
+  }
 
   @Get()
   findAll(

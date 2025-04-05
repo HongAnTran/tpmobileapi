@@ -11,6 +11,12 @@ export class RatingService {
     return this.prisma.rating.create({ data: createRatingDto });
   }
 
+  async createMany(
+    createRatingDto: Prisma.RatingCreateManyInput []
+  ) {
+    return this.prisma.rating.createMany({ data:createRatingDto  });
+  }
+
   async findAll({
     where,
     skip,
