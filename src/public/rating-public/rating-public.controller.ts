@@ -28,4 +28,9 @@ export class RatingPublicController {
       product: { connect: { id: product_id } },
     });
   }
+
+  @Get(":product_id")
+  findAll(@Param("product_id") product_id: string) {
+    return this.ratingPublicService.findAll(+product_id);
+  }
 }

@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  Put,
 } from "@nestjs/common";
 import { RatingService } from "./rating.service";
 import { UpdateRatingDto } from "./dto/update-rating.dto";
@@ -36,6 +37,8 @@ export class RatingController {
       limit?: string;
       product_id?: string;
       customer_id?: string;
+      sort_by?: string;
+      sort_type?: string;
     }
   ) {
     const { customer_id, product_id, limit, page } = query;
@@ -61,5 +64,12 @@ export class RatingController {
   @Delete(":id")
   remove(@Param("id") id: string) {
     return this.ratingService.remove(+id);
+  }
+
+  @Put("products")
+  updateProductRating(@Body() updateRatingDto: {
+    ids : number[];
+  }) {
+    return this.ratingService.updateManyProductRating(updateRatingDto.ids);
   }
 }

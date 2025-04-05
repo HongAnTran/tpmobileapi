@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma.service";
 import { PaymentStatus, Prisma } from "@prisma/client";
 import { OrderStatus } from "src/common/types/Order.type";
+import { count } from "console";
 
 @Injectable()
 export class RatingPublicService {
@@ -62,6 +63,46 @@ export class RatingPublicService {
     return res
   }
 
+  async findAll(product_id: number) {
+    const ratings = await this.prisma.rating.findMany({
+      where: {
+        product_id,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+      include: {
+        tags:{
+          select:{
+            id:true,
+            title:true,
+            code:true,
+
+          }
+        },
+        customer: {
+          select: {
+            id: true,
+            avatar: true,
+            full_name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    const total = await this.prisma.rating.count({
+      where: {
+        product_id,
+      },
+    });
+    return {
+      datas: ratings,
+      count: total,
+    }
+  }
+    
+
   async updateProductRating(productId: number) {
     // Lấy tất cả ratings
     const allRatings = await this.prisma.rating.findMany({
@@ -76,35 +117,23 @@ export class RatingPublicService {
       });
       return;
     }
-  
     // Tính toán rating tổng
     const count = allRatings.length;
     const sum = allRatings.reduce((acc, r) => acc + r.rate, 0);
-    const average = parseFloat((sum / count).toFixed(1));
-  
-    const distribution = allRatings.reduce((acc, r) => {
-      acc[r.rate] = (acc[r.rate] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
-  
+    const average = count > 0 ? parseFloat((sum / count).toFixed(1)) : 0
     // Lọc bỏ rating seeding
     const realRatings = allRatings.filter(r => !r.is_seeding);
     const countReal = realRatings.length;
     const sumReal = realRatings.reduce((acc, r) => acc + r.rate, 0);
-    const averageReal = countReal > 0 ? parseFloat((sumReal / countReal).toFixed(1)) : null;
-  
-    const distributionReal = realRatings.reduce((acc, r) => {
-      acc[r.rate] = (acc[r.rate] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
-  
-    // Cập nhật Product với cả rating tổng và rating thực
+    const averageReal = countReal > 0 ? parseFloat((sumReal / countReal).toFixed(1)) : 0;
     await this.prisma.product.update({
       where: { id: productId },
+
       data: { 
+        rating_count: count,
+        average_rating: average,
         rating: { 
-          average, count, distribution,
-          real: countReal > 0 ? { average: averageReal, count: countReal, distribution: distributionReal } : null
+          average : averageReal, count : countReal ,
          },
       
       },
