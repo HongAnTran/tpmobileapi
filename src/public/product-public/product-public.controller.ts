@@ -166,6 +166,8 @@ export class ProductPublicController {
         updated_at: true,
         meta_tags: true,
         tags: true,
+        rating_count: true,
+        average_rating: true,
         attributes: {
           include: {
             attribute: true,
