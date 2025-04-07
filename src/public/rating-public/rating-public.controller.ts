@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from "@nestjs/common";
 import { RatingPublicService } from "./rating-public.service";
 import { CreateRatingPublicDto } from "./dto/create-rating-public.dto";
@@ -30,7 +31,8 @@ export class RatingPublicController {
   }
 
   @Get(":product_id")
-  findAll(@Param("product_id") product_id: string) {
-    return this.ratingPublicService.findAll(+product_id);
+  findAll(@Param("product_id") product_id: string , @Query() query: { page?: string; limit?: string }) {
+
+    return this.ratingPublicService.findAll(+product_id, query);
   }
 }

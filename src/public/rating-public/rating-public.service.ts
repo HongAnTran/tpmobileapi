@@ -63,8 +63,17 @@ export class RatingPublicService {
     return res
   }
 
-  async findAll(product_id: number) {
+  async findAll(product_id: number , query: { page?: string; limit?: string }) {
+    const MAX_LIMIT = 50;
+    const take = query.limit
+      ? Number(query.limit) <= MAX_LIMIT
+        ? Number(query.limit)
+        : MAX_LIMIT 
+      : MAX_LIMIT;
+    const skip = query.page ? (Number(query.page) - 1) * take : undefined;
     const ratings = await this.prisma.rating.findMany({
+      take: take,
+      skip: skip,
       where: {
         product_id,
       },
@@ -98,7 +107,7 @@ export class RatingPublicService {
     });
     return {
       datas: ratings,
-      count: total,
+      total: total,
     }
   }
     
