@@ -21,7 +21,9 @@ export class CustomerSystemService {
   }
 
   async findAll(): Promise<Customer[]> {
-    return this.prisma.customer.findMany();
+    return this.prisma.customer.findMany({
+      include: { account: true },
+    });
   }
 
   async findOne(id: number): Promise<Customer | null> {
