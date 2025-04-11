@@ -48,10 +48,14 @@ export class AuthService {
 
   async refreshToken(refreshToken: string) {
     try {
-      const payload = this.jwtService.verify(refreshToken);
+      const payload = this.jwtService.verify(refreshToken,{
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+      const account = await this.accountService.findOne(payload.id);
+
       const accessToken = this.jwtService.sign(
-        { sub: payload.sub },
-        { expiresIn: "30m" }
+        { id: account.user_id  , roles : account.roles.map((role) => role.code) },
+        { expiresIn: "1d", secret: process.env.JWT_SECRET }
       );
       return { accessToken };
     } catch (error) {

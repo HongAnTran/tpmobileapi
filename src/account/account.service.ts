@@ -18,6 +18,7 @@ export class AccountService {
   findOne(id: number) {
     return this.PrismaService.account.findUnique({
       where: { id },
+      include: { user: true, roles: true },
     });
   }
 
