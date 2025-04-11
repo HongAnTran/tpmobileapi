@@ -33,8 +33,8 @@ export class TelebotService {
         'send-telegram-message', // Tên job
         { chatId, message }, // Dữ liệu gửi vào queue
         {
-          attempts: 3, // Số lần thử lại nếu thất bại
-          backoff: 5000, // Thời gian chờ giữa các lần thử lại (5 giây)
+          attempts: 2, // Số lần thử lại nếu thất bại
+          backoff: 2000, // Thời gian chờ giữa các lần thử lại (5 giây)
         },
       );
       console.log(`Đã thêm job gửi tin nhắn vào queue cho ${chatId}`);

@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma.service";
 import { PaymentStatus, Prisma } from "@prisma/client";
 import { OrderStatus } from "src/common/types/Order.type";
-import { count } from "console";
 
 @Injectable()
 export class RatingPublicService {
@@ -49,16 +48,6 @@ export class RatingPublicService {
     }
 
     const res = await this.prisma.rating.create({ data: createRatingDto });
-    await this.prisma.product.update({
-      where: {
-        id: createRatingDto.product.connect.id,
-      },
-      data: {
-        rating:{
-          
-        }
-      },
-    });
     await this.updateProductRating(product.connect.id);
     return res
   }
