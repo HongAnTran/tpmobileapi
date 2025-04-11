@@ -1,56 +1,55 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateQuestionDto } from './dto/create-question.dto';
-import { UpdateQuestionDto } from './dto/update-question.dto';
-import { Question } from '@prisma/client'; 
+import { CreateAnswerDto } from './dto/create-answer';
+import { Prisma, Question } from '@prisma/client'; 
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class QuestionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
-  //   return this.prisma.question.create({
-  //     data: {...createQuestionDto , },
-  //   });
-  // }
+  async create(userId : number,createQuestionDto: CreateAnswerDto) {
+    return this.prisma.answer.create({
+      data: {
+        content: createQuestionDto.content,
+        question:{
+          connect: { id: createQuestionDto.questionId },
+        }, 
+        author:{
+          connect: { id: userId }, 
+        }
+      },
+    });
+  }
 
-  async findAll(): Promise<Question[]> {
+  async findAll(query:{
+    page: number; 
+    limit: number; 
+    productId?: number; 
+    customerId?: number;
+  }) {
+    const { page , limit, productId, customerId } = query;
+    const skip = (page - 1) * limit; // Tính toán số bản ghi cần bỏ qua
+    const take = limit; // Số bản ghi cần lấy
+
+
     return this.prisma.question.findMany({
+      where:{
+     product_id: productId ? productId : undefined, // Lọc theo productId nếu có
+      customer_id : customerId ? customerId : undefined, // Lọc theo customerId nếu có
+      },
+      skip,
+      take,
       include: {
-        answers: true, // Nếu bạn muốn lấy kèm các câu trả lời
+        answers: true, 
+        product: true, 
       },
     });
   }
 
-  async findOne(id: number): Promise<Question> {
-    const question = await this.prisma.question.findUnique({
-      where: { id },
-      include: {
-        answers: true, // Nếu bạn muốn lấy kèm các câu trả lời
-      },
-    });
-
-    if (!question) {
-      throw new NotFoundException(`Question with id ${id} not found`);
-    }
-
-    return question;
-  }
-
-  async update(id: number, updateQuestionDto: UpdateQuestionDto): Promise<Question> {
-    const question = await this.findOne(id); // Kiểm tra xem câu hỏi có tồn tại không
-
-    return this.prisma.question.update({
-      where: { id: question.id },
-      data: updateQuestionDto,
-    });
-  }
 
   async remove(id: number): Promise<Question> {
-    const question = await this.findOne(id); // Kiểm tra xem câu hỏi có tồn tại không
-
     return this.prisma.question.delete({
-      where: { id: question.id },
+      where: { id },
     });
   }
 }
