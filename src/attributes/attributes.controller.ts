@@ -29,6 +29,10 @@ export class AttributesController {
       take: take ? Number(take) : undefined,
     });
   }
+  @Get("productAttributeValue")
+  getProductAttributeValue() {
+    return this.attributesService.getProductAttributeValue();
+  }
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.attributesService.findOne(+id);
@@ -45,10 +49,6 @@ export class AttributesController {
   @Delete(":id")
   remove(@Param("id") id: string) {
     return this.attributesService.remove(+id);
-  }
-  @Get("productAttributeValue")
-  getProductAttributeValue() {
-    return this.attributesService.getProductAttributeValue();
   }
 
 
