@@ -46,4 +46,10 @@ export class AttributesController {
   remove(@Param("id") id: string) {
     return this.attributesService.remove(+id);
   }
+  @Get("productAttributeValue")
+  getProductAttributeValue() {
+    return this.attributesService.getProductAttributeValue();
+  }
+
+
 }

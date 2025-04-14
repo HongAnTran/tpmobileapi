@@ -46,4 +46,9 @@ export class AttributesService {
       where: { id },
     });
   }
+
+
+  async getProductAttributeValue(){
+    return this.prisma.productAttributeValue.findMany();
+  }
 }
