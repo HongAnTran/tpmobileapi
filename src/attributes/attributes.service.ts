@@ -49,6 +49,6 @@ export class AttributesService {
 
 
   async getProductAttributeValue(){
-    return this.prisma.productAttributeValue.findMany();
+    return this.prisma.productAttributes.findMany();
   }
 }
