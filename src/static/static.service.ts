@@ -18,9 +18,9 @@ export class StaticService {
     const res = await this.cloudinaryService.uploadImageFromFile(file);
     const createStaticDto: Prisma.FileCreateInput = {
       format: res.format,
-      name: file.filename || res.original_filename,
+      name: file.originalname || res.original_filename,
       url: res.secure_url,
-      size: res.size || 0,
+      size: res.bytes || file.size,
       id_root: res.public_id,
       folder: folderId ?{
         connect: { id: folderId}
