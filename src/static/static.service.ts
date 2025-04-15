@@ -16,9 +16,12 @@ export class StaticService {
 
   async uploadImageFormFileToCloudinary(file: Express.Multer.File , folderId?: number) {
     const res = await this.cloudinaryService.uploadImageFromFile(file);
+    const baseName = file.originalname
+        .split('.')[0]
+        .replace(/[^a-zA-Z0-9-_]/g, '');
     const createStaticDto: Prisma.FileCreateInput = {
       format: res.format,
-      name: file.originalname || res.original_filename,
+      name: baseName || res.original_filename,
       url: res.secure_url,
       size: res.bytes || file.size,
       id_root: res.public_id,
