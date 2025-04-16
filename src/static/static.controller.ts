@@ -71,9 +71,6 @@ export class StaticController {
     @UploadedFiles() files: Express.Multer.File[],
     @Query("folder_id") folderId?: string
   ) {
-    if (files.length > 5) {
-      throw new BadRequestException("You can only upload up to 5 files.");
-    }
     const fileUploads = [];
 
     for await (const file of files) {

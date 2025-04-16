@@ -21,11 +21,14 @@ export class StaticService {
     folderId?: number
   ) {
     const res = await this.cloudinaryService.uploadImageFromFile(file);
+    const baseName = file.originalname
+        .split('.')[0]
+        .replace(/[^a-zA-Z0-9-_]/g, '');
     const createStaticDto: Prisma.FileCreateInput = {
       format: res.format,
-      name: file.filename || res.original_filename,
+      name: baseName || res.original_filename,
       url: res.secure_url,
-      size: res.size || 0,
+      size: res.bytes || file.size,
       id_root: res.public_id,
       folder: folderId
         ? {
