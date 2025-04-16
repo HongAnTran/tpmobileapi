@@ -28,6 +28,8 @@ import { AccountModule } from "../account/account.module";
 import { RoleModule } from "../role/role.module";
 import { ReportModule } from "../report/report.module";
 import { ProductConsultationModule } from "../product-consultation/product-consultation.module";
+import { SubscriptionsModule } from "../subscriptions/subscriptions.module";
+
 import { AuthGuard } from "src/auth/jwt.guard";
 @Module({
   imports: [
@@ -60,6 +62,7 @@ import { AuthGuard } from "src/auth/jwt.guard";
     RoleModule,
     ReportModule,
     ProductConsultationModule,
+    SubscriptionsModule,
   ],
   providers: [AuthGuard],
 })
