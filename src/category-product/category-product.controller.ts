@@ -47,13 +47,18 @@ export class CategoryProductController {
       take?: string;
       orderBy?: string;
       orderType?: string;
+      slugs?: string;
     }
   ) {
     const skip = query.skip ? parseInt(query.skip, 10) : undefined;
     const take = query.take ? parseInt(query.take, 10) : undefined;
+    const slugs = query.slugs ? query.slugs.split(",") : undefined;
     return this.categoryProductService.categories({
       skip: skip,
       take: take,
+      where: {
+        slug: slugs ? { in: slugs } : undefined,
+      },
       orderBy: {
         [query.orderBy]: query.orderType,
       },
