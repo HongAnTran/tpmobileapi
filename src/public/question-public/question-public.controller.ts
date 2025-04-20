@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { QuestionPublicService } from './question-public.service';
-import { CreateQuestionPublicDto } from './dto/create-question-public.dto';
-import { UpdateQuestionPublicDto } from './dto/update-question-public.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Query,
+  UseGuards,
+  Req,
+} from "@nestjs/common";
+import { QuestionPublicService } from "./question-public.service";
+import { CreateQuestionPublicDto } from "./dto/create-question-public.dto";
+import { AuthCustomerGuard } from "../customer-auth/jwtCustomer.guard";
 
-@Controller('public/questions')
+@Controller("public/questions")
 export class QuestionPublicController {
   constructor(private readonly questionPublicService: QuestionPublicService) {}
 
@@ -13,13 +22,23 @@ export class QuestionPublicController {
   }
 
   @Get()
-  findAll(@Query('product_id') product_id: string) {
+  findAll(@Query("product_id") product_id: string) {
     if (product_id) {
       return this.questionPublicService.findAll(+product_id);
     }
 
-    throw new Error('product_id is required');
-    
+    throw new Error("product_id is required");
   }
 
+  @Get("me")
+  @UseGuards(AuthCustomerGuard)
+  myQuestion(@Req() req: any) {
+    const { id } = req.customer;
+    return this.questionPublicService.myQuestion(id);
+  }
+
+  @Patch()
+  like(@Body() body: { questionId: number; like: boolean }) {
+    return this.questionPublicService.like(body);
+  }
 }
