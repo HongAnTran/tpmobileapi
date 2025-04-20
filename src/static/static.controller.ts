@@ -16,6 +16,8 @@ import { StaticService } from "./static.service";
 import { Prisma } from "@prisma/client";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { AuthGuard } from "src/auth/jwt.guard";
+import { UpdateFileDto } from "./dto/update-static.dto";
+import { UpdateFolderDto } from "./dto/update-folder.dto";
 @Controller("static")
 @UseGuards(AuthGuard)
 export class StaticController {
@@ -67,12 +69,15 @@ export class StaticController {
   )
   async uploadMultipleFilesImageToClound(
     @UploadedFiles() files: Express.Multer.File[],
-    @Query('folder_id') folderId?: string
+    @Query("folder_id") folderId?: string
   ) {
     const fileUploads = [];
 
     for await (const file of files) {
-      let res = await this.staticService.uploadImageFormFileToCloudinary(file , +folderId);
+      let res = await this.staticService.uploadImageFormFileToCloudinary(
+        file,
+        +folderId
+      );
       fileUploads.push(res);
     }
     return fileUploads;
@@ -135,6 +140,16 @@ export class StaticController {
   @Get("folders/:id")
   findOneFolder(@Param("id") id: string) {
     return this.staticService.findOnefolder(+id);
+  }
+
+  @Patch("files/:id")
+  editFile(@Param("id") id: string, @Body() File: UpdateFileDto) {
+    return this.staticService.editFile(+id, File);
+  }
+
+  @Patch("folders/:id")
+  editFolder(@Param("id") id: string, @Body() folder: UpdateFolderDto) {
+    return this.staticService.editFolder(+id, folder);
   }
 
   @Delete("files/:id")

@@ -1,4 +1,11 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateStaticDto } from './create-static.dto';
+import { IsInt, IsOptional, IsString } from "class-validator";
 
-export class UpdateStaticDto extends PartialType(CreateStaticDto) {}
+export class UpdateFileDto {
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsInt()
+  folder_id?: number;
+}

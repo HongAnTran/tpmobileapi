@@ -7,6 +7,8 @@ import { v4 as uuid } from "uuid";
 import * as fs from "fs";
 import { sanitizeName } from "src/common/helper/hassPassword";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { UpdateFileDto } from "./dto/update-static.dto";
+import { UpdateFolderDto } from "./dto/update-folder.dto";
 @Injectable()
 export class StaticService {
   constructor(
@@ -14,7 +16,10 @@ export class StaticService {
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
-  async uploadImageFormFileToCloudinary(file: Express.Multer.File , folderId?: number) {
+  async uploadImageFormFileToCloudinary(
+    file: Express.Multer.File,
+    folderId?: number
+  ) {
     const res = await this.cloudinaryService.uploadImageFromFile(file);
     const baseName = file.originalname
         .split('.')[0]
@@ -25,9 +30,11 @@ export class StaticService {
       url: res.secure_url,
       size: res.bytes || file.size,
       id_root: res.public_id,
-      folder: folderId ?{
-        connect: { id: folderId}
-      } : undefined
+      folder: folderId
+        ? {
+            connect: { id: folderId },
+          }
+        : undefined,
     };
     const createdFile = await this.createFile(createStaticDto);
     return createdFile;
@@ -51,6 +58,20 @@ export class StaticService {
       data: createStaticDto,
     });
   }
+  editFile(id: number, file: UpdateFileDto) {
+    return this.prisma.file.update({
+      where: { id },
+      data: {
+        name: file.name,
+        folder: file.folder_id
+          ? {
+              connect: { id: file.folder_id },
+            }
+          : undefined,
+      },
+    });
+  }
+
   createFiles(createStaticDto: Prisma.FileCreateManyInput[]) {
     return this.prisma.file.createMany({
       data: createStaticDto,
@@ -59,6 +80,19 @@ export class StaticService {
   createFolder(createStaticDto: Prisma.FolderCreateInput) {
     return this.prisma.folder.create({
       data: createStaticDto,
+    });
+  }
+  editFolder(id: number, createStaticDto: UpdateFolderDto) {
+    return this.prisma.folder.update({
+      where: { id },
+      data: {
+        name: createStaticDto.name,
+        parent: createStaticDto.parent_id
+          ? {
+              connect: { id: createStaticDto.parent_id },
+            }
+          : undefined,
+      },
     });
   }
 
