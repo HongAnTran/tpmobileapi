@@ -50,6 +50,12 @@ export class QuestionPublicService {
         status: QuestionStatus.APPROVED,
       },
       include: {
+        answers: {
+          select: {
+            content: true,
+            created_at: true,
+          },
+        },
         customer: {
           select: {
             full_name: true,
