@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateAnswerDto } from "./dto/create-answer";
 import { Prisma, Question } from "@prisma/client";
 import { PrismaService } from "src/prisma.service";
+import { QuestionStatus } from "src/common/types/Questions.type";
 
 @Injectable()
 export class QuestionService {

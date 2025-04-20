@@ -15,6 +15,7 @@ import { CreateAnswerDto } from "./dto/create-answer";
 import { UpdateQuestionDto } from "./dto/update-question.dto";
 import { AuthGuard } from "src/auth/jwt.guard";
 import { AuthenticatedRequest } from "src/common/types/Auth.type";
+import { QuestionStatus } from "src/common/types/Questions.type";
 
 @Controller("question")
 @UseGuards(AuthGuard)

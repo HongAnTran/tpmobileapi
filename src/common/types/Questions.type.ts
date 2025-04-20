@@ -1,4 +1,4 @@
-enum QuestionStatus {
+export enum QuestionStatus {
   PENDING,
   APPROVED,
   REJECTED,

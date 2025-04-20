@@ -3,6 +3,7 @@ import { CreateQuestionPublicDto } from "./dto/create-question-public.dto";
 import { PrismaService } from "src/prisma.service";
 import { TelebotService } from "src/telebot/telebot.service";
 import { TELE_CHATID } from "src/common/config/config";
+import { QuestionStatus } from "src/common/types/Questions.type";
 
 @Injectable()
 export class QuestionPublicService {
