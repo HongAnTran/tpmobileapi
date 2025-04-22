@@ -46,7 +46,7 @@ export class QuestionService {
     const skip = (page - 1) * limit; // Tính toán số bản ghi cần bỏ qua
     const take = limit; // Số bản ghi cần lấy
 
-    return this.prisma.question.findMany({
+    const rows = await this.prisma.question.findMany({
       where: {
         product_id: productId ? productId : undefined, // Lọc theo productId nếu có
         customer_id: customerId ? customerId : undefined, // Lọc theo customerId nếu có
@@ -58,6 +58,13 @@ export class QuestionService {
         product: true,
       },
     });
+    const count = await this.prisma.question.count({
+      where: {
+        product_id: productId ? productId : undefined, // Lọc theo productId nếu có
+        customer_id: customerId ? customerId : undefined, // Lọc theo customerId nếu có
+      },
+    });
+    return { rows, count };
   }
 
   async remove(id: number): Promise<Question> {
