@@ -1,7 +1,7 @@
 // mail.processor.ts
 import { Processor, Process } from "@nestjs/bull";
 import { Job } from "bull";
-import { MailerService } from "@nestjs-modules/mailer"; 
+import { MailerService } from "@nestjs-modules/mailer";
 import { Logger } from "@nestjs/common";
 
 @Processor("mail-queue")
@@ -15,7 +15,7 @@ export class MailProcessor {
     const { to, subject, template, context } = job.data;
     try {
       await this.mailerService.sendMail({
-        from: process.env.ADMIN_EMAIL_ADDRESS,
+        from: `TP Mobile Store <${process.env.ADMIN_EMAIL_ADDRESS}>`,
         to,
         subject,
         template,
