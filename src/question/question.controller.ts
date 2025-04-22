@@ -46,6 +46,7 @@ export class QuestionController {
       page: string;
       limit: string;
       productId?: string;
+      status?: QuestionStatus;
       customerId?: string;
     }
   ) {
@@ -55,7 +56,13 @@ export class QuestionController {
     const customerId = query.customerId
       ? parseInt(query.customerId)
       : undefined;
-    return this.questionService.findAll({ page, limit, productId, customerId });
+    return this.questionService.findAll({
+      page,
+      limit,
+      productId,
+      customerId,
+      status: query.status,
+    });
   }
 
   @Delete(":id")

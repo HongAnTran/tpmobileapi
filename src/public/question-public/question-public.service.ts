@@ -52,6 +52,7 @@ export class QuestionPublicService {
       include: {
         answers: {
           select: {
+            id: true,
             content: true,
             created_at: true,
           },

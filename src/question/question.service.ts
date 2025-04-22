@@ -41,6 +41,7 @@ export class QuestionService {
     limit: number;
     productId?: number;
     customerId?: number;
+    status?: QuestionStatus;
   }) {
     const { page, limit, productId, customerId } = query;
     const skip = (page - 1) * limit; // Tính toán số bản ghi cần bỏ qua
@@ -50,6 +51,7 @@ export class QuestionService {
       where: {
         product_id: productId ? productId : undefined, // Lọc theo productId nếu có
         customer_id: customerId ? customerId : undefined, // Lọc theo customerId nếu có
+        status: query.status ? query.status : undefined, // Lọc theo status nếu có
       },
       skip,
       take,
