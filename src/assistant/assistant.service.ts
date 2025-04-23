@@ -33,8 +33,15 @@ export class AssistantService implements OnModuleInit {
       const userId = ctx.from.id;
       const text = ctx.message.text;
 
-      const reply = await this.askAI(userId, text);
-      await ctx.reply(reply);
+      try {
+        const reply = await this.askAI(userId, text);
+        await ctx.reply(reply);
+      } catch (error) {
+        console.error("❌ Lỗi khi gọi askAI:", error);
+        await ctx.reply(
+          "Đã có lỗi xảy ra khi xử lý tin nhắn. Hãy thử lại sau nhé!"
+        );
+      }
     });
     this.bot.command("reset", async (ctx) => {
       await this.redisService.clearHistory(ctx.from.id);
