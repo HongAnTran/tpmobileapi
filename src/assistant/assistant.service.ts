@@ -142,7 +142,9 @@ export class AssistantService implements OnModuleInit {
     return true;
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_8AM)
+  @Cron(CronExpression.EVERY_DAY_AT_8AM, {
+    timeZone: "Asia/Ho_Chi_Minh",
+  })
   async morningReminder() {
     const prompt = `
             Hãy viết một tin nhắn nhắc nhở không được nghỉ đột xuất đi làm đúng giờ, log time, và hoàn thành task với phong cách vui nhộn, sáng tạo, thân thiện.
@@ -152,7 +154,9 @@ export class AssistantService implements OnModuleInit {
     await this.sendReminders(prompt);
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_5PM)
+  @Cron(CronExpression.EVERY_DAY_AT_5PM, {
+    timeZone: "Asia/Ho_Chi_Minh",
+  })
   async afternoonChecklist() {
     if (!this.isDayWorkTime()) return;
     const prompt = `
@@ -162,7 +166,9 @@ export class AssistantService implements OnModuleInit {
     await this.sendReminders(prompt);
   }
 
-  @Cron("45 11 * * 1-5")
+  @Cron("45 11 * * 1-5", {
+    timeZone: "Asia/Ho_Chi_Minh",
+  })
   async lunchReminder() {
     const prompt = `
     Viết một lời nhắc đi ăn trưa lúc 11h45 với phong cách hài hước, dễ thương, thân thiện.
@@ -171,7 +177,9 @@ export class AssistantService implements OnModuleInit {
     await this.sendReminders(prompt);
   }
 
-  @Cron("0 9-17/2 * * 1-5") // 9h, 11h, 13h, 15h, 17h từ T2 đến T6
+  @Cron("0 9-17/2 * * 1-5", {
+    timeZone: "Asia/Ho_Chi_Minh",
+  }) // 9h, 11h, 13h, 15h, 17h từ T2 đến T6
   async drinkWaterReminder() {
     const prompt = `
     Viết một lời nhắc nhở uống nước với phong cách hài hước, dễ thương, có thể dùng emoji.
@@ -181,7 +189,9 @@ export class AssistantService implements OnModuleInit {
     await this.sendReminders(prompt);
   }
 
-  @Cron("30 10,15 * * 1-5") // 10:30 và 15:30 T2 đến T6
+  @Cron("30 10,15 * * 1-5", {
+    timeZone: "Asia/Ho_Chi_Minh",
+  }) // 10:30 và 15:30 T2 đến T6
   async breakReminder() {
     const prompt = `
     Viết một lời nhắc nhở hãy nghỉ ngơi vài phút để thư giãn rồi làm việc tiếp, giọng điệu vui vẻ, thân thiện.
