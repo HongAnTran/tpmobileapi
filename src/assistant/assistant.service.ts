@@ -59,7 +59,8 @@ export class AssistantService implements OnModuleInit {
           "📌 Nhắc nhở đã được bật cho đoạn chat này rồi nha! 😺"
         );
       } else {
-        await redisClient.sadd("reminder:recipients", chatId);
+        await redisClient.sadd("reminder:recipients", userId);
+        await redisClient.set(`user:${userId}:chatId`, chatId);
         await ctx.reply(
           "✅ Đã đăng ký nhận nhắc nhở mỗi ngày! Tôi sẽ giúp bạn đúng giờ ⏰"
         );
