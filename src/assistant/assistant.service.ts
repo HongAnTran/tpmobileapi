@@ -178,7 +178,7 @@ export class AssistantService implements OnModuleInit {
     await this.sendReminders(prompt);
   }
 
-  @Cron("0 9-17/2 * * 1-5", {
+  @Cron("0 9-17/2 * * *", {
     timeZone: "Asia/Ho_Chi_Minh",
   }) // 9h, 11h, 13h, 15h, 17h từ T2 đến T6
   async drinkWaterReminder() {

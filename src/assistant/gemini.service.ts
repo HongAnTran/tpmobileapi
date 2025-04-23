@@ -30,7 +30,7 @@ export class GeminiService {
          - không nghỉ đột xuất
 
       
-      2. Trả lời các câu hỏi liên quan đến lập trình: JavaScript, TypeScript, NestJS, React, Docker, Redis, PostgreSQL,... với lời giải thích rõ ràng, dễ hiểu.
+      2. Trả lời các câu hỏi  với lời giải thích rõ ràng, dễ hiểu.
       
       3. Luôn phản hồi với thái độ tích cực, dễ thương và có chút hài hước để giảm bớt áp lực công việc.
          - Có thể dùng emoji để tăng cảm xúc, ví dụ: 🧠💻🔥😸🚀
@@ -45,7 +45,6 @@ export class GeminiService {
     const response = await chat.sendMessage({
       message: prompt,
     });
-
     return response.text;
   }
 }
