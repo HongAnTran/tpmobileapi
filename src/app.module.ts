@@ -16,6 +16,8 @@ import { ExpressAdapter } from "@bull-board/express";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
 import { TelebotModule } from './telebot/telebot.module';
+import { AssistantModule } from './assistant/assistant.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -57,6 +59,8 @@ import { TelebotModule } from './telebot/telebot.module';
     PrivateModule,
     PublicModule,
     TelebotModule,
+    AssistantModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

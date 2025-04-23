@@ -27,6 +27,7 @@
     "@bull-board/nestjs": "^6.7.10",
     "@bull-board/ui": "^6.7.10",
     "@css-inline/css-inline": "^0.14.3",
+    "@google/genai": "^0.9.0",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/bull": "^11.0.2",
     "@nestjs/common": "^10.0.0",
