@@ -43,20 +43,6 @@ export class AssistantService implements OnModuleInit {
       );
     });
 
-    this.bot.on("text", async (ctx) => {
-      const userId = ctx.from.id;
-      const text = ctx.message.text;
-
-      try {
-        const reply = await this.askAI(userId, text);
-        await ctx.reply(reply);
-      } catch (error) {
-        console.error("❌ Lỗi khi gọi askAI:", error);
-        await ctx.reply(
-          "Đã có lỗi xảy ra khi xử lý tin nhắn. Hãy thử lại sau nhé!"
-        );
-      }
-    });
     this.bot.command("reset", async (ctx) => {
       await this.redisService.clearHistory(ctx.from.id);
       await ctx.reply("🧹 Lịch sử chat đã được làm sạch!");
@@ -79,7 +65,21 @@ export class AssistantService implements OnModuleInit {
         );
       }
     });
+    this.bot.on("text", async (ctx) => {
+      const userId = ctx.from.id;
+      const text = ctx.message.text;
+      if (text.startsWith("/")) return;
 
+      try {
+        const reply = await this.askAI(userId, text);
+        await ctx.reply(reply);
+      } catch (error) {
+        console.error("❌ Lỗi khi gọi askAI:", error);
+        await ctx.reply(
+          "Đã có lỗi xảy ra khi xử lý tin nhắn. Hãy thử lại sau nhé!"
+        );
+      }
+    });
     this.bot.launch();
   }
   async onModuleDestroy() {
