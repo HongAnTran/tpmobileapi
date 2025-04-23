@@ -20,12 +20,26 @@ export class AssistantService implements OnModuleInit {
 
   onModuleInit() {
     this.bot.start(async (ctx) => {
-      ctx.reply("Xin chào! Tôi là Trợ Lý Ảo vui vẻ ✨. Gõ gì đó để bắt đầu!");
+      await ctx.reply(
+        `👋 Xin chào ${ctx.from.first_name || "bạn"}! Tôi là Trợ Lý Ảo vui vẻ ✨
+    
+    🤖 Bạn có thể làm những điều sau:
+    • Gõ bất kỳ câu hỏi nào để tôi trả lời bằng AI 🧠
+    • Dùng lệnh /reset để xoá lịch sử chat 🧹
+    • Dùng lệnh /remind để đăng ký nhận lời nhắc mỗi sáng ☀️
+    • Dùng lệnh /help để xem lại hướng dẫn
+    
+    🎯 Hãy bắt đầu với một lời chào hoặc một câu hỏi bất kỳ nhé!`
+      );
     });
 
     this.bot.help((ctx) => {
       ctx.reply(
-        "Cứ hỏi tôi bất kỳ điều gì hoặc chờ tôi nhắc nhở hằng ngày nha!"
+        `    🤖 Bạn có thể làm những điều sau:
+    • Gõ bất kỳ câu hỏi nào để tôi trả lời bằng AI 🧠
+    • Dùng lệnh /reset để xoá lịch sử chat 🧹
+    • Dùng lệnh /remind để đăng ký nhận lời nhắc mỗi sáng ☀️
+    • Dùng lệnh /help để xem lại hướng dẫn`
       );
     });
 
@@ -49,16 +63,27 @@ export class AssistantService implements OnModuleInit {
     });
     this.bot.command("remind", async (ctx) => {
       const redisClient = this.redisService.getRedisClient();
-      const userId = ctx.from.id.toString();
       const chatId = ctx.chat.id.toString();
-      await redisClient.set(`user:${userId}:chatId`, chatId);
-      await redisClient.sadd("reminder:recipients", userId);
-      await ctx.reply(
-        "📌 Bạn đã đăng ký nhận nhắc nhở mỗi ngày rồi nha! Tôi sẽ giúp bạn đúng giờ, đủ task 😸"
-      );
+      const userId = ctx.from.id.toString();
+
+      const alreadySubscribed = await redisClient.get(`user:${userId}:chatId`);
+
+      if (alreadySubscribed) {
+        await ctx.reply(
+          "📌 Nhắc nhở đã được bật cho đoạn chat này rồi nha! 😺"
+        );
+      } else {
+        await redisClient.sadd("reminder:recipients", chatId);
+        await ctx.reply(
+          "✅ Đã đăng ký nhận nhắc nhở mỗi ngày! Tôi sẽ giúp bạn đúng giờ ⏰"
+        );
+      }
     });
 
     this.bot.launch();
+  }
+  async onModuleDestroy() {
+    this.bot.stop();
   }
 
   async sendMessage(chatId: number | string, message: string) {
